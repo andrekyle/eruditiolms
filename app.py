@@ -10,9 +10,27 @@ from functools import wraps
 from werkzeug.utils import secure_filename
 import json
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.urandom(24)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///lms.db'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or os.urandom(24).hex()
+
+# Database: prefer DATABASE_URL (e.g. Supabase Postgres), fall back to local SQLite
+_db_url = os.environ.get('DATABASE_URL', 'sqlite:///lms.db')
+# SQLAlchemy 1.4+ requires postgresql:// scheme (not postgres://)
+if _db_url.startswith('postgres://'):
+    _db_url = _db_url.replace('postgres://', 'postgresql://', 1)
+app.config['SQLALCHEMY_DATABASE_URI'] = _db_url
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Optional Supabase client config (for storage/auth/REST features)
+app.config['SUPABASE_URL'] = os.environ.get('SUPABASE_URL')
+app.config['SUPABASE_KEY'] = os.environ.get('SUPABASE_KEY')
+
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login_manager = LoginManager(app)
@@ -952,11 +970,23 @@ def inject_current_year():
 
 def init_db():
     with app.app_context():
-        # Drop all tables
-        db.drop_all()
-        # Create all tables
+        # Destructive reset only when explicitly requested via env var.
+        # Defaults to True for SQLite (dev convenience) and False otherwise (safe for Postgres/Supabase).
+        is_sqlite = app.config['SQLALCHEMY_DATABASE_URI'].startswith('sqlite')
+        reset_default = '1' if is_sqlite else '0'
+        reset_db = os.environ.get('INIT_DB_RESET', reset_default) == '1'
+        seed_demo = os.environ.get('INIT_DB_SEED', '1') == '1'
+
+        if reset_db:
+            db.drop_all()
         db.create_all()
-        
+
+        # Skip seeding if users already exist (avoids duplicate seed on remote DB)
+        if User.query.first() is not None:
+            return
+        if not seed_demo:
+            return
+
         # Create a superadmin account
         superadmin = User(
             username='admin',

@@ -9,6 +9,11 @@ venv/
 env/
 .venv/
 
+# Secrets / env
+.env
+.env.*
+!.env.example
+
 # Flask instance / SQLite
 instance/
 *.db
