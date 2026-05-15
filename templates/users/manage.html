@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>
+            <i class="bx bx-user-circle text-primary"></i> Manage Users
+        </h1>
+        <div>
+            <a href="{{ url_for('create_user') }}" class="btn btn-primary">
+                <i class="bx bx-user-plus"></i> Create User
+            </a>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary">
+                <i class="bx bx-arrow-back"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                {% if user.is_superadmin %}
+                                <span class="badge bg-danger">Super Admin</span>
+                                {% elif user.is_teacher %}
+                                <span class="badge bg-primary">Teacher</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Student</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                <a href="{{ url_for('edit_user', user_id=user.id) }}" class="btn btn-link text-primary p-0 border-0 text-decoration-none" style="line-height: 1;">
+                                    <i class="bx bx-edit" style="font-size: 18px;"></i>
+                                </a>
+                                <a href="{{ url_for('change_password', user_id=user.id) }}" class="btn btn-link text-primary p-0 border-0 text-decoration-none ms-2" style="line-height: 1;">
+                                    <i class="bx bx-key" style="font-size: 18px;"></i>
+                                </a>
+                                {% if user.id != current_user.id %}
+                                <form action="{{ url_for('delete_user', user_id=user.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                                    <button type="submit" class="btn btn-link text-danger p-0 border-0 text-decoration-none ms-2" style="line-height: 1;">
+                                        <i class="bx bx-trash" style="font-size: 18px;"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

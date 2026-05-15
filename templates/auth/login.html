@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in - African Code Academy</title>
+    <style>
+        :root {
+            --primary-color: #0078D4;
+            --primary-hover: #106EBE;
+            --primary-pressed: #005A9E;
+            --canvas: #FAF9F8;
+            --surface: #FFFFFF;
+            --text-color: #323130;
+            --light-text: #605E5C;
+            --border-color: #EDEBE9;
+            --border-strong: #C8C6C4;
+            --success-color: #107C10;
+            --danger-color: #A4262C;
+            --secondary-color: #DEECF9;
+        }
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; height: 100%; }
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            color: var(--text-color);
+            background: var(--surface);
+            overflow: hidden;
+        }
+        .auth-shell {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+        }
+        /* === Left image panel === */
+        .auth-image {
+            flex: 1 1 50%;
+            background: var(--canvas) url('https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+            position: relative;
+            border-right: 1px solid var(--border-color);
+        }
+
+        /* === Right form panel === */
+        .auth-form-panel {
+            flex: 1 1 50%;
+            background: var(--surface);
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 48px 56px;
+            overflow-y: auto;
+        }
+        .auth-form {
+            width: 100%;
+            max-width: 420px;
+        }
+        .auth-form h1 {
+            font-size: 32px;
+            font-weight: 600;
+            margin: 0 0 8px;
+            color: var(--text-color);
+            letter-spacing: -0.01em;
+        }
+        .auth-form .auth-sub {
+            color: var(--light-text);
+            font-size: 14px;
+            margin: 0 0 28px;
+        }
+
+        /* Google button */
+        .btn-google {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border-strong);
+            color: var(--text-color);
+            font-size: 14px;
+            font-weight: 600;
+            padding: 12px 16px;
+            border-radius: 2px;
+            cursor: pointer;
+            text-decoration: none;
+            font-family: inherit;
+        }
+        .btn-google:hover { background: var(--canvas); border-color: var(--primary-color); color: var(--text-color); }
+        .google-icon { width: 18px; height: 18px; flex-shrink: 0; }
+
+        /* Divider */
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            margin: 22px 0 18px;
+            color: var(--light-text);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-color);
+        }
+        .auth-divider::before { margin-right: 14px; }
+        .auth-divider::after { margin-left: 14px; }
+
+        /* Field labels */
+        .field-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 6px;
+        }
+        .field-label a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .field-label a:hover { color: var(--primary-hover); text-decoration: underline; }
+
+        /* Inputs */
+        .field-wrap {
+            position: relative;
+            margin-bottom: 16px;
+        }
+        .field-input {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border-strong);
+            color: var(--text-color);
+            font-size: 14px;
+            padding: 10px 12px 10px 40px;
+            border-radius: 2px;
+            outline: none;
+            font-family: inherit;
+            min-height: 40px;
+        }
+        .field-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 1px var(--primary-color);
+        }
+        .field-input::placeholder { color: var(--light-text); }
+        .field-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            color: var(--light-text);
+            pointer-events: none;
+        }
+        .field-eye {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: 0;
+            padding: 6px;
+            cursor: pointer;
+            color: var(--light-text);
+            border-radius: 2px;
+        }
+        .field-eye:hover { color: var(--primary-color); background: var(--canvas); }
+        .field-eye svg { width: 18px; height: 18px; display: block; }
+
+        /* Submit */
+        .btn-submit {
+            width: 100%;
+            background: var(--primary-color);
+            color: #ffffff;
+            border: 1px solid var(--primary-color);
+            padding: 12px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 4px;
+            font-family: inherit;
+            min-height: 40px;
+        }
+        .btn-submit:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
+        .btn-submit:active { background: var(--primary-pressed); border-color: var(--primary-pressed); }
+        .btn-submit svg { width: 16px; height: 16px; }
+
+        /* Footer notes */
+        .auth-secured {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+            color: var(--light-text);
+            font-size: 12px;
+        }
+        .auth-secured svg { width: 14px; height: 14px; color: var(--success-color); }
+        .auth-create {
+            text-align: center;
+            margin-top: 14px;
+            color: var(--light-text);
+            font-size: 13px;
+        }
+        .auth-create a { color: var(--primary-color); font-weight: 600; text-decoration: none; }
+        .auth-create a:hover { color: var(--primary-hover); text-decoration: underline; }
+
+        /* Flash messages */
+        .auth-flash {
+            background: #FDE7E9;
+            border: 1px solid var(--danger-color);
+            border-left: 3px solid var(--danger-color);
+            color: var(--danger-color);
+            padding: 10px 14px;
+            border-radius: 2px;
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+        .auth-flash.success {
+            background: #DFF6DD;
+            border-color: var(--success-color);
+            border-left-color: var(--success-color);
+            color: var(--success-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            body { overflow: auto; }
+            .auth-shell { flex-direction: column; }
+            .auth-image { min-height: 220px; flex: none; border-right: 0; border-bottom: 1px solid var(--border-color); }
+            .auth-form-panel { padding: 36px 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-shell">
+        <div class="auth-image" aria-hidden="true"></div>
+
+        <div class="auth-form-panel">
+            <div class="auth-form">
+                <h1>Sign in.</h1>
+                <p class="auth-sub">Enter your details to continue.</p>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% for category, message in messages %}
+                        <div class="auth-flash {% if category == 'success' %}success{% endif %}">{{ message }}</div>
+                    {% endfor %}
+                {% endwith %}
+
+                <a href="#" class="btn-google" onclick="return false;" title="Google sign-in not configured yet">
+                    <svg class="google-icon" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.5 29.5 4.5 24 4.5 13.2 4.5 4.5 13.2 4.5 24S13.2 43.5 24 43.5 43.5 34.8 43.5 24c0-1.2-.1-2.4-.4-3.5z"/>
+                        <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.5 29.5 4.5 24 4.5 16.3 4.5 9.6 8.9 6.3 14.7z"/>
+                        <path fill="#4CAF50" d="M24 43.5c5.4 0 10.3-2 13.9-5.3l-6.4-5.3c-2 1.5-4.7 2.6-7.5 2.6-5.3 0-9.7-3.4-11.3-8L6.1 32.4C9.4 38.6 16.1 43.5 24 43.5z"/>
+                        <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.4l6.4 5.3c-.4.4 6.8-5 6.8-14.7 0-1.2-.1-2.4-.4-3.5z"/>
+                    </svg>
+                    <span>Sign in with Google</span>
+                </a>
+
+                <div class="auth-divider"><span>Or sign in with email</span></div>
+
+                <form method="POST" action="{{ url_for('login') }}" novalidate>
+                    <div class="field-label"><label for="username">Email or username</label></div>
+                    <div class="field-wrap">
+                        <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+                        <input type="text" id="username" name="username" class="field-input" autocomplete="username" required>
+                    </div>
+
+                    <div class="field-label">
+                        <label for="password">Password</label>
+                        <a href="#" onclick="return false;">Forgot?</a>
+                    </div>
+                    <div class="field-wrap">
+                        <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+                        <input type="password" id="password" name="password" class="field-input" autocomplete="current-password" required>
+                        <button type="button" class="field-eye" id="togglePw" aria-label="Show password">
+                            <svg id="eyeOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                            <svg id="eyeClosed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-6.5 0-10-7-10-7a18.45 18.45 0 0 1 4.06-5.06"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19"/><path d="M1 1l22 22"/></svg>
+                        </button>
+                    </div>
+
+                    <input type="hidden" name="remember" value="on">
+
+                    <button type="submit" class="btn-submit">
+                        <span>Sign in</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </button>
+                </form>
+
+                <div class="auth-secured">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+                    <span>Secured with end-to-end encryption</span>
+                </div>
+
+                <div class="auth-create">
+                    New to African Code Academy? <a href="#" onclick="return false;">Create an account</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var btn = document.getElementById('togglePw');
+            var input = document.getElementById('password');
+            var open = document.getElementById('eyeOpen');
+            var closed = document.getElementById('eyeClosed');
+            if (!btn || !input) return;
+            btn.addEventListener('click', function () {
+                var isPw = input.type === 'password';
+                input.type = isPw ? 'text' : 'password';
+                open.style.display = isPw ? 'none' : 'block';
+                closed.style.display = isPw ? 'block' : 'none';
+                btn.setAttribute('aria-label', isPw ? 'Hide password' : 'Show password');
+            });
+        })();
+    </script>
+</body>
+</html>

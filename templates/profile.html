@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>My Profile</h1>
+    <p class="page-subtitle">Update your personal information and account settings.</p>
+</div>
+
+<form method="POST" action="{{ url_for('profile') }}" class="profile-form" autocomplete="off" enctype="multipart/form-data">
+    <div class="profile-grid">
+        <!-- Identity card -->
+        <div class="profile-card profile-identity">
+            <div class="profile-avatar-wrap">
+                <label for="avatar" class="profile-avatar-trigger" title="Click to change photo">
+                    {% if user.avatar_url %}
+                        <img src="{{ user.avatar_url }}" alt="Avatar" class="profile-avatar profile-avatar-img" id="avatarPreview">
+                    {% else %}
+                        <div class="profile-avatar" id="avatarPreview"><i class="bx bx-user-circle"></i></div>
+                    {% endif %}
+                    <span class="profile-avatar-overlay"><i class="bx bx-camera"></i></span>
+                </label>
+                <input type="file" id="avatar" name="avatar" accept="image/png,image/jpeg,image/gif,image/webp" hidden>
+                {% if user.avatar_url %}
+                <button type="submit" name="remove_avatar" value="1" class="btn btn-outline-secondary btn-sm"
+                        formnovalidate onclick="return confirm('Remove your profile photo?');">
+                    <i class="bx bx-trash"></i> Remove
+                </button>
+                {% endif %}
+            </div>
+            <div class="profile-identity-text">
+                <div class="profile-identity-name">
+                    {% if user.first_name or user.last_name %}
+                        {{ user.first_name }} {{ user.last_name }}
+                    {% else %}
+                        {{ user.username }}
+                    {% endif %}
+                </div>
+                <div class="profile-identity-role">
+                    {% if user.is_superadmin %}Administrator
+                    {% elif user.is_teacher %}Teacher
+                    {% else %}Student{% endif %}
+                </div>
+                <div class="profile-identity-meta">
+                    <span><i class="bx bx-envelope"></i> {{ user.email }}</span>
+                    <span><i class="bx bx-calendar"></i> Joined {{ user.created_at.strftime('%b %Y') }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Personal information -->
+        <div class="profile-card">
+            <h2 class="profile-card-title">Personal information</h2>
+            <p class="profile-card-subtitle">This information will be displayed publicly on your profile.</p>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="first_name" class="form-label">First name</label>
+                    <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name or '' }}" placeholder="e.g. Jane">
+                </div>
+                <div class="col-md-6">
+                    <label for="last_name" class="form-label">Last name</label>
+                    <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.last_name or '' }}" placeholder="e.g. Doe">
+                </div>
+                <div class="col-md-6">
+                    <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="email" class="form-label">Email address <span class="text-danger">*</span></label>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="phone" class="form-label">Phone</label>
+                    <input type="text" class="form-control" id="phone" name="phone" value="{{ user.phone or '' }}" placeholder="Optional">
+                </div>
+                <div class="col-md-6">
+                    <label for="location" class="form-label">Location</label>
+                    <input type="text" class="form-control" id="location" name="location" value="{{ user.location or '' }}" placeholder="City, Country">
+                </div>
+                <div class="col-12">
+                    <label for="bio" class="form-label">Bio</label>
+                    <textarea class="form-control" id="bio" name="bio" rows="4" placeholder="Tell us a little about yourself...">{{ user.bio or '' }}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Change password -->
+        <div class="profile-card">
+            <h2 class="profile-card-title">Change password</h2>
+            <p class="profile-card-subtitle">Leave blank if you don't want to change your password.</p>
+
+            <div class="row g-3">
+                <div class="col-md-12">
+                    <label for="current_password" class="form-label">Current password</label>
+                    <input type="password" class="form-control" id="current_password" name="current_password" autocomplete="current-password">
+                </div>
+                <div class="col-md-6">
+                    <label for="new_password" class="form-label">New password</label>
+                    <input type="password" class="form-control" id="new_password" name="new_password" autocomplete="new-password">
+                </div>
+                <div class="col-md-6">
+                    <label for="confirm_password" class="form-label">Confirm new password</label>
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" autocomplete="new-password">
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="profile-actions">
+            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">
+                <i class="bx bx-save"></i> Save changes
+            </button>
+        </div>
+    </div>
+</form>
+
+<script>
+(function () {
+    var input = document.getElementById('avatar');
+    var preview = document.getElementById('avatarPreview');
+    if (!input || !preview) return;
+    input.addEventListener('change', function () {
+        var file = this.files && this.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            var img = document.createElement('img');
+            img.src = e.target.result;
+            img.alt = 'Avatar preview';
+            img.id = 'avatarPreview';
+            img.className = 'profile-avatar profile-avatar-img';
+            preview.replaceWith(img);
+            preview = img;
+        };
+        reader.readAsDataURL(file);
+    });
+})();
+</script>
+{% endblock %}

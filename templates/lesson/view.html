@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}{{ lesson.title }}{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>
+            {% set type_icon = {'lesson': 'bx-book', 'video': 'bx-play', 'task': 'bx-edit', 'exam': 'bx-task'} %}
+            <i class="bx {{ type_icon.get(lesson.content_type, 'bx-book') }} text-primary"></i>
+            {{ lesson.title }}
+        </h1>
+        <div class="d-flex" style="gap:.5rem;">
+            {% if completed %}<span class="badge bg-success align-self-center"><i class="bx bx-check"></i> Completed</span>{% endif %}
+            <a href="{{ url_for('list_lessons', course_id=course.id) }}" class="btn btn-outline-primary">
+                <i class="bx bx-arrow-back"></i> All Lessons
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+
+        {# ---------- LESSON (read) ---------- #}
+        {% if lesson.content_type == 'lesson' %}
+            <div class="lesson-content">{{ lesson.content|safe }}</div>
+            {% if not current_user.is_teacher and not completed %}
+            <form action="{{ url_for('complete_lesson', lesson_id=lesson.id) }}" method="POST" class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bx bx-check"></i> Mark as Complete
+                </button>
+            </form>
+            {% endif %}
+
+        {# ---------- VIDEO ---------- #}
+        {% elif lesson.content_type == 'video' %}
+            {% if lesson.video_url %}
+            <div class="ratio ratio-16x9 mb-3">
+                <iframe src="{{ lesson.video_url }}" title="{{ lesson.title }}"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen></iframe>
+            </div>
+            {% else %}
+            <div class="alert alert-warning">No video URL configured.</div>
+            {% endif %}
+            {% if lesson.content %}<div class="mt-3">{{ lesson.content|safe }}</div>{% endif %}
+            {% if not current_user.is_teacher and not completed %}
+            <form action="{{ url_for('complete_lesson', lesson_id=lesson.id) }}" method="POST" class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bx bx-check"></i> I've watched this video
+                </button>
+            </form>
+            {% endif %}
+
+        {# ---------- TASK ---------- #}
+        {% elif lesson.content_type == 'task' %}
+            <h5>Instructions</h5>
+            <div class="mb-4">{{ (lesson.task_instructions or lesson.content)|safe }}</div>
+
+            {% if submission %}
+            <div class="alert alert-info">
+                <strong>Your last submission</strong>
+                <small class="text-muted d-block">Submitted {{ submission.submitted_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                <pre class="mt-2 mb-0" style="white-space: pre-wrap;">{{ submission.submission_text }}</pre>
+                {% if submission.grade is not none %}
+                    <div class="mt-2"><strong>Grade:</strong> {{ submission.grade }}</div>
+                {% endif %}
+                {% if submission.feedback %}
+                    <div class="mt-2"><strong>Feedback:</strong> {{ submission.feedback }}</div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% if not current_user.is_teacher %}
+            <form action="{{ url_for('submit_task', lesson_id=lesson.id) }}" method="POST">
+                <div class="mb-3">
+                    <label for="submission_text" class="form-label">Your submission</label>
+                    <textarea id="submission_text" name="submission_text" rows="8"
+                              class="form-control" required
+                              placeholder="Paste your work here..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bx bx-save"></i> Submit Task
+                </button>
+            </form>
+            {% endif %}
+
+        {# ---------- EXAM ---------- #}
+        {% elif lesson.content_type == 'exam' %}
+            {% if lesson.exam_quiz %}
+            <h5>{{ lesson.exam_quiz.title }}</h5>
+            <p class="text-muted">{{ lesson.exam_quiz.description or 'Take the exam to complete this lesson.' }}</p>
+            <p><strong>Questions:</strong> {{ lesson.exam_quiz.questions|length }}</p>
+            <a href="{{ url_for('take_lesson_exam', lesson_id=lesson.id) }}" class="btn btn-primary">
+                <i class="bx bx-play"></i> Start Exam
+            </a>
+            {% else %}
+            <div class="alert alert-warning">No exam attached to this lesson.</div>
+            {% endif %}
+        {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

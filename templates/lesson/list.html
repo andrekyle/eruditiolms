@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ course.title }} — Lessons{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="bx bx-book-content text-primary"></i> {{ course.title }} — Lessons</h1>
+        <a href="{{ url_for('view_course', course_id=course.id) }}" class="btn btn-outline-primary">
+            <i class="bx bx-arrow-back"></i> Back to Course
+        </a>
+    </div>
+
+    {% if lessons %}
+    <div class="card">
+        <ul class="list-group list-group-flush">
+            {% for lesson in lessons %}
+            {% set type_icon = {'lesson': 'bx-book', 'video': 'bx-play', 'task': 'bx-edit', 'exam': 'bx-task'} %}
+            <li class="list-group-item d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center" style="gap: .75rem;">
+                    <i class="bx {{ type_icon.get(lesson.content_type, 'bx-book') }} text-primary"></i>
+                    <div>
+                        <div style="font-weight:600;">{{ lesson.title }}</div>
+                        <small class="text-muted">{{ lesson.content_type|capitalize }} · {{ lesson.points or 0 }} pts</small>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center" style="gap:.5rem;">
+                    {% if lesson.id in completed_ids %}
+                        <span class="badge bg-success"><i class="bx bx-check"></i> Done</span>
+                    {% endif %}
+                    <a href="{{ url_for('view_lesson', lesson_id=lesson.id) }}" class="btn btn-sm btn-primary">
+                        Open <i class="bx bx-right-arrow-alt"></i>
+                    </a>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% else %}
+    <div class="alert alert-info">No lessons have been added to this course yet.</div>
+    {% endif %}
+</div>
+{% endblock %}

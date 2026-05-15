@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Edit User Profile{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">
+                        {% if current_user.id == user.id %}
+                            Edit Your Profile
+                        {% else %}
+                            Edit Profile for {{ user.username }}
+                        {% endif %}
+                    </h2>
+
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+                        </div>
+
+                        {% if current_user.is_superadmin %}
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="is_teacher" name="is_teacher" {% if user.is_teacher %}checked{% endif %}>
+                                <label class="form-check-label" for="is_teacher">Teacher</label>
+                            </div>
+                            {% if current_user.id != user.id %}
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="is_superadmin" name="is_superadmin" {% if user.is_superadmin %}checked{% endif %}>
+                                <label class="form-check-label" for="is_superadmin">Super Admin</label>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="bx bx-save me-1"></i>Save Changes
+                            </button>
+                            {% if current_user.is_superadmin and current_user.id != user.id %}
+                            <a href="{{ url_for('manage_users') }}" class="btn btn-secondary btn-sm">
+                                <i class="bx bx-arrow-back me-1"></i>Back to Users
+                            </a>
+                            {% else %}
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-sm">
+                                <i class="bx bx-arrow-back me-1"></i>Back to Dashboard
+                            </a>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

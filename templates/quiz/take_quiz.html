@@ -1,0 +1,353 @@
+{% extends "base.html" %}
+
+{% block title %}Take Quiz{% endblock %}
+
+{% block styles %}
+<style>
+.draggable {
+    cursor: move;
+    padding: 8px 12px;
+    margin: 4px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.draggable.dragging {
+    opacity: 0.5;
+}
+
+.drop-zone {
+    min-height: 100px;
+    padding: 16px;
+    margin: 8px 0;
+    background-color: #fff;
+    border: 2px dashed #dee2e6;
+    border-radius: 4px;
+}
+
+.drop-zone.dragover {
+    background-color: #e9ecef;
+    border-color: #6c757d;
+}
+
+.source-zone .draggable {
+    background-color: #e9ecef;
+}
+
+.target-zone .draggable {
+    background-color: #fff;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2">
+            <i class="bx bx-edit text-primary"></i> {{ quiz.title }}
+        </h1>
+    </div>
+
+    <form method="POST">
+        {% for question in quiz.questions %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Question {{ loop.index }}</h5>
+                <div class="question-text mb-3">
+                    {{ question.question_html|safe }}
+                </div>
+
+                {% if question.question_type == 'drag_and_drop' %}
+                <div class="drag-drop-container">
+                    <!-- Source Zone -->
+                    <!-- Image Drag and Drop Question Type -->
+                    {% if question.question_type == 'image_drag_drop' %}
+                    <div class="image-drag-drop-container mb-4">
+                      <div class="question-content mb-3">
+                        {{ question.question_html|safe }}
+                      </div>
+                    
+                      <div class="image-container position-relative mb-3" style="max-width: 800px;">
+                        <img src="{{ question.image_url }}" class="img-fluid border" id="question_image_{{ question.id }}">
+                        
+                        <!-- Target zones -->
+                        <div class="zones-overlay" id="zones_overlay_{{ question.id }}">
+                          {% for option in question.options %}
+                            {% if option.drag_zone == 'zone' %}
+                              {% set zone_data = option.option_html|tojson|safe %}
+                              <div class="drop-zone" 
+                                   data-target-id="{{ option.id }}"
+                                   data-position="{{ loop.index0 }}"
+                                   style="position: absolute; left: {{ zone_data.x }}px; top: {{ zone_data.y }}px; width: {{ zone_data.width }}px; height: {{ zone_data.height }}px;">
+                                <span class="zone-number">{{ loop.index }}</span>
+                              </div>
+                            {% endif %}
+                          {% endfor %}
+                        </div>
+                        
+                        <!-- Items that can be dragged -->
+                        <div class="drag-items-container mt-3" id="drag_items_{{ question.id }}">
+                          {% for option in question.options %}
+                            {% if option.drag_zone == 'item' %}
+                              <div class="draggable-item" draggable="true" data-option-id="{{ option.id }}" data-index="{{ loop.index0 }}">
+                                {{ option.option_html|safe }}
+                              </div>
+                            {% endif %}
+                          {% endfor %}
+                        </div>
+                      </div>
+                    
+                      <!-- Hidden inputs to store positions -->
+                      <div class="hidden-inputs">
+                        {% for option in question.options %}
+                          {% if option.drag_zone == 'item' %}
+                            <input type="hidden" name="question_{{ question.id }}_positions[]" value="">
+                          {% endif %}
+                        {% endfor %}
+                      </div>
+                    </div>
+                    
+                    <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                      const questionId = '{{ question.id }}';
+                      const draggableItems = document.querySelectorAll(`#drag_items_${questionId} .draggable-item`);
+                      const dropZones = document.querySelectorAll(`#zones_overlay_${questionId} .drop-zone`);
+                      const imageContainer = document.querySelector(`#question_image_${questionId}`).parentElement;
+                      const hiddenInputs = document.querySelectorAll(`input[name="question_${questionId}_positions[]"]`);
+                      
+                      // Store placed items
+                      const placedItems = new Map();
+                      
+                      draggableItems.forEach(item => {
+                        item.addEventListener('dragstart', function(e) {
+                          e.dataTransfer.setData('text/plain', JSON.stringify({
+                            optionId: this.dataset.optionId,
+                            index: this.dataset.index
+                          }));
+                          this.classList.add('dragging');
+                        });
+                        
+                        item.addEventListener('dragend', function() {
+                          this.classList.remove('dragging');
+                        });
+                      });
+                      
+                      // Allow dropping on image
+                      imageContainer.addEventListener('dragover', function(e) {
+                        e.preventDefault();
+                      });
+                      
+                      imageContainer.addEventListener('drop', function(e) {
+                        e.preventDefault();
+                        
+                        try {
+                          const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+                          const rect = this.getBoundingClientRect();
+                          const x = e.clientX - rect.left;
+                          const y = e.clientY - rect.top;
+                          
+                          // Position the item where it was dropped
+                          const item = document.querySelector(`.draggable-item[data-option-id="${data.optionId}"]`);
+                          const clone = document.createElement('div');
+                          clone.className = 'placed-item';
+                          clone.innerHTML = item.innerHTML;
+                          clone.dataset.index = data.index;
+                          clone.style.position = 'absolute';
+                          clone.style.left = `${x}px`;
+                          clone.style.top = `${y}px`;
+                          clone.style.zIndex = '100';
+                          clone.style.cursor = 'grab';
+                          
+                          // Remove existing placement for this item
+                          const existingPlacement = document.querySelector(`.placed-item[data-index="${data.index}"]`);
+                          if (existingPlacement) {
+                            existingPlacement.remove();
+                          }
+                          
+                          // Add the new placement
+                          this.appendChild(clone);
+                          
+                          // Store position in hidden input
+                          const position = { x: x, y: y };
+                          hiddenInputs[data.index].value = JSON.stringify(position);
+                          
+                          // Make the placed item draggable (for repositioning)
+                          makeItemDraggable(clone, data.index);
+                          
+                          // Hide the original item
+                          item.style.opacity = '0.5';
+                          
+                        } catch (err) {
+                          console.error("Error processing drop:", err);
+                        }
+                      });
+                      
+                      function makeItemDraggable(element, index) {
+                        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+                        element.onmousedown = dragMouseDown;
+                        
+                        function dragMouseDown(e) {
+                          e.preventDefault();
+                          pos3 = e.clientX;
+                          pos4 = e.clientY;
+                          document.onmouseup = closeDragElement;
+                          document.onmousemove = elementDrag;
+                        }
+                        
+                        function elementDrag(e) {
+                          e.preventDefault();
+                          pos1 = pos3 - e.clientX;
+                          pos2 = pos4 - e.clientY;
+                          pos3 = e.clientX;
+                          pos4 = e.clientY;
+                          
+                          const parent = element.parentElement;
+                          const parentRect = parent.getBoundingClientRect();
+                          const elemRect = element.getBoundingClientRect();
+                          
+                          let newLeft = element.offsetLeft - pos1;
+                          let newTop = element.offsetTop - pos2;
+                          
+                          // Keep within bounds
+                          newLeft = Math.max(0, Math.min(newLeft, parentRect.width - elemRect.width));
+                          newTop = Math.max(0, Math.min(newTop, parentRect.height - elemRect.height));
+                          
+                          element.style.top = newTop + "px";
+                          element.style.left = newLeft + "px";
+                          
+                          // Update hidden input with new position
+                          const position = { x: newLeft, y: newTop };
+                          hiddenInputs[index].value = JSON.stringify(position);
+                        }
+                        
+                        function closeDragElement() {
+                          document.onmouseup = null;
+                          document.onmousemove = null;
+                        }
+                      }
+                    });
+                    </script>
+                    {% endif %}                    <div class="source-zone" data-question-id="{{ question.id }}">
+                        <h6 class="mb-3">Available Items</h6>
+                        <div class="source-items">
+                            {% for option in question.options %}
+                                {% if option.drag_zone == 'source' %}
+                                <div class="draggable" draggable="true" data-option-id="{{ option.id }}">
+                                    {{ option.option_html|safe }}
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Target Zone -->
+                    <div class="target-zone" data-question-id="{{ question.id }}">
+                        <h6 class="mb-3">Drop Items Here</h6>
+                        {% for option in question.options %}
+                            {% if option.drag_zone == 'target' %}
+                            <div class="drop-target empty" data-target-id="{{ option.id }}">
+                                <span class="placeholder">Drop item here</span>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <!-- Hidden inputs to store answers -->
+                    {% for option in question.options %}
+                        {% if option.drag_zone == 'target' %}
+                        <input type="hidden" name="question_{{ question.id }}_answers[]" value="">
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const draggables = document.querySelectorAll('.draggable');
+                    const dropTargets = document.querySelectorAll('.drop-target');
+
+                    draggables.forEach(draggable => {
+                        draggable.addEventListener('dragstart', dragStart);
+                        draggable.addEventListener('dragend', dragEnd);
+                    });
+
+                    dropTargets.forEach(target => {
+                        target.addEventListener('dragover', dragOver);
+                        target.addEventListener('dragleave', dragLeave);
+                        target.addEventListener('drop', drop);
+                    });
+
+                    function dragStart(e) {
+                        e.dataTransfer.setData('text/plain', e.target.dataset.optionId);
+                        e.target.classList.add('dragging');
+                    }
+
+                    function dragEnd(e) {
+                        e.target.classList.remove('dragging');
+                    }
+
+                    function dragOver(e) {
+                        e.preventDefault();
+                        if (!e.target.classList.contains('drop-target')) return;
+                        e.target.classList.add('dragover');
+                    }
+
+                    function dragLeave(e) {
+                        if (!e.target.classList.contains('drop-target')) return;
+                        e.target.classList.remove('dragover');
+                    }
+
+                    function drop(e) {
+                        e.preventDefault();
+                        const target = e.target.closest('.drop-target');
+                        if (!target) return;
+                        
+                        target.classList.remove('dragover');
+                        const optionId = e.dataTransfer.getData('text/plain');
+                        const draggable = document.querySelector(`[data-option-id="${optionId}"]`);
+                        const questionId = target.closest('.target-zone').dataset.questionId;
+
+                        // Clear previous content
+                        if (!target.classList.contains('empty')) {
+                            const oldOptionId = target.dataset.filledWith;
+                            const oldDraggable = document.querySelector(`[data-option-id="${oldOptionId}"]`);
+                            if (oldDraggable) {
+                                oldDraggable.style.display = 'block';
+                            }
+                        }
+
+                        // Update target
+                        target.innerHTML = draggable.innerHTML;
+                        target.classList.remove('empty');
+                        target.dataset.filledWith = optionId;
+                        draggable.style.display = 'none';
+
+                        // Update hidden inputs
+                        updateAnswers(questionId);
+                    }
+
+                    function updateAnswers(questionId) {
+                        const targets = document.querySelectorAll(`.target-zone[data-question-id="${questionId}"] .drop-target`);
+                        const inputs = document.querySelectorAll(`input[name="question_${questionId}_answers[]"]`);
+                        
+                        targets.forEach((target, index) => {
+                            inputs[index].value = target.dataset.filledWith || '';
+                        });
+                    }
+                });
+                </script>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary">
+            <i class="bx bx-check"></i> Submit Quiz
+        </button>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

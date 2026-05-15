@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LMS - {% block title %}{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/rich-editor.css') }}" rel="stylesheet">
+    <style>
+        .enrolled-students {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.25rem;
+        }
+        .enrolled-students .badge {
+            font-size: 0.8rem;
+            padding: 0.35rem 0.65rem;
+            border: 1px solid #dee2e6;
+        }
+        .enrolled-students .badge i {
+            margin-right: 0.25rem;
+        }
+        /* Button Styles (Azure / Fluent) */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 16px;
+            font-size: 14px;
+            line-height: 1;
+            border-radius: 2px;
+            gap: 4px;
+        }
+        .btn i {
+            font-size: 16px;
+            line-height: 1;
+        }
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 12px;
+            border-radius: 2px;
+        }
+        .btn-sm i {
+            font-size: 14px;
+        }
+        /* Consistent icon sizes */
+        .bx {
+            line-height: 1;
+            vertical-align: middle;
+        }
+        /* Button group fixes */
+        .btn-group .btn {
+            display: inline-flex;
+        }
+        /* Fixed width buttons in grids */
+        .d-grid .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    {% if current_user.is_authenticated %}
+    <aside class="app-sidebar">
+        <a href="{{ url_for('index') }}" class="sidebar-brand">
+            <span class="sidebar-brand-icon"><i class="bx bx-code-alt"></i></span>
+            <span class="sidebar-brand-text">African Code Academy</span>
+        </a>
+
+        <nav class="sidebar-nav">
+            <a class="sidebar-link {% if request.endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}">
+                <i class="bx bx-dashboard"></i><span>Dashboard</span>
+            </a>
+            {% if current_user.is_teacher %}
+            <a class="sidebar-link" href="{{ url_for('index') }}">
+                <i class="bx bx-book-content"></i><span>My Courses</span>
+            </a>
+            {% endif %}
+            {% if current_user.is_superadmin %}
+            <a class="sidebar-link {% if request.endpoint == 'manage_users' %}active{% endif %}" href="{{ url_for('manage_users') }}">
+                <i class="bx bx-user"></i><span>Users</span>
+            </a>
+            {% endif %}
+        </nav>
+
+        <div class="sidebar-footer">
+            <a class="sidebar-user {% if request.endpoint == 'profile' %}active{% endif %}" href="{{ url_for('profile') }}" title="View profile">
+                <div class="sidebar-user-avatar">
+                    {% if current_user.avatar_url %}
+                        <img src="{{ current_user.avatar_url }}" alt="Avatar">
+                    {% else %}
+                        <i class="bx bx-user-circle"></i>
+                    {% endif %}
+                </div>
+                <div class="sidebar-user-info">
+                    <div class="sidebar-user-name">
+                        {% if current_user.first_name or current_user.last_name %}{{ current_user.first_name }} {{ current_user.last_name }}{% else %}{{ current_user.username }}{% endif %}
+                    </div>
+                    <div class="sidebar-user-role">
+                        {% if current_user.is_superadmin %}Administrator
+                        {% elif current_user.is_teacher %}Teacher
+                        {% else %}Student{% endif %}
+                    </div>
+                </div>
+            </a>
+            <a class="sidebar-link sidebar-signout" href="{{ url_for('logout') }}">
+                <i class="bx bx-log-out"></i><span>Sign out</span>
+            </a>
+        </div>
+    </aside>
+    {% endif %}
+
+    <div class="app-main {% if not current_user.is_authenticated %}app-main-full{% endif %}">
+        {% if not current_user.is_authenticated %}
+        <nav class="navbar navbar-expand-lg navbar-light topbar-public">
+            <div class="container">
+                <a class="navbar-brand" href="{{ url_for('index') }}">
+                    <i class="bx bx-code-alt"></i> African Code Academy
+                </a>
+                <div class="ms-auto">
+                    <a class="btn btn-primary" href="{{ url_for('login') }}">Login</a>
+                </div>
+            </div>
+        </nav>
+        {% endif %}
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="app-flash">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <main class="app-content">
+            {% block content %}{% endblock %}
+        </main>
+
+        <footer class="app-footer">
+            <div class="text-muted">&copy; {{ current_year }} African Code Academy.</div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="{{ url_for('static', filename='js/icons-shim.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.progress-bar').forEach(function(bar) {
+                const width = bar.getAttribute('data-width');
+                if (width) {
+                    bar.style.width = width + '%';
+                }
+            });
+        });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

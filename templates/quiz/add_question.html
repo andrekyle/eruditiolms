@@ -1,0 +1,535 @@
+{% extends "base.html" %}
+<div class="question-type-container" id="image_drag_drop_container" style="display: none;">
+  <div class="mb-3">
+    <label for="question_image" class="form-label">Upload Image</label>
+    <input type="file" class="form-control" id="question_image" name="question_image" accept="image/*">
+  </div>
+  
+  <div class="mb-3" id="image_preview_container" style="display: none;">
+    <h5>Image Preview</h5>
+    <div class="position-relative">
+      <img id="image_preview" src="#" alt="Preview" class="img-fluid border" style="max-height: 400px;">
+      <div id="image_zones_overlay" class="position-absolute top-0 start-0" style="width: 100%; height: 100%;">
+        <!-- Drop zones will be added here -->
+      </div>
+      <button type="button" class="btn btn-sm btn-primary mt-2" id="add_zone_btn">Add Drop Zone</button>
+    </div>
+  </div>
+  
+  <div class="mb-3">
+    <h5>Drag Items</h5>
+    <div id="drag_items_container">
+      <div class="input-group mb-2">
+        <input type="text" class="form-control" name="drag_items[]" placeholder="Item text">
+        <button type="button" class="btn btn-danger remove-item">Remove</button>
+      </div>
+    </div>
+    <button type="button" class="btn btn-sm btn-primary" id="add_drag_item_btn">Add Item</button>
+  </div>
+  
+  <!-- Hidden inputs for zone coordinates -->
+  <div id="zones_data">
+    <!-- Will be populated with zone coordinates -->
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Show question type specific containers
+    const questionTypeSelect = document.getElementById('question_type');
+    const imageInput = document.getElementById('question_image');
+    const imagePreview = document.getElementById('image_preview');
+    const imagePreviewContainer = document.getElementById('image_preview_container');
+    const imageZonesOverlay = document.getElementById('image_zones_overlay');
+    const addZoneBtn = document.getElementById('add_zone_btn');
+    const zonesData = document.getElementById('zones_data');
+    const addDragItemBtn = document.getElementById('add_drag_item_btn');
+    const dragItemsContainer = document.getElementById('drag_items_container');
+    
+    let currentZoneIndex = 0;
+    let imageNaturalWidth = 0;
+    let imageNaturalHeight = 0;
+    
+    questionTypeSelect.addEventListener('change', function() {
+      // Hide all containers first
+      document.querySelectorAll('.question-type-container').forEach(container => {
+        container.style.display = 'none';
+      });
+      
+      // Show the selected container
+      const selectedType = this.value;
+      const container = document.getElementById(`${selectedType}_container`);
+      if (container) {
+        container.style.display = 'block';
+      }
+    });
+    
+    // Image preview
+    imageInput.addEventListener('change', function() {
+      if (this.files && this.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          imagePreview.src = e.target.result;
+          imagePreviewContainer.style.display = 'block';
+          
+          // Get natural image dimensions after loading
+          imagePreview.onload = function() {
+            imageNaturalWidth = this.naturalWidth;
+            imageNaturalHeight = this.naturalHeight;
+            // Reset zones when new image is loaded
+            imageZonesOverlay.innerHTML = '';
+            zonesData.innerHTML = '';
+            currentZoneIndex = 0;
+          };
+        }
+        reader.readAsDataURL(this.files[0]);
+      }
+    });
+    
+    // Add zone on image
+    addZoneBtn.addEventListener('click', function() {
+      const zoneId = `zone_${currentZoneIndex}`;
+      const zoneElement = document.createElement('div');
+      zoneElement.id = zoneId;
+      zoneElement.className = 'position-absolute border border-primary bg-primary bg-opacity-25';
+      zoneElement.style.width = '100px';
+      zoneElement.style.height = '100px';
+      zoneElement.style.left = '10px';
+      zoneElement.style.top = '10px';
+      zoneElement.style.cursor = 'move';
+      
+      // Add zone index label
+      const zoneLabel = document.createElement('div');
+      zoneLabel.className = 'position-absolute top-0 start-0 bg-primary text-white px-2';
+      zoneLabel.textContent = currentZoneIndex + 1;
+      zoneElement.appendChild(zoneLabel);
+      
+      imageZonesOverlay.appendChild(zoneElement);
+      
+      // Add hidden inputs for zone coordinates
+      const zoneDataInputs = document.createElement('div');
+      zoneDataInputs.innerHTML = `
+        <input type="hidden" name="zone_x[]" value="10">
+        <input type="hidden" name="zone_y[]" value="10">
+        <input type="hidden" name="zone_width[]" value="100">
+        <input type="hidden" name="zone_height[]" value="100">
+      `;
+      zonesData.appendChild(zoneDataInputs);
+      
+      // Make zone draggable and resizable (simplified implementation)
+      makeZoneDraggable(zoneElement, currentZoneIndex);
+      
+      currentZoneIndex++;
+    });
+    
+    // Add drag item
+    addDragItemBtn.addEventListener('click', function() {
+      const itemDiv = document.createElement('div');
+      itemDiv.className = 'input-group mb-2';
+      itemDiv.innerHTML = `
+        <input type="text" class="form-control" name="drag_items[]" placeholder="Item text">
+        <button type="button" class="btn btn-danger remove-item">Remove</button>
+      `;
+      dragItemsContainer.appendChild(itemDiv);
+      
+      // Add remove functionality
+      itemDiv.querySelector('.remove-item').addEventListener('click', function() {
+        itemDiv.remove();
+      });
+    });
+    
+    // Remove drag item
+    dragItemsContainer.addEventListener('click', function(e) {
+      if (e.target.classList.contains('remove-item')) {
+        e.target.closest('.input-group').remove();
+      }
+    });
+    
+    function makeZoneDraggable(element, index) {
+      let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+      element.onmousedown = dragMouseDown;
+      
+      function dragMouseDown(e) {
+        e.preventDefault();
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+      }
+      
+      function elementDrag(e) {
+        e.preventDefault();
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        
+        // Calculate new position within parent bounds
+        const parent = element.parentElement;
+        const parentRect = parent.getBoundingClientRect();
+        const elemRect = element.getBoundingClientRect();
+        
+        let newLeft = element.offsetLeft - pos1;
+        let newTop = element.offsetTop - pos2;
+        
+        // Keep within bounds
+        newLeft = Math.max(0, Math.min(newLeft, parentRect.width - elemRect.width));
+        newTop = Math.max(0, Math.min(newTop, parentRect.height - elemRect.height));
+        
+        element.style.top = newTop + "px";
+        element.style.left = newLeft + "px";
+        
+        // Update hidden inputs
+        const xInput = zonesData.children[index].querySelector('input[name="zone_x[]"]');
+        const yInput = zonesData.children[index].querySelector('input[name="zone_y[]"]');
+        xInput.value = Math.round(newLeft / parentRect.width * imageNaturalWidth);
+        yInput.value = Math.round(newTop / parentRect.height * imageNaturalHeight);
+      }
+      
+      function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+      }
+    }
+  });
+</script>
+{% block title %}Add Question{% endblock %}
+
+{% block content %}
+<div class="container py-4 add-question-view">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>
+            <i class="bx bx-help-circle text-primary"></i> Add Question
+        </h1>
+        <a href="{{ url_for('view_quiz', quiz_id=quiz.id) }}" class="btn btn-outline-primary">
+            <i class="bx bx-arrow-back"></i>
+            <span>Back to Quiz</span>
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form id="questionForm" method="POST" action="{{ url_for('add_question', quiz_id=quiz.id) }}">
+                <div class="mb-4">
+                    <label class="form-label">Question Type</label>
+                    <select class="form-select" name="question_type" id="questionType" required>
+                        <option value="">Select question type...</option>
+                        <option value="multiple_choice">Multiple Choice</option>
+                        <option value="single_choice">Single Choice</option>
+                        <option value="true_false">True/False</option>
+                        <option value="short_answer">Short Answer</option>
+                        <option value="long_answer">Long Answer</option>
+                        <option value="file_upload">File Upload</option>
+                        <option value="matching">Matching</option>
+                        <option value="ordering">Ordering</option>
+                        <option value="drag_and_drop">Drag and Drop</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Question Text</label>
+                    <textarea class="form-control rich-editor" name="question_text" rows="4" required></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Points</label>
+                    <input type="number" class="form-control" name="points" value="1" min="0" step="0.5" required>
+                </div>
+
+                <!-- Dynamic options section -->
+                <div id="optionsSection" class="mb-4" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <label class="form-label">Options</label>
+                        <button type="button" class="btn btn-outline-primary btn-sm" id="addOption">
+                            <i class="bx bx-plus"></i> Add Option
+                        </button>
+                    </div>
+                    <div id="optionsList">
+                        <!-- Options will be added here dynamically -->
+                    </div>
+                </div>
+
+                <!-- Drag and Drop section -->
+                <div id="dragDropSection" class="mb-4" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <label class="form-label">Draggable Items and Drop Zones</label>
+                        <button type="button" class="btn btn-outline-primary btn-sm" id="addDragDropItem">
+                            <i class="bx bx-plus"></i> Add Item
+                        </button>
+                    </div>
+                    <div id="dragDropList">
+                        <!-- Drag and drop items will be added here dynamically -->
+                    </div>
+                </div>
+
+                <!-- Matching section -->
+                <div id="matchingSection" class="mb-4" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <label class="form-label">Matching Pairs</label>
+                        <button type="button" class="btn btn-outline-primary btn-sm" id="addMatchingPair">
+                            <i class="bx bx-plus"></i> Add Pair
+                        </button>
+                    </div>
+                    <div id="matchingList">
+                        <!-- Matching pairs will be added here dynamically -->
+                    </div>
+                </div>
+
+                <!-- Correct answer for non-multiple choice questions -->
+                <div id="correctAnswerSection" class="mb-4" style="display: none;">
+                    <label class="form-label">Correct Answer</label>
+                    <textarea class="form-control rich-editor" name="correct_answer" rows="3"></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Feedback</label>
+                    <textarea class="form-control rich-editor" name="feedback" rows="3" placeholder="Optional feedback to show after answering"></textarea>
+                </div>
+
+                <div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bx bx-save"></i> Save Question
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Option template -->
+<template id="optionTemplate">
+    <div class="option-item" data-option-id="">
+        <div class="option-handle">
+            <i class="bx bx-menu"></i>
+        </div>
+        <div class="option-content">
+            <textarea class="form-control rich-editor" name="options[]" rows="2" required></textarea>
+        </div>
+        <div class="option-controls">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input correct-option-checkbox" name="correct_options[]">
+                <label class="form-check-label">Correct</label>
+            </div>
+            <button type="button" class="btn btn-outline-danger btn-sm delete-option">
+                <i class="bx bx-trash"></i>
+            </button>
+        </div>
+    </div>
+</template>
+
+<!-- Drag and Drop item template -->
+<template id="dragDropItemTemplate">
+    <div class="drag-drop-item mb-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Item Text</label>
+                            <textarea class="form-control rich-editor" name="drag_items[]" required></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">Zone Type</label>
+                            <select class="form-select" name="drag_zones[]" required>
+                                <option value="source">Source (Draggable)</option>
+                                <option value="target">Target (Drop Zone)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-outline-danger delete-drag-item">
+                            <i class="bx bx-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Matching pair template -->
+<template id="matchingPairTemplate">
+    <div class="matching-pair mb-3">
+        <div class="row g-3">
+            <div class="col">
+                <input type="text" class="form-control" name="matching_prompts[]" placeholder="Prompt" required>
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" name="matching_answers[]" placeholder="Answer" required>
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-outline-danger btn-sm delete-pair">
+                    <i class="bx bx-trash"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</template>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+<script src="{{ url_for('static', filename='js/rich-editor.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize rich text editors
+    document.querySelectorAll('.rich-editor').forEach(editor => {
+        new RichTextEditor(editor);
+    });
+
+    // Get references to sections
+    const questionType = document.getElementById('questionType');
+    const optionsSection = document.getElementById('optionsSection');
+    const dragDropSection = document.getElementById('dragDropSection');
+    const matchingSection = document.getElementById('matchingSection');
+    const correctAnswerSection = document.getElementById('correctAnswerSection');
+    const dragDropList = document.getElementById('dragDropList');
+    const matchingList = document.getElementById('matchingList');
+    const optionsList = document.getElementById('optionsList');
+    const optionTemplate = document.getElementById('optionTemplate');
+    const matchingPairTemplate = document.getElementById('matchingPairTemplate');
+    const dragDropItemTemplate = document.getElementById('dragDropItemTemplate');
+
+    // Add new drag and drop item
+    document.getElementById('addDragDropItem').addEventListener('click', function() {
+        addDragDropItem();
+    });
+
+    function addDragDropItem() {
+        const item = document.importNode(dragDropItemTemplate.content, true);
+        dragDropList.appendChild(item);
+        // Initialize rich text editor for the new item
+        const editor = item.querySelector('.rich-editor');
+        new RichTextEditor(editor);
+    }
+
+    // Handle question type changes
+    questionType.addEventListener('change', function() {
+        const type = this.value;
+        console.log('Question type changed to:', type);
+        
+        // Hide all sections first
+        optionsSection.style.display = 'none';
+        matchingSection.style.display = 'none';
+        dragDropSection.style.display = 'none';
+        correctAnswerSection.style.display = 'none';
+        
+        if (type === 'drag_and_drop') {
+            dragDropSection.style.display = 'block';
+            // Add initial item if none exist
+            if (dragDropList.children.length === 0) {
+                addDragDropItem();
+                addDragDropItem();
+            }
+        } else if (type === 'matching') {
+            matchingSection.style.display = 'block';
+            // Add initial pair if none exist
+            if (matchingList.children.length === 0) {
+                addMatchingPair();
+            }
+        } else if (['multiple_choice', 'single_choice'].includes(type)) {
+            optionsSection.style.display = 'block';
+            // Update input type for correct options
+            const correctInputs = document.querySelectorAll('.correct-option-checkbox');
+            correctInputs.forEach(input => {
+                input.type = type === 'multiple_choice' ? 'checkbox' : 'radio';
+                input.name = type === 'multiple_choice' ? 'correct_options[]' : 'correct_option';
+            });
+        } else if (type === 'true_false') {
+            optionsSection.style.display = 'block';
+            optionsList.innerHTML = '';
+            ['True', 'False'].forEach(value => {
+                const option = createOption(value);
+                optionsList.appendChild(option);
+            });
+        } else {
+            correctAnswerSection.style.display = 'block';
+        }
+    });
+
+    // Add new option
+    document.getElementById('addOption').addEventListener('click', function() {
+        const option = createOption();
+        optionsList.appendChild(option);
+        // Initialize rich text editor for the new option
+        const editor = option.querySelector('.rich-editor');
+        new RichTextEditor(editor);
+    });
+
+    // Add new matching pair
+    document.getElementById('addMatchingPair').addEventListener('click', function() {
+        console.log('Add matching pair clicked');
+        addMatchingPair();
+    });
+
+    function addMatchingPair() {
+        console.log('Adding matching pair');
+        const pair = document.importNode(matchingPairTemplate.content, true);
+        matchingList.appendChild(pair);
+    }
+
+    // Delete option/pair
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.delete-option')) {
+            const optionItem = e.target.closest('.option-item');
+            if (optionsList.children.length > 1) {
+                optionItem.remove();
+            } else {
+                alert('You must have at least one option.');
+            }
+        } else if (e.target.closest('.delete-drag-item')) {
+            const itemElement = e.target.closest('.drag-drop-item');
+            if (dragDropList.children.length > 2) {
+                itemElement.remove();
+            } else {
+                alert('You must have at least two items for drag and drop.');
+            }
+        } else if (e.target.closest('.delete-pair')) {
+            const pairItem = e.target.closest('.matching-pair');
+            if (matchingList.children.length > 1) {
+                pairItem.remove();
+            } else {
+                alert('You must have at least one matching pair.');
+            }
+        }
+    });
+
+    function createOption(value = '') {
+        const clone = document.importNode(optionTemplate.content, true);
+        const textarea = clone.querySelector('textarea');
+        textarea.value = value;
+        return clone;
+    }
+
+    // Make options sortable
+    if (optionsList) {
+        new Sortable(optionsList, {
+            handle: '.option-handle',
+            animation: 150
+        });
+    }
+
+    // Make drag drop items sortable
+    if (dragDropList) {
+        new Sortable(dragDropList, {
+            animation: 150
+        });
+    }
+
+    // Make matching pairs sortable
+    new Sortable(matchingList, {
+        animation: 150
+    });
+
+    // Add initial matching pair if matching type is selected
+    if (questionType.value === 'matching') {
+        matchingSection.style.display = 'block';
+        if (matchingList.children.length === 0) {
+            addMatchingPair();
+        }
+    }
+});
+</script>
+{% endblock %}

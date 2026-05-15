@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Add Question{% endblock %}
+
+{% block content %}
+<div class="container py-4 add-question-view">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>
+            <i class="bx bx-help-circle text-primary"></i> Add Question
+        </h1>
+        <a href="{{ url_for('view_quiz', quiz_id=quiz.id) }}" class="btn btn-outline-primary">
+            <i class="bx bx-arrow-back"></i> Back to Quiz
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form id="questionForm" method="POST" action="{{ url_for('save_question', quiz_id=quiz.id) }}">
+                <div class="mb-4">
+                    <label class="form-label">Question Type</label>
+                    <select class="form-select" name="question_type" id="questionType" required>
+                        <option value="">Select question type...</option>
+                        <option value="multiple_choice">Multiple Choice</option>
+                        <option value="single_choice">Single Choice</option>
+                        <option value="true_false">True/False</option>
+                        <option value="short_answer">Short Answer</option>
+                        <option value="long_answer">Long Answer</option>
+                        <option value="file_upload">File Upload</option>
+                        <option value="matching">Matching</option>
+                        <option value="ordering">Ordering</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Question Text</label>
+                    <textarea class="form-control rich-editor" name="question_text" rows="4" required></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Points</label>
+                    <input type="number" class="form-control" name="points" value="1" min="0" step="0.5" required>
+                </div>
+
+                <!-- Dynamic options section -->
+                <div id="optionsSection" class="mb-4" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <label class="form-label">Options</label>
+                        <button type="button" class="btn btn-outline-primary btn-sm" id="addOption">
+                            <i class="bx bx-plus"></i> Add Option
+                        </button>
+                    </div>
+                    <div id="optionsList">
+                        <!-- Options will be added here dynamically -->
+                    </div>
+                </div>
+
+                <!-- Correct answer for non-multiple choice questions -->
+                <div id="correctAnswerSection" class="mb-4" style="display: none;">
+                    <label class="form-label">Correct Answer</label>
+                    <textarea class="form-control rich-editor" name="correct_answer" rows="3"></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Feedback</label>
+                    <textarea class="form-control rich-editor" name="feedback" rows="3" placeholder="Optional feedback to show after answering"></textarea>
+                </div>
+
+                <div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bx bx-save"></i> Save Question
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Option template -->
+<template id="optionTemplate">
+    <div class="option-item" data-option-id="">
+        <div class="option-handle">
+            <i class="bx bx-menu"></i>
+        </div>
+        <div class="option-content">
+            <textarea class="form-control rich-editor" name="options[]" rows="2" required></textarea>
+        </div>
+        <div class="option-controls">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input correct-option-checkbox" name="correct_options[]">
+                <label class="form-check-label">Correct</label>
+            </div>
+            <button type="button" class="btn btn-outline-danger btn-sm delete-option">
+                <i class="bx bx-trash"></i>
+            </button>
+        </div>
+    </div>
+</template>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/rich-editor.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize rich text editors
+    document.querySelectorAll('.rich-editor').forEach(editor => {
+        new RichTextEditor(editor);
+    });
+
+    const questionType = document.getElementById('questionType');
+    const optionsSection = document.getElementById('optionsSection');
+    const correctAnswerSection = document.getElementById('correctAnswerSection');
+    const optionsList = document.getElementById('optionsList');
+    const optionTemplate = document.getElementById('optionTemplate');
+
+    // Handle question type changes
+    questionType.addEventListener('change', function() {
+        const type = this.value;
+        const hasOptions = ['multiple_choice', 'single_choice', 'matching', 'ordering'].includes(type);
+        
+        optionsSection.style.display = hasOptions ? 'block' : 'none';
+        correctAnswerSection.style.display = hasOptions ? 'none' : 'block';
+
+        if (type === 'true_false') {
+            // Add True/False options
+            optionsList.innerHTML = '';
+            ['True', 'False'].forEach(value => {
+                const option = createOption(value);
+                optionsList.appendChild(option);
+            });
+            optionsSection.style.display = 'block';
+            correctAnswerSection.style.display = 'none';
+        }
+
+        // Update correct option inputs for single/multiple choice
+        const correctInputs = document.querySelectorAll('.correct-option-checkbox');
+        correctInputs.forEach(input => {
+            input.type = type === 'multiple_choice' ? 'checkbox' : 'radio';
+            input.name = type === 'multiple_choice' ? 'correct_options[]' : 'correct_option';
+        });
+    });
+
+    // Add new option
+    document.getElementById('addOption').addEventListener('click', function() {
+        const option = createOption();
+        optionsList.appendChild(option);
+        // Initialize rich text editor for the new option
+        const editor = option.querySelector('.rich-editor');
+        new RichTextEditor(editor);
+    });
+
+    // Delete option
+    optionsList.addEventListener('click', function(e) {
+        if (e.target.closest('.delete-option')) {
+            e.target.closest('.option-item').remove();
+        }
+    });
+
+    function createOption(value = '') {
+        const clone = document.importNode(optionTemplate.content, true);
+        const textarea = clone.querySelector('textarea');
+        textarea.value = value;
+        return clone;
+    }
+
+    // Make options sortable
+    new Sortable(optionsList, {
+        handle: '.option-handle',
+        animation: 150
+    });
+});
+</script>
+{% endblock %}

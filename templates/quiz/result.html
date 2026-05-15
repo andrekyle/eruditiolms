@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Quiz Results{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="bx bx-trophy text-primary"></i> Quiz Results</h1>
+        <div>
+            {% if not current_user.is_teacher %}
+            <form action="{{ url_for('reset_quiz', quiz_id=quiz.id) }}" method="POST" class="d-inline-block me-2">
+                <button type="submit" class="btn btn-outline-warning" onclick="return confirm('Are you sure you want to reset this quiz? Your current results will be deleted.')">
+                    <i class="bx bx-reset"></i> Reset Quiz
+                </button>
+            </form>
+            {% endif %}
+            <a href="{{ url_for('view_quiz', quiz_id=quiz.id) }}" class="btn btn-outline-primary">
+                <i class="bx bx-arrow-back"></i>
+                <span>Back to Quiz</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Score Summary</h5>
+            <div class="progress mb-3" style="height: 25px;">
+                <div class="progress-bar {{ 'bg-success' if score.percentage >= 80 else 'bg-primary' }}" 
+                     role="progressbar" 
+                     data-width="{{ score.percentage }}"
+                     aria-valuenow="{{ score.percentage }}" 
+                     aria-valuemin="0" 
+                     aria-valuemax="100">
+                    {{ score.percentage }}%
+                </div>
+            </div>
+            <p class="mb-0">
+                You scored <strong>{{ score.earned }} out of {{ score.total }}</strong> points
+                ({{ score.percentage }}%)
+            </p>
+        </div>
+    </div>
+
+    <div class="question-responses">
+        {% for response in responses %}
+        <div class="card mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="badge {{ 'bg-success' if response.is_correct else 'bg-danger' }}">
+                        {{ response.points_earned }}/{{ response.question.points }} points
+                    </span>
+                    <span class="ms-2 badge bg-primary">
+                        {{ response.question.question_type|replace('_', ' ')|title }}
+                    </span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="question-text mb-3">
+                    {{ response.question.question_html|safe }}
+                </div>
+
+                {% if response.question.question_type == 'matching' %}
+                <div class="matching-responses">
+                    <div class="row mb-3">
+                        <div class="col">
+                            <strong>Prompts</strong>
+                        </div>
+                        <div class="col">
+                            <strong>Your Answer</strong>
+                        </div>
+                        <div class="col">
+                            <strong>Correct Answer</strong>
+                        </div>
+                    </div>
+                    {% for option in response.question.options|sort(attribute='order') %}
+                    <div class="row mb-2">
+                        <div class="col">
+                            {{ option.option_html|safe }}
+                        </div>
+                        <div class="col">
+                            {% set selected = response.selected_options|selectattr('id', 'equalto', option.id)|first %}
+                            {% if selected %}
+                                <span class="{{ 'text-success' if selected.matching_answer == option.matching_answer else 'text-danger' }}">
+                                    {{ selected.matching_answer }}
+                                </span>
+                            {% else %}
+                                <span class="text-danger">No answer</span>
+                            {% endif %}
+                        </div>
+                        <div class="col">
+                            <span class="text-success">{{ option.matching_answer }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="options-list">
+                    {% for option in response.question.options|sort(attribute='order') %}
+                    <div class="option-item">
+                        <div class="d-flex align-items-center">
+                            <div class="option-marker">
+                                {% if response.question.question_type == 'multiple_choice' %}
+                                <i class="bx {{ 'bx-checkbox-checked text-success' if option.is_correct else 'bx-checkbox text-muted' }}"></i>
+                                {% else %}
+                                <i class="bx {{ 'bx-radio-circle-marked text-success' if option.is_correct else 'bx-radio-circle text-muted' }}"></i>
+                                {% endif %}
+                            </div>
+                            <div class="option-text ms-2 {{ 'text-success' if option.is_correct }}">
+                                {{ option.option_html|safe }}
+                                {% if option in response.selected_options %}
+                                <i class="bx bx-check text-primary ms-2"></i>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if response.question.feedback %}
+                <div class="feedback-section mt-3">
+                    <strong>Feedback:</strong>
+                    <div class="feedback-text">
+                        {{ response.question.feedback|safe }}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

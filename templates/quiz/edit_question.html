@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Question{% endblock %}
+
+{% block head %}
+<script src="{{ url_for('static', filename='js/rich-editor.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4 edit-question">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>
+            <i class="bx bx-edit text-primary"></i> Edit Question
+        </h1>
+        <a href="{{ url_for('view_quiz', quiz_id=question.quiz_id) }}" class="btn btn-outline-primary">
+            <i class="bx bx-arrow-back"></i>
+            <span>Back to Quiz</span>
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="POST" class="needs-validation" novalidate>
+                <div class="mb-3">
+                    <label for="question_text" class="form-label">Question</label>
+                    <div class="rich-editor-container">
+                        <input type="hidden" name="question_text" id="question_text" value="{{ question.question_html }}">
+                        <input type="hidden" name="question_html" id="question_html" value="{{ question.question_html }}">
+                        <div class="rich-editor-toolbar"></div>
+                        <div class="rich-editor-content" contenteditable="true">{{ question.question_html|safe }}</div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="points" class="form-label">Points</label>
+                    <input type="number" class="form-control" id="points" name="points" value="{{ question.points }}" min="1" required>
+                </div>
+
+                {% if question.question_type in ['multiple_choice', 'single_choice', 'true_false'] %}
+                <div class="mb-3">
+                    <label class="form-label">Options</label>
+                    <div id="options-container">
+                        {% for option in question.options|sort(attribute='order') %}
+                        <div class="option-row mb-2">
+                            <div class="input-group">
+                                <div class="input-group-text">
+                                    <input type="{{ 'checkbox' if question.question_type == 'multiple_choice' else 'radio' }}" 
+                                           name="correct_options[]" 
+                                           value="{{ loop.index0 }}"
+                                           {% if option.is_correct %}checked{% endif %}>
+                                </div>
+                                <input type="text" class="form-control" name="options[]" value="{{ option.option_html }}" required>
+                                <button type="button" class="btn btn-outline-danger remove-option">
+                                    <i class="bx bx-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button type="button" class="btn btn-outline-primary mt-2" id="add-option">
+                        <i class="bx bx-plus"></i> Add Option
+                    </button>
+                </div>
+                {% endif %}
+
+                {% if question.question_type == 'matching' %}
+                <div class="mb-3">
+                    <label class="form-label">Matching Pairs</label>
+                    <div id="matching-container">
+                        {% for option in question.options|sort(attribute='order') %}
+                        <div class="matching-row mb-2">
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="prompts[]" value="{{ option.option_html }}" placeholder="Prompt" required>
+                                <span class="input-group-text"><i class="bx bx-right-arrow-alt"></i></span>
+                                <input type="text" class="form-control" name="answers[]" value="{{ option.matching_answer }}" placeholder="Answer" required>
+                                <button type="button" class="btn btn-outline-danger remove-matching">
+                                    <i class="bx bx-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button type="button" class="btn btn-outline-primary mt-2" id="add-matching">
+                        <i class="bx bx-plus"></i> Add Matching Pair
+                    </button>
+                </div>
+                {% endif %}
+
+                <div class="mb-3">
+                    <label for="feedback" class="form-label">Feedback (Optional)</label>
+                    <textarea class="form-control" id="feedback" name="feedback" rows="3">{{ question.feedback }}</textarea>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bx bx-save"></i> Save Changes
+                    </button>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        <i class="bx bx-trash"></i> Delete Question
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Question</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this question? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="{{ url_for('delete_question', question_id=question.id) }}" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        new RichTextEditor(
+            document.querySelector('.rich-editor-content'),
+            {
+                onChange: function(text, html) {
+                    document.getElementById('question_text').value = text;
+                    document.getElementById('question_html').value = html;
+                }
+            }
+        );
+    } catch (e) {
+        console.error('Error initializing rich text editor:', e);
+    }
+
+    // Update form values before submit
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const editorContent = document.querySelector('.rich-editor-content');
+        document.getElementById('question_text').value = editorContent.textContent;
+        document.getElementById('question_html').value = editorContent.innerHTML;
+    });
+
+    const optionsContainer = document.getElementById('options-container');
+    const addOptionBtn = document.getElementById('add-option');
+    
+    if (optionsContainer && addOptionBtn) {
+        addOptionBtn.addEventListener('click', function() {
+            const optionCount = optionsContainer.children.length;
+            const questionType = '{{ question.question_type }}';
+            const inputType = questionType === 'multiple_choice' ? 'checkbox' : 'radio';
+            
+            const newOption = document.createElement('div');
+            newOption.className = 'option-row mb-2';
+            newOption.innerHTML = `
+                <div class="input-group">
+                    <div class="input-group-text">
+                        <input type="${inputType}" 
+                               name="correct_options[]" 
+                               value="${optionCount}">
+                    </div>
+                    <input type="text" class="form-control" name="options[]" required>
+                    <button type="button" class="btn btn-outline-danger remove-option">
+                        <i class="bx bx-trash"></i>
+                    </button>
+                </div>
+            `;
+            optionsContainer.appendChild(newOption);
+        });
+    }
+
+    const matchingContainer = document.getElementById('matching-container');
+    const addMatchingBtn = document.getElementById('add-matching');
+    
+    if (matchingContainer && addMatchingBtn) {
+        addMatchingBtn.addEventListener('click', function() {
+            const newMatching = document.createElement('div');
+            newMatching.className = 'matching-row mb-2';
+            newMatching.innerHTML = `
+                <div class="input-group">
+                    <input type="text" class="form-control" name="prompts[]" placeholder="Prompt" required>
+                    <span class="input-group-text"><i class="bx bx-right-arrow-alt"></i></span>
+                    <input type="text" class="form-control" name="answers[]" placeholder="Answer" required>
+                    <button type="button" class="btn btn-outline-danger remove-matching">
+                        <i class="bx bx-trash"></i>
+                    </button>
+                </div>
+            `;
+            matchingContainer.appendChild(newMatching);
+        });
+    }
+
+    document.addEventListener('click', function(e) {
+        const removeBtn = e.target.closest('.remove-option, .remove-matching');
+        if (removeBtn) {
+            const row = removeBtn.closest('.option-row, .matching-row');
+            if (row.parentElement.children.length > 1) {
+                row.remove();
+                // Update indices for correct_options
+                if (optionsContainer) {
+                    const options = optionsContainer.querySelectorAll('input[name="correct_options[]"]');
+                    options.forEach((opt, idx) => opt.value = idx);
+                }
+            } else {
+                alert('You must have at least one option.');
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

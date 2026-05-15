@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}{{ quiz.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2">
+            <i class="bx bx-help-circle text-primary"></i> {{ quiz.title }}
+        </h1>
+        {% if current_user.is_teacher %}
+        <div class="btn-group">
+            <a href="{{ url_for('add_question', quiz_id=quiz.id) }}" class="btn btn-primary">
+                <i class="bx bx-plus"></i> Add Question
+            </a>
+            <a href="{{ url_for('edit_quiz', quiz_id=quiz.id) }}" class="btn btn-outline-primary">
+                <i class="bx bx-edit"></i> Edit Quiz
+            </a>
+        </div>
+        {% else %}
+        <a href="{{ url_for('take_quiz', quiz_id=quiz.id) }}" class="btn btn-primary">
+            <i class="bx bx-play"></i> Take Quiz
+        </a>
+        {% endif %}
+    </div>
+
+    {% if quiz.description %}
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Description</h5>
+            <p class="card-text">{{ quiz.description }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if current_user.is_teacher %}
+    <div class="questions-list">
+        {% for question in quiz.questions %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="card-title mb-0">Question {{ loop.index }}</h5>
+                    <span class="badge bg-primary">{{ question.points }} points</span>
+                </div>
+                
+                <div class="question-text mb-3">
+                    {{ question.question_html|safe }}
+                </div>
+
+                {% if question.question_type == 'drag_and_drop' %}
+                <div class="options-list">
+                    <h6 class="mb-2">Draggable Items:</h6>
+                    <div class="source-items mb-3">
+                        {% for option in question.options %}
+                            {% if option.drag_zone == 'source' %}
+                            <span class="badge bg-light text-dark border me-2">
+                                {{ option.option_html|safe }}
+                            </span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    
+                    <h6 class="mb-2">Target Zones:</h6>
+                    <div class="target-zones">
+                        {% for option in question.options %}
+                            {% if option.drag_zone == 'target' %}
+                            <span class="badge bg-light text-dark border me-2">
+                                {{ option.option_html|safe }}
+                            </span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if question.feedback %}
+                <div class="mt-3 pt-3 border-top">
+                    <small class="text-muted">
+                        <i class="bx bx-info-circle"></i> Feedback: {{ question.feedback }}
+                    </small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

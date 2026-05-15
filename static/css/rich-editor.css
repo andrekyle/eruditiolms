@@ -1,0 +1,131 @@
+.rich-editor-container {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.rich-editor-toolbar {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+    background: #f8f9fa;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.rich-editor-button {
+    padding: 6px 10px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.rich-editor-button:hover {
+    background: #e9ecef;
+    border-color: #ced4da;
+}
+
+.rich-editor-button:active {
+    background: #dee2e6;
+}
+
+.rich-editor-button i {
+    font-size: 1.1rem;
+}
+
+.rich-editor-content {
+    padding: 12px;
+    min-height: 200px;
+    overflow-y: auto;
+}
+
+.rich-editor-content:empty:before {
+    content: attr(data-placeholder);
+    color: #6c757d;
+}
+
+.rich-editor-content:focus {
+    outline: none;
+}
+
+.rich-editor-content h1 {
+    font-size: 1.8em;
+    margin: 0.67em 0;
+}
+
+.rich-editor-content h2 {
+    font-size: 1.5em;
+    margin: 0.75em 0;
+}
+
+.rich-editor-content ul,
+.rich-editor-content ol {
+    margin: 1em 0;
+    padding-left: 40px;
+}
+
+.rich-editor-content a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.rich-editor-content a:hover {
+    text-decoration: underline;
+}
+
+.rich-editor-content img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Question specific styles */
+.question-editor {
+    margin-bottom: 2rem;
+}
+
+.question-type-selector {
+    margin-bottom: 1rem;
+}
+
+.question-options {
+    margin-top: 1rem;
+}
+
+.option-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.option-item:hover {
+    background: #f8f9fa;
+}
+
+.option-handle {
+    cursor: move;
+    color: #6c757d;
+}
+
+.option-content {
+    flex-grow: 1;
+}
+
+.option-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.correct-option {
+    border-color: #28a745;
+    background: #f8fff8;
+}
