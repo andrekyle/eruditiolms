@@ -457,9 +457,13 @@ def edit_user(user_id):
                     return render_template('users/edit.html', user=user)
                 filename = secure_filename(f"avatar_{user.id}_{int(datetime.utcnow().timestamp())}.{ext}")
                 upload_path = os.path.join(app.static_folder, 'uploads', 'avatars')
-                os.makedirs(upload_path, exist_ok=True)
-                avatar_file.save(os.path.join(upload_path, filename))
-                user.avatar_url = url_for('static', filename=f'uploads/avatars/{filename}')
+                try:
+                    os.makedirs(upload_path, exist_ok=True)
+                    avatar_file.save(os.path.join(upload_path, filename))
+                    user.avatar_url = url_for('static', filename=f'uploads/avatars/{filename}')
+                except OSError:
+                    # Read-only filesystem (e.g. Vercel serverless).
+                    flash('Avatar upload is disabled in this environment; other changes were saved.', 'warning')
 
             # Remove avatar if requested
             if request.form.get('remove_avatar') == '1':
@@ -597,9 +601,14 @@ def profile():
                 return render_template('profile.html', user=user)
             filename = secure_filename(f"avatar_{user.id}_{int(datetime.utcnow().timestamp())}.{ext}")
             upload_path = os.path.join(app.static_folder, 'uploads', 'avatars')
-            os.makedirs(upload_path, exist_ok=True)
-            avatar_file.save(os.path.join(upload_path, filename))
-            user.avatar_url = url_for('static', filename=f'uploads/avatars/{filename}')
+            try:
+                os.makedirs(upload_path, exist_ok=True)
+                avatar_file.save(os.path.join(upload_path, filename))
+                user.avatar_url = url_for('static', filename=f'uploads/avatars/{filename}')
+            except OSError:
+                # Read-only filesystem (e.g. Vercel serverless). Skip the
+                # upload but let the rest of the profile update proceed.
+                flash('Avatar upload is disabled in this environment; other changes were saved.', 'warning')
 
         # Remove avatar if requested
         if request.form.get('remove_avatar') == '1':
