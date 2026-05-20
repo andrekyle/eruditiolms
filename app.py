@@ -19,8 +19,13 @@ except ImportError:
 app = Flask(__name__)
 
 # Make sure the instance folder exists — used for the SQLite DB AND the
-# persisted secret key below.
-os.makedirs(app.instance_path, exist_ok=True)
+# persisted secret key below. On read-only hosts (e.g. Vercel serverless
+# functions where /var/task is read-only) this can fail; ignore in that case
+# and rely on env-based SECRET_KEY + external DATABASE_URL.
+try:
+    os.makedirs(app.instance_path, exist_ok=True)
+except OSError:
+    pass
 
 # SECRET_KEY: prefer env var; otherwise persist a generated key to
 # instance/.secret_key so logged-in sessions survive app restarts.
