@@ -20,8 +20,9 @@ instance/
 *.sqlite
 *.sqlite3
 
-# Uploaded user content
-static/uploads/
+# Uploaded user content (committed for non-production deploys so course
+# images persist on Vercel's read-only filesystem).
+# static/uploads/
 
 # Migrations cache
 migrations/__pycache__/
