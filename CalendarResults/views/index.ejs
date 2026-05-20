@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1a237e">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="nav-links">
+        <a href="/" class="active"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="/python-report"><i class="fab fa-python"></i> Python</a>
+        <a href="/java-report"><i class="fab fa-java"></i> Java</a>
+        <a href="/ai-report"><i class="fas fa-brain"></i> AI</a>
+        <a href="/azure-report"><i class="fab fa-microsoft"></i> Azure</a>
+        <a href="/powerbi-report"><i class="fas fa-chart-bar"></i> Power BI</a>
+        <a href="/calendar"><i class="far fa-calendar-alt"></i> Calendar</a>
+        <a href="/curriculum"><i class="fas fa-book"></i> Curriculum</a>
+    </div>
+
+    <div class="header">
+        <div class="container">
+            <h1 class="display-4">Certification Exam Results Dashboard for the year <%= year %></h1>
+            <p class="lead">Comprehensive Overview of All Certification Results</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Overview -->
+        <div class="card mb-4 p-4">
+            <h2>Overview</h2>
+            <p>This dashboard provides access to detailed reports for various certification exams. Each report includes comprehensive analysis, visualizations, and recommendations based on student performance.</p>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card p-3">
+                    <h4 class="h5">Certifications Achieved</h4>
+                    <p class="h2" id="certifications-count">352</p>
+                    <small class="text-muted">Successfully Certified</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-3">
+                    <h4 class="h5">Average Pass Rate</h4>
+                    <p class="h2" id="pass-rate">93%</p>
+                    <small class="text-muted">All certifications combined</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-3">
+                    <h4 class="h5">Retake Success</h4>
+                    <p class="h2" id="retake-success">85%</p>
+                    <small class="text-muted">Pass rate on second attempts</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-3">
+                    <h4 class="h5">Top Performers</h4>
+                    <p class="h2" id="top-performers">35%</p>
+                    <small class="text-muted">Scored above 90%</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Cards -->
+        <div class="row g-4">
+            <!-- Python Report -->
+            <div class="col-md-6 col-lg-4">
+                <a href="/python-report" class="report-link">
+                    <div class="card report-card p-4">
+                        <h3><i class="fab fa-python"></i> Python Certification</h3>
+                        <div class="mb-3">
+                            <span class="stat-badge"><i class="fas fa-users"></i> 28 Students</span>
+                            <span class="stat-badge"><i class="fas fa-award"></i> 100% Pass Rate</span>
+                        </div>
+                        <p>Comprehensive analysis of Python certification results including performance metrics and recommendations.</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Java Report -->
+            <div class="col-md-6 col-lg-4">
+                <a href="/java-report" class="report-link">
+                    <div class="card report-card p-4">
+                        <h3><i class="fab fa-java"></i> Java Certification</h3>
+                        <div class="mb-3">
+                            <span class="stat-badge"><i class="fas fa-users"></i> 32 Students</span>
+                            <span class="stat-badge"><i class="fas fa-award"></i> 94% Pass Rate</span>
+                        </div>
+                        <p>Detailed analysis of Java certification performance with student progress tracking.</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- AI Report -->
+            <div class="col-md-6 col-lg-4">
+                <a href="/ai-report" class="report-link">
+                    <div class="card report-card p-4">
+                        <h3><i class="fas fa-brain"></i> Azure AI-900</h3>
+                        <div class="mb-3">
+                            <span class="stat-badge"><i class="fas fa-users"></i> 87 Students</span>
+                            <span class="stat-badge"><i class="fas fa-award"></i> 92% Pass Rate</span>
+                        </div>
+                        <p>Analysis of Azure AI Fundamentals certification results and key learning areas.</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Azure Report -->
+            <div class="col-md-6 col-lg-4">
+                <a href="/azure-report" class="report-link">
+                    <div class="card report-card p-4">
+                        <h3><i class="fab fa-microsoft"></i> Azure Fundamentals</h3>
+                        <div class="mb-3">
+                            <span class="stat-badge"><i class="fas fa-users"></i> 65 Students</span>
+                            <span class="stat-badge"><i class="fas fa-award"></i> 89% Pass Rate</span>
+                        </div>
+                        <p>Comprehensive analysis of Azure Fundamentals certification results and performance trends.</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Power BI Report -->
+            <div class="col-md-6 col-lg-4">
+                <a href="/powerbi-report" class="report-link">
+                    <div class="card report-card p-4">
+                        <h3><i class="fas fa-chart-bar"></i> Power BI</h3>
+                        <div class="mb-3">
+                            <span class="stat-badge"><i class="fas fa-users"></i> 42 Students</span>
+                            <span class="stat-badge"><i class="fas fa-award"></i> 95% Pass Rate</span>
+                        </div>
+                        <p>Analysis of Power BI certification results with visualization performance metrics.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-light py-3 mt-5">
+        <div class="container text-center">
+            <p class="text-muted mb-0">Report Dashboard • Generated by Andre Snell, Senior Facilitator • March 2025</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/main.js"></script>
+</body>
+</html>

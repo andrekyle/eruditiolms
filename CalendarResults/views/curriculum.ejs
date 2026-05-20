@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1a237e">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .module-card {
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+        .module-card:hover {
+            transform: translateY(-5px);
+        }
+        .module-header {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px 10px 0 0;
+        }
+        .module-content {
+            padding: 1.5rem;
+        }
+        .module-topics {
+            margin-top: 1rem;
+        }
+        .module-topics li {
+            margin-bottom: 0.5rem;
+        }
+        .certification-badge {
+            display: inline-block;
+            background: #e8eaf6;
+            color: #3f51b5;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin: 0.25rem;
+            border: 1px solid #c5cae9;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-links">
+        <a href="/"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="/python-report"><i class="fab fa-python"></i> Python</a>
+        <a href="/java-report"><i class="fab fa-java"></i> Java</a>
+        <a href="/ai-report"><i class="fas fa-brain"></i> AI</a>
+        <a href="/azure-report"><i class="fab fa-microsoft"></i> Azure</a>
+        <a href="/powerbi-report"><i class="fas fa-chart-bar"></i> Power BI</a>
+        <a href="/calendar"><i class="far fa-calendar-alt"></i> Calendar</a>
+        <a href="/curriculum" class="active"><i class="fas fa-book"></i> Curriculum</a>
+    </div>
+
+    <div class="header">
+        <div class="container">
+            <h1 class="display-4">Curriculum 2025</h1>
+            <p class="lead">Comprehensive Certification Curriculum Overview</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card p-4">
+                    <h2>Curriculum Overview</h2>
+                    <p>This curriculum provides a comprehensive roadmap for students pursuing various technical certifications in 2025. Each module is designed to prepare students for industry-recognized certifications while developing practical skills for real-world applications.</p>
+                    
+                    <div class="mt-3">
+                        <h4>Learning Approach</h4>
+                        <p>Our curriculum follows a blended learning approach with:</p>
+                        <ul>
+                            <li>Instructor-led sessions (40%)</li>
+                            <li>Hands-on labs and projects (40%)</li>
+                            <li>Self-paced learning and practice tests (20%)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Python Module -->
+            <div class="col-md-6">
+                <div class="card module-card">
+                    <div class="module-header">
+                        <h3><i class="fab fa-python"></i> Python Programming</h3>
+                        <div>
+                            <span class="certification-badge">Python Certified Associate</span>
+                        </div>
+                    </div>
+                    <div class="module-content">
+                        <p>This module covers Python programming fundamentals through advanced concepts, preparing students for the Python Certified Associate exam.</p>
+                        
+                        <div class="module-topics">
+                            <h5>Key Topics:</h5>
+                            <ul>
+                                <li>Python syntax and data structures</li>
+                                <li>Object-oriented programming</li>
+                                <li>File handling and exceptions</li>
+                                <li>Modules and packages</li>
+                                <li>Data analysis with NumPy and Pandas</li>
+                                <li>Web development with Flask</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <h5>Duration:</h5>
+                            <p>8 weeks (January - February 2025)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Java Module -->
+            <div class="col-md-6">
+                <div class="card module-card">
+                    <div class="module-header">
+                        <h3><i class="fab fa-java"></i> Java Programming</h3>
+                        <div>
+                            <span class="certification-badge">Java SE 8 Programmer</span>
+                        </div>
+                    </div>
+                    <div class="module-content">
+                        <p>This module covers Java programming from basics to advanced concepts, preparing students for the Java SE 8 Programmer certification.</p>
+                        
+                        <div class="module-topics">
+                            <h5>Key Topics:</h5>
+                            <ul>
+                                <li>Java language fundamentals</li>
+                                <li>Object-oriented programming</li>
+                                <li>Exception handling</li>
+                                <li>Collections framework</li>
+                                <li>Functional programming with lambdas</li>
+                                <li>Stream API and concurrency</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <h5>Duration:</h5>
+                            <p>8 weeks (January - February 2025)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Azure Module -->
+            <div class="col-md-6">
+                <div class="card module-card">
+                    <div class="module-header">
+                        <h3><i class="fab fa-microsoft"></i> Azure Fundamentals</h3>
+                        <div>
+                            <span class="certification-badge">AZ-900</span>
+                        </div>
+                    </div>
+                    <div class="module-content">
+                        <p>This module introduces students to cloud concepts and Microsoft Azure services, preparing them for the Azure Fundamentals certification.</p>
+                        
+                        <div class="module-topics">
+                            <h5>Key Topics:</h5>
+                            <ul>
+                                <li>Cloud concepts and service models</li>
+                                <li>Azure core services and management tools</li>
+                                <li>Security, privacy, compliance, and trust</li>
+                                <li>Azure pricing and support</li>
+                                <li>Identity, governance, and compliance features</li>
+                                <li>Azure resource management</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <h5>Duration:</h5>
+                            <p>4 weeks (February 2025)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Azure AI Module -->
+            <div class="col-md-6">
+                <div class="card module-card">
+                    <div class="module-header">
+                        <h3><i class="fas fa-brain"></i> Azure AI Fundamentals</h3>
+                        <div>
+                            <span class="certification-badge">AI-900</span>
+                        </div>
+                    </div>
+                    <div class="module-content">
+                        <p>This module introduces artificial intelligence concepts and Microsoft Azure AI services, preparing students for the Azure AI Fundamentals certification.</p>
+                        
+                        <div class="module-topics">
+                            <h5>Key Topics:</h5>
+                            <ul>
+                                <li>Introduction to AI and machine learning</li>
+                                <li>Computer vision workloads</li>
+                                <li>Natural language processing</li>
+                                <li>Conversational AI</li>
+                                <li>Azure Cognitive Services</li>
+                                <li>Responsible AI principles</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <h5>Duration:</h5>
+                            <p>4 weeks (February - March 2025)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Power BI Module -->
+            <div class="col-md-6">
+                <div class="card module-card">
+                    <div class="module-header">
+                        <h3><i class="fas fa-chart-bar"></i> Power BI</h3>
+                        <div>
+                            <span class="certification-badge">PL-300</span>
+                        </div>
+                    </div>
+                    <div class="module-content">
+                        <p>This module covers data visualization and business intelligence using Microsoft Power BI, preparing students for the Power BI Data Analyst certification.</p>
+                        
+                        <div class="module-topics">
+                            <h5>Key Topics:</h5>
+                            <ul>
+                                <li>Data preparation and transformation</li>
+                                <li>Data modeling and relationships</li>
+                                <li>Visualization creation and configuration</li>
+                                <li>DAX formulas and measures</li>
+                                <li>Report design and formatting</li>
+                                <li>Dashboard creation and sharing</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <h5>Duration:</h5>
+                            <p>4 weeks (March 2025)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Advanced Certifications -->
+            <div class="col-md-6">
+                <div class="card module-card">
+                    <div class="module-header">
+                        <h3><i class="fas fa-award"></i> Advanced Certifications</h3>
+                        <div>
+                            <span class="certification-badge">Various</span>
+                        </div>
+                    </div>
+                    <div class="module-content">
+                        <p>Advanced certification tracks for students who have completed the foundational certifications and want to specialize further.</p>
+                        
+                        <div class="module-topics">
+                            <h5>Available Tracks:</h5>
+                            <ul>
+                                <li>Azure Administrator (AZ-104)</li>
+                                <li>Azure Developer (AZ-204)</li>
+                                <li>Azure Solutions Architect (AZ-305)</li>
+                                <li>Java EE Developer</li>
+                                <li>Python Data Science</li>
+                                <li>AI Engineer (AI-102)</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <h5>Duration:</h5>
+                            <p>8-12 weeks (April - June 2025)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card p-4">
+                    <h3>Learning Resources</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Core Materials</h5>
+                            <ul>
+                                <li>Official certification study guides</li>
+                                <li>Interactive lab environments</li>
+                                <li>Practice test platforms</li>
+                                <li>Video courses and tutorials</li>
+                                <li>Hands-on projects and case studies</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Support Services</h5>
+                            <ul>
+                                <li>Weekly mentoring sessions</li>
+                                <li>Peer study groups</li>
+                                <li>Technical support forums</li>
+                                <li>Industry expert guest lectures</li>
+                                <li>Career counseling and job placement assistance</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-light py-3 mt-5">
+        <div class="container text-center">
+            <p class="text-muted mb-0">Curriculum 2025 • Generated by Andre Snell, Senior Facilitator • March 2025</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/main.js"></script>
+</body>
+</html>

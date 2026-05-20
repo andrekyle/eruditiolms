@@ -1,0 +1,628 @@
+{% extends "base.html" %}
+{% block title %}Academic Transcript{% endblock %}
+
+{% block content %}
+<style>
+    /* ============================================================
+       Academic Transcript — Oxford/Azure blue + white only.
+       Microsoft fonts only.
+       Palette:
+         #002147 Oxford blue (primary)
+         #0078D4 Azure blue  (accent)
+         #1A1A1A ink
+         #5A5A5A muted
+         #D1D5DB rule
+         #F3F4F6 light tint
+         #FFFFFF paper
+       ============================================================ */
+    .transcript {
+        max-width: 1100px;
+        margin: 0 auto 48px;
+        background: #FFFFFF;
+        color: #1A1A1A;
+        font-family: "Segoe UI", "Segoe UI Web", Tahoma, Arial, sans-serif;
+        border: 1px solid #D1D5DB;
+        box-shadow: 0 1px 0 rgba(0,0,0,0.02), 0 8px 20px rgba(0, 33, 71, 0.06);
+        overflow: hidden;
+    }
+
+    .ts-crest {
+        background: #0F6FD1;
+        color: #FFFFFF;
+        padding: 30px 40px 26px;
+    }
+    .ts-crest__row {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 24px;
+    }
+    .ts-crest__mark { justify-self: start; }
+    .ts-crest__inst-block { text-align: center; }
+    .ts-crest__shield {
+        height: 54px; width: auto; display: block;
+        background: transparent;
+    }
+    .ts-crest__inst {
+        font-family: "Segoe UI Semibold", "Segoe UI", Tahoma, Arial, sans-serif;
+        font-size: 1.1875rem; font-weight: 600; letter-spacing: 0.01em;
+        line-height: 1.2; margin: 0; color: #FFFFFF !important;
+        text-align: center;
+    }
+    .ts-crest__inst-sub {
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+        font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase;
+        opacity: 0.88; margin: 4px 0 0; color: #FFFFFF !important;
+        text-align: center;
+    }
+    .ts-crest__meta {
+        text-align: right; font-size: 0.8125rem; line-height: 1.6;
+        color: #FFFFFF !important; opacity: 0.95;
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+        justify-self: end;
+    }
+    .ts-crest__meta strong { color: #FFFFFF !important; font-weight: 600; letter-spacing: 0.04em; }
+
+    .ts-title {
+        padding: 28px 40px 16px;
+        border-bottom: 1px solid #D1D5DB;
+        background: #FFFFFF;
+    }
+    .ts-title__eyebrow {
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+        font-size: 0.75rem; letter-spacing: 0.22em; text-transform: uppercase;
+        color: #002147 !important; margin: 0 0 6px; font-weight: 600;
+    }
+    .ts-title__h1 {
+        font-family: "Segoe UI Light", "Segoe UI", Tahoma, Arial, sans-serif;
+        font-size: 2.125rem; font-weight: 300; letter-spacing: -0.01em;
+        color: #002147 !important; margin: 0;
+    }
+
+    .ts-student {
+        padding: 22px 40px 24px;
+        display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px;
+        border-bottom: 1px solid #D1D5DB;
+    }
+    .ts-field {
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+        font-size: 0.9375rem; line-height: 1.55; color: #1A1A1A !important;
+    }
+    .ts-field__label {
+        display: block; font-size: 0.6875rem; letter-spacing: 0.18em;
+        text-transform: uppercase; color: #5A5A5A !important; margin: 0 0 2px; font-weight: 600;
+    }
+    .ts-field__value { font-weight: 600; color: #1A1A1A !important; }
+
+    .ts-summary {
+        padding: 22px 40px 26px;
+        display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+        border-bottom: 1px solid #D1D5DB; background: #FFFFFF;
+    }
+    .ts-summary__cell { padding: 6px 18px; border-right: 1px solid #E5E7EB; }
+    .ts-summary__cell:last-child { border-right: none; }
+    .ts-summary__cell:first-child { padding-left: 0; }
+    .ts-summary__label {
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+        font-size: 0.6875rem; letter-spacing: 0.18em; text-transform: uppercase;
+        color: #5A5A5A !important; margin: 0 0 6px; font-weight: 600;
+    }
+    .ts-summary__value {
+        font-family: "Segoe UI Light", "Segoe UI", Tahoma, Arial, sans-serif;
+        font-size: 1.875rem; font-weight: 300; color: #002147 !important;
+        margin: 0; line-height: 1.05;
+    }
+    .ts-summary__sub {
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+        font-size: 0.75rem; color: #5A5A5A !important; margin: 4px 0 0;
+        white-space: nowrap;
+    }
+
+    .ts-body { padding: 26px 40px 32px; background: #FFFFFF; }
+
+    .ts-section-title {
+        font-family: "Segoe UI Semibold", "Segoe UI", Tahoma, Arial, sans-serif;
+        font-size: 1.0625rem; letter-spacing: 0.16em; text-transform: uppercase;
+        color: #0F6FD1 !important; border-bottom: 0;
+        padding-bottom: 0; margin: 0 0 18px; font-weight: 600;
+    }
+
+    /* Course block: flat bordered card, no side rail */
+    .ts-course {
+        margin-bottom: 24px; background: #FFFFFF;
+        border: 1px solid #D1D5DB;
+    }
+    .ts-course__head {
+        display: flex; justify-content: space-between; align-items: flex-start;
+        padding: 16px 22px 14px; border-bottom: 1px solid #E5E7EB; gap: 16px;
+        background: #FFFFFF;
+    }
+    .ts-course__code {
+        display: inline-block;
+        font-family: "Cascadia Mono", "Consolas", "Courier New", monospace;
+        font-size: 0.75rem; letter-spacing: 0.06em; font-weight: 400;
+        background: #000000; color: #FFFFFF !important;
+        padding: 3px 8px; margin-right: 10px; vertical-align: 2px;
+    }
+    .ts-course__name {
+        font-family: "Segoe UI Semibold", "Segoe UI", Tahoma, Arial, sans-serif;
+        font-size: 1.125rem; font-weight: 600; color: #002147 !important;
+        margin: 0; line-height: 1.3;
+    }
+    .ts-course__name a { color: #002147 !important; text-decoration: none; }
+    .ts-course__name a:hover { color: #0078D4 !important; text-decoration: underline; }
+    .ts-course__sub {
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+        font-size: 0.8125rem; color: #5A5A5A !important; margin: 4px 0 0;
+    }
+    .ts-course__avg { text-align: right; white-space: nowrap; }
+    .ts-course__avg-num {
+        font-family: "Segoe UI Semibold", "Segoe UI", Tahoma, Arial, sans-serif;
+        font-size: 1.5rem; font-weight: 700; color: #002147 !important;
+        margin: 0; line-height: 1.05;
+    }
+    .ts-course__avg-lbl {
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+        font-size: 0.6875rem; letter-spacing: 0.16em; text-transform: uppercase;
+        color: #5A5A5A !important; margin: 4px 0 0;
+    }
+
+    .ts-table {
+        width: 100%; border-collapse: collapse; font-size: 0.9375rem;
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    }
+    .ts-table thead th {
+        text-align: left;
+        font-family: "Segoe UI Semibold", "Segoe UI", Tahoma, Arial, sans-serif;
+        font-size: 0.6875rem; letter-spacing: 0.16em;
+        text-transform: uppercase; color: #5A5A5A !important; background: #F3F4F6;
+        padding: 9px 18px; border-bottom: 1px solid #D1D5DB; font-weight: 600;
+    }
+    .ts-table tbody td {
+        padding: 13px 18px; border-bottom: 1px solid #E5E7EB;
+        color: #1A1A1A !important; vertical-align: middle;
+    }
+    .ts-table tbody tr:last-child td { border-bottom: none; }
+    .ts-table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .ts-table .center { text-align: center; }
+
+    .ts-assess__title {
+        color: #002147 !important; font-weight: 600;
+        font-family: "Segoe UI Semibold", "Segoe UI", Tahoma, Arial, sans-serif;
+    }
+    .ts-attempts-toggle {
+        background: none; border: none; padding: 0; margin-top: 3px;
+        color: #0078D4 !important; font-size: 0.8125rem; font-weight: 600;
+        cursor: pointer; text-decoration: underline; text-underline-offset: 3px;
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    }
+    .ts-attempts-toggle:hover { color: #002147 !important; }
+
+    .ts-grade {
+        display: inline-block; min-width: 36px; padding: 3px 0;
+        font-family: "Segoe UI Semibold", "Segoe UI", Tahoma, Arial, sans-serif;
+        font-size: 0.9375rem; font-weight: 600; text-align: center;
+        border: 1px solid transparent;
+    }
+    .ts-grade.g-a { background: #002147; color: #FFFFFF !important; }
+    .ts-grade.g-b { background: #0078D4; color: #FFFFFF !important; }
+    .ts-grade.g-c { background: #FFFFFF; color: #002147 !important; border-color: #002147; }
+    .ts-grade.g-d { background: #FFFFFF; color: #0078D4 !important; border-color: #0078D4; }
+    .ts-grade.g-e { background: #F3F4F6; color: #002147 !important; border-color: #D1D5DB; }
+    .ts-grade.g-f { background: #FFFFFF; color: #5A5A5A !important; border-color: #5A5A5A; }
+
+    .ts-review-link {
+        color: #0078D4 !important; font-weight: 600; text-decoration: none;
+        border-bottom: 1px solid #0078D4;
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    }
+    .ts-review-link:hover { color: #002147 !important; border-bottom-color: #002147; }
+
+    .ts-attempts-row { background: #F3F4F6; }
+    .ts-attempts-row td {
+        padding: 12px 18px 14px 64px !important;
+        border-bottom: 1px solid #E5E7EB !important;
+    }
+    .ts-attempts-row ol {
+        margin: 0; padding-left: 18px; font-size: 0.875rem; color: #1A1A1A;
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    }
+    .ts-attempts-row li { padding: 4px 0; }
+
+    .ts-meta {
+        color: #5A5A5A !important; font-size: 0.875rem;
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    }
+
+    .ts-empty { padding: 60px 40px; text-align: center; background: #FFFFFF; border-top: 1px solid #D1D5DB; }
+    .ts-empty__h {
+        font-family: "Segoe UI Light", "Segoe UI", Tahoma, Arial, sans-serif;
+        font-size: 1.5rem; font-weight: 300; color: #002147 !important; margin: 0 0 8px;
+    }
+    .ts-empty__p {
+        color: #5A5A5A !important; margin: 0;
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    }
+
+    .ts-footer {
+        padding: 18px 40px 22px; border-top: 0; background: #FFFFFF;
+        font-size: 0.75rem; color: #5A5A5A !important; line-height: 1.6;
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    }
+    .ts-footer strong { color: #002147 !important; font-weight: 600; }
+    .ts-footer__row { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+    @media (max-width: 760px) {
+        .ts-student, .ts-summary { grid-template-columns: 1fr 1fr; }
+        .ts-summary__cell { border-right: none; padding: 8px 0; }
+        .ts-crest, .ts-title, .ts-student, .ts-summary, .ts-body, .ts-footer {
+            padding-left: 22px; padding-right: 22px;
+        }
+        .ts-table .hide-sm { display: none; }
+    }
+
+    /* ============================================================
+       Dark mode — Oxford/Azure blue + white only
+       ============================================================ */
+    html[data-theme="dark"] .transcript {
+        background: #161616;
+        border-color: #2A2A2A;
+        box-shadow: 0 1px 0 rgba(0,0,0,0.4), 0 8px 22px rgba(0,0,0,0.55);
+        color: #E6E6E6;
+    }
+    html[data-theme="dark"] .ts-crest { background: #141414; }
+    html[data-theme="dark"] .ts-title { background: #161616; border-bottom-color: #2A2A2A; }
+    html[data-theme="dark"] .ts-title__eyebrow { color: #4FA8F2 !important; }
+    html[data-theme="dark"] .ts-title__h1 { color: #FFFFFF !important; }
+
+    html[data-theme="dark"] .ts-student { border-bottom-color: #2A2A2A; }
+    html[data-theme="dark"] .ts-field { color: #E6E6E6 !important; }
+    html[data-theme="dark"] .ts-field__label { color: #A0A0A0 !important; }
+    html[data-theme="dark"] .ts-field__value { color: #FFFFFF !important; }
+    html[data-theme="dark"] .ts-meta { color: #A0A0A0 !important; }
+
+    html[data-theme="dark"] .ts-summary { background: #1E1E1E; border-bottom-color: #2A2A2A; }
+    html[data-theme="dark"] .ts-summary__cell { border-right-color: #2A2A2A; }
+    html[data-theme="dark"] .ts-summary__label { color: #A0A0A0 !important; }
+    html[data-theme="dark"] .ts-summary__value { color: #FFFFFF !important; }
+    html[data-theme="dark"] .ts-summary__sub { color: #A0A0A0 !important; }
+
+    html[data-theme="dark"] .ts-body { background: #161616; }
+    html[data-theme="dark"] .ts-section-title {
+        color: #4DA3FF !important; border-bottom: 0;
+    }
+
+    html[data-theme="dark"] .ts-course {
+        background: #1E1E1E; border-color: #2A2A2A;
+    }
+    html[data-theme="dark"] .ts-course__head {
+        background: #1E1E1E; border-bottom-color: #2A2A2A;
+    }
+    html[data-theme="dark"] .ts-course__code {
+        background: #0078D4; color: #FFFFFF !important;
+    }
+    html[data-theme="dark"] .ts-course__name,
+    html[data-theme="dark"] .ts-course__name a { color: #FFFFFF !important; }
+    html[data-theme="dark"] .ts-course__name a:hover { color: #4FA8F2 !important; }
+    html[data-theme="dark"] .ts-course__sub { color: #A0A0A0 !important; }
+    html[data-theme="dark"] .ts-course__avg-num { color: #FFFFFF !important; }
+    html[data-theme="dark"] .ts-course__avg-lbl { color: #A0A0A0 !important; }
+
+    html[data-theme="dark"] .ts-table thead th {
+        background: #161616; color: #A0A0A0 !important; border-bottom-color: #2A2A2A;
+    }
+    html[data-theme="dark"] .ts-table tbody td {
+        color: #E6E6E6 !important; border-bottom-color: #2A2A2A;
+    }
+    html[data-theme="dark"] .ts-assess__title { color: #FFFFFF !important; }
+    html[data-theme="dark"] .ts-attempts-toggle { color: #4FA8F2 !important; }
+    html[data-theme="dark"] .ts-attempts-toggle:hover { color: #FFFFFF !important; }
+
+    html[data-theme="dark"] .ts-grade.g-a { background: #FFFFFF; color: #161616 !important; border-color: #FFFFFF; }
+    html[data-theme="dark"] .ts-grade.g-b { background: #0078D4; color: #FFFFFF !important; border-color: #0078D4; }
+    html[data-theme="dark"] .ts-grade.g-c { background: transparent; color: #FFFFFF !important; border-color: #FFFFFF; }
+    html[data-theme="dark"] .ts-grade.g-d { background: transparent; color: #4FA8F2 !important; border-color: #4FA8F2; }
+    html[data-theme="dark"] .ts-grade.g-e { background: #2A2A2A; color: #E6E6E6 !important; border-color: #2A2A2A; }
+    html[data-theme="dark"] .ts-grade.g-f { background: transparent; color: #A0A0A0 !important; border-color: #A0A0A0; }
+
+    html[data-theme="dark"] .ts-review-link {
+        color: #4FA8F2 !important; border-bottom-color: #4FA8F2;
+    }
+    html[data-theme="dark"] .ts-review-link:hover {
+        color: #FFFFFF !important; border-bottom-color: #FFFFFF;
+    }
+
+    html[data-theme="dark"] .ts-attempts-row { background: #161616; }
+    html[data-theme="dark"] .ts-attempts-row td { border-bottom-color: #2A2A2A !important; }
+    html[data-theme="dark"] .ts-attempts-row ol { color: #E6E6E6; }
+
+    html[data-theme="dark"] .ts-empty { background: #1E1E1E; border-top-color: #2A2A2A; }
+    html[data-theme="dark"] .ts-empty__h { color: #FFFFFF !important; }
+    html[data-theme="dark"] .ts-empty__p { color: #A0A0A0 !important; }
+
+    html[data-theme="dark"] .ts-footer {
+        background: #1E1E1E; border-top: 0; color: #A0A0A0 !important;
+    }
+    html[data-theme="dark"] .ts-footer strong { color: #FFFFFF !important; }
+
+    /* ---- Download / action bar ---- */
+    .ts-actions {
+        max-width: 1100px;
+        margin: 0 auto 14px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+    .ts-btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 8px 16px;
+        background: #0F6FD1; color: #FFFFFF !important;
+        border: 1px solid #0F6FD1;
+        font-family: "Segoe UI Semibold", "Segoe UI", Tahoma, Arial, sans-serif;
+        font-size: 0.875rem; font-weight: 600; letter-spacing: 0.02em;
+        text-decoration: none; cursor: pointer;
+        transition: background 0.15s, border-color 0.15s;
+    }
+    .ts-btn:hover { background: #0A559F; border-color: #0A559F; color: #FFFFFF !important; text-decoration: none; }
+    .ts-btn svg { width: 16px; height: 16px; }
+    html[data-theme="dark"] .ts-btn { background: #0078D4; border-color: #0078D4; }
+    html[data-theme="dark"] .ts-btn:hover { background: #4FA8F2; border-color: #4FA8F2; color: #161616 !important; }
+
+    /* Light mode: force the blue and gray transcript text to black (crest, grade pills, buttons untouched) */
+    html:not([data-theme="dark"]) .transcript .ts-title__eyebrow,
+    html:not([data-theme="dark"]) .transcript .ts-title__h1,
+    html:not([data-theme="dark"]) .transcript .ts-field,
+    html:not([data-theme="dark"]) .transcript .ts-field__label,
+    html:not([data-theme="dark"]) .transcript .ts-field__value,
+    html:not([data-theme="dark"]) .transcript .ts-summary__label,
+    html:not([data-theme="dark"]) .transcript .ts-summary__sub,
+    html:not([data-theme="dark"]) .transcript .ts-summary__value,
+    html:not([data-theme="dark"]) .transcript .ts-course__name,
+    html:not([data-theme="dark"]) .transcript .ts-course__name a,
+    html:not([data-theme="dark"]) .transcript .ts-course__sub,
+    html:not([data-theme="dark"]) .transcript .ts-course__avg-lbl,
+    html:not([data-theme="dark"]) .transcript .ts-course__avg-num,
+    html:not([data-theme="dark"]) .transcript .ts-table thead th,
+    html:not([data-theme="dark"]) .transcript .ts-table tbody td,
+    html:not([data-theme="dark"]) .transcript .ts-assess__title,
+    html:not([data-theme="dark"]) .transcript .ts-attempts-toggle,
+    html:not([data-theme="dark"]) .transcript .ts-attempts-toggle:hover,
+    html:not([data-theme="dark"]) .transcript .ts-review-link,
+    html:not([data-theme="dark"]) .transcript .ts-review-link:hover,
+    html:not([data-theme="dark"]) .transcript .ts-empty,
+    html:not([data-theme="dark"]) .transcript .ts-empty h4,
+    html:not([data-theme="dark"]) .transcript .ts-empty p,
+    html:not([data-theme="dark"]) .transcript .ts-empty li,
+    html:not([data-theme="dark"]) .transcript .ts-footer,
+    html:not([data-theme="dark"]) .transcript .ts-footer p,
+    html:not([data-theme="dark"]) .transcript .ts-footer small,
+    html:not([data-theme="dark"]) .transcript .ts-footer strong { color: #000000 !important; }
+
+    /* ---- Print styles (Dark-mode PDF) ---- */
+    @media print {
+        @page { size: A4; margin: 14mm; background: #161616; }
+        html, body { background: #161616 !important; color: #E6E6E6 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+        .app-sidebar, .app-topbar, .topbar-public, .navbar, .sidebar-footer,
+        .bare-theme-toggle, .ts-actions { display: none !important; }
+        .app-main, .app-main-full, .container, .container-fluid {
+            margin: 0 !important; padding: 0 !important; max-width: 100% !important;
+            background: #161616 !important;
+        }
+        /* Force every transcript surface to the dark palette */
+        .transcript { background: #161616 !important; border: 1px solid #2A2A2A !important; box-shadow: none !important; margin: 0 auto !important; max-width: 100% !important; color: #E6E6E6 !important; }
+        .ts-crest { background: #141414 !important; color: #FFFFFF !important; }
+        .ts-crest__meta, .ts-crest__meta strong { color: #FFFFFF !important; }
+        .ts-title { background: #161616 !important; }
+        .ts-title__eyebrow { color: #4FA8F2 !important; }
+        .ts-title__h1 { color: #FFFFFF !important; }
+        .ts-student, .ts-body { background: #161616 !important; color: #E6E6E6 !important; }
+        .ts-summary { background: #1E1E1E !important; }
+        .ts-summary__cell { border-right-color: #2A2A2A !important; }
+        .ts-summary__label, .ts-summary__sub { color: #A0A0A0 !important; }
+        .ts-summary__value { color: #FFFFFF !important; }
+        .ts-section-title { color: #4DA3FF !important; border-bottom: 0 !important; }
+        .ts-course { background: #1E1E1E !important; border-color: #2A2A2A !important; }
+        .ts-course__head { background: #1E1E1E !important; border-bottom-color: #2A2A2A !important; }
+        .ts-course__code { background: #0078D4 !important; color: #FFFFFF !important; }
+        .ts-course__name, .ts-course__name a { color: #FFFFFF !important; }
+        .ts-course__sub, .ts-course__avg-lbl { color: #A0A0A0 !important; }
+        .ts-course__avg-num { color: #FFFFFF !important; }
+        .ts-table thead th { background: #161616 !important; color: #A0A0A0 !important; border-bottom-color: #2A2A2A !important; }
+        .ts-table tbody td { color: #E6E6E6 !important; border-bottom-color: #2A2A2A !important; }
+        .ts-assess__title { color: #FFFFFF !important; }
+        .ts-attempts-row.collapse { display: table-row !important; background: #161616 !important; }
+        .ts-attempts-toggle, .ts-review-link { display: none !important; }
+        .ts-footer { background: #1E1E1E !important; border-top: 0 !important; color: #A0A0A0 !important; }
+        .ts-footer strong { color: #FFFFFF !important; }
+        .ts-course, .ts-crest, .ts-summary__cell { break-inside: avoid; page-break-inside: avoid; }
+        a { color: #E6E6E6 !important; text-decoration: none !important; border-bottom: none !important; }
+    }
+</style>
+
+<div class="ts-actions">
+    <button type="button" class="ts-btn" onclick="window.print()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Download PDF
+    </button>
+</div>
+
+<div class="transcript">
+    <div class="ts-crest">
+        <div class="ts-crest__row">
+            <div class="ts-crest__mark">
+                <img class="ts-crest__shield" src="{{ url_for('static', filename='Images/eurditioLogo.png') }}" alt="Eurditio">
+            </div>
+            <div class="ts-crest__inst-block"></div>
+            <div class="ts-crest__meta">
+                <div><strong>DOCUMENT</strong> &nbsp; Academic Transcript</div>
+                <div><strong>ISSUED</strong> &nbsp; <span id="ts-issued"></span></div>
+                <div><strong>REF</strong> &nbsp; TR-{{ '%06d'|format(current_user.id) }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ts-title">
+        <p class="ts-title__eyebrow">Official Record of Assessment</p>
+        <h1 class="ts-title__h1">Academic Transcript</h1>
+    </div>
+
+    <div class="ts-student">
+        <div class="ts-field">
+            <span class="ts-field__label">Issued To</span>
+            <span class="ts-field__value">
+                {% if current_user.first_name or current_user.last_name %}{{ current_user.first_name }} {{ current_user.last_name }}{% else %}{{ current_user.username }}{% endif %}
+            </span><br>
+            <span class="ts-meta">{{ current_user.email }}</span>
+        </div>
+        <div class="ts-field">
+            <span class="ts-field__label">Student Number</span>
+            <span class="ts-field__value">STU-{{ '%06d'|format(current_user.id) }}</span><br>
+            <span class="ts-meta">Status: {% if current_user.is_superadmin %}Administrator{% elif current_user.is_teacher %}Faculty{% else %}Enrolled student{% endif %}</span>
+        </div>
+    </div>
+
+    <div class="ts-summary">
+        <div class="ts-summary__cell">
+            <p class="ts-summary__label">Cumulative Mark</p>
+            <p class="ts-summary__value">{{ '%.1f'|format(overall_pct) }}%</p>
+            <p class="ts-summary__sub">{{ '%.1f'|format(overall_best) }} / {{ '%.1f'|format(overall_total) }} pts</p>
+        </div>
+        <div class="ts-summary__cell">
+            <p class="ts-summary__label">Overall Grade</p>
+            <p class="ts-summary__value">{{ overall_grade }}</p>
+            <p class="ts-summary__sub">Best-attempt basis</p>
+        </div>
+        <div class="ts-summary__cell">
+            <p class="ts-summary__label">Modules Attempted</p>
+            <p class="ts-summary__value">{{ quizzes_taken }}</p>
+            <p class="ts-summary__sub">Distinct assessments</p>
+        </div>
+        <div class="ts-summary__cell">
+            <p class="ts-summary__label">Total Submissions</p>
+            <p class="ts-summary__value">{{ total_attempts }}</p>
+            <p class="ts-summary__sub">All attempts</p>
+        </div>
+    </div>
+
+    {% if not course_rows %}
+        <div class="ts-empty">
+            <p class="ts-empty__h">No assessment record on file.</p>
+            <p class="ts-empty__p">Once you submit a quiz from any enrolled course, it will appear on your transcript.</p>
+        </div>
+    {% else %}
+    <div class="ts-body">
+        <h2 class="ts-section-title">Courses &amp; Assessments</h2>
+
+        {% for row in course_rows %}
+        <section class="ts-course">
+            <header class="ts-course__head">
+                <div>
+                    <h3 class="ts-course__name">
+                        <span class="ts-course__code">CRS-{{ '%03d'|format(row.course.id) }}</span>
+                        <a href="{{ url_for('view_course', course_id=row.course.id) }}">{{ row.course.title }}</a>
+                    </h3>
+                    <p class="ts-course__sub">{{ row.quizzes|length }} assessment{{ '' if row.quizzes|length == 1 else 's' }} on record</p>
+                </div>
+                <div class="ts-course__avg">
+                    <p class="ts-course__avg-num">{{ '%.1f'|format(row.avg_percent) }}%</p>
+                    <p class="ts-course__avg-lbl">Course average &middot; {{ row.avg_grade }}</p>
+                </div>
+            </header>
+            <table class="ts-table">
+                <thead>
+                    <tr>
+                        <th>Assessment</th>
+                        <th class="num hide-sm">Attempts</th>
+                        <th class="num">Best Mark</th>
+                        <th class="num hide-sm">Points</th>
+                        <th class="center">Grade</th>
+                        <th class="hide-sm">Date</th>
+                        <th class="center">Review</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for q in row.quizzes %}
+                    <tr>
+                        <td>
+                            <div class="ts-assess__title">{{ q.title }}</div>
+                            {% if q.attempts_count > 1 %}
+                            <button type="button" class="ts-attempts-toggle" data-bs-toggle="collapse" data-bs-target="#ts-attempts-{{ q.quiz_id }}" aria-expanded="false">
+                                View all attempts
+                            </button>
+                            {% endif %}
+                        </td>
+                        <td class="num hide-sm">{{ q.attempts_count }}</td>
+                        <td class="num"><strong>{{ '%.1f'|format(q.best_percent) }}%</strong></td>
+                        <td class="num hide-sm">{{ '%.1f'|format(q.best_points) }} / {{ '%.1f'|format(q.best_total) }}</td>
+                        <td class="center"><span class="ts-grade g-{{ q.best_grade|lower }}">{{ q.best_grade }}</span></td>
+                        <td class="hide-sm ts-meta">{{ q.latest_taken_at.strftime('%d %b %Y') }}</td>
+                        <td class="center">
+                            <a href="{{ url_for('view_quiz_result', quiz_id=q.quiz_id, response_id=q.best_response_id) }}" class="ts-review-link">View</a>
+                        </td>
+                    </tr>
+                    {% if q.attempts_count > 1 %}
+                    <tr class="ts-attempts-row collapse" id="ts-attempts-{{ q.quiz_id }}">
+                        <td colspan="7">
+                            <strong style="font-size:0.75rem;letter-spacing:0.16em;text-transform:uppercase;color:#5A5A5A;">Attempt history</strong>
+                            <ol>
+                                {% for a in q.attempts %}
+                                <li>
+                                    {{ a.taken_at.strftime('%d %b %Y &middot; %H:%M')|safe }} &mdash;
+                                    <strong>{{ '%.1f'|format(a.percent) }}%</strong>
+                                    ({{ '%.1f'|format(a.points) }} / {{ '%.1f'|format(a.total) }})
+                                    <span class="ts-grade g-{{ a.grade|lower }}" style="margin-left:8px;">{{ a.grade }}</span>
+                                    &middot;
+                                    <a href="{{ url_for('view_quiz_result', quiz_id=q.quiz_id, response_id=a.response_id) }}" class="ts-review-link">Review</a>
+                                </li>
+                                {% endfor %}
+                            </ol>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="ts-footer">
+        <div class="ts-footer__row">
+            <div>
+                <strong>Grading scale</strong> &middot;
+                A 85&ndash;100 &nbsp;|&nbsp; B 75&ndash;84 &nbsp;|&nbsp; C 65&ndash;74 &nbsp;|&nbsp; D 55&ndash;64 &nbsp;|&nbsp; E 50&ndash;54 &nbsp;|&nbsp; F &lt; 50
+            </div>
+            <div>
+                Generated electronically &middot; <span id="ts-issued-foot"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    var d = new Date();
+    var fmt = d.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
+    var e1 = document.getElementById('ts-issued');
+    var e2 = document.getElementById('ts-issued-foot');
+    if (e1) e1.textContent = fmt;
+    if (e2) e2.textContent = fmt;
+
+    // Expand all attempt history rows for print; no theme swap (PDF stays dark).
+    var htmlEl = document.documentElement;
+    window.addEventListener('beforeprint', function () {
+        document.querySelectorAll('.ts-attempts-row.collapse').forEach(function (r) {
+            r.classList.add('show');
+        });
+    });
+    window.addEventListener('afterprint', function () {
+        document.querySelectorAll('.ts-attempts-row.collapse').forEach(function (r) {
+            r.classList.remove('show');
+        });
+    });
+})();
+</script>
+{% endblock %}

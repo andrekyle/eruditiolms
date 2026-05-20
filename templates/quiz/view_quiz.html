@@ -9,12 +9,12 @@
             <i class="bx bx-help-circle text-primary"></i> {{ quiz.title }}
         </h1>
         {% if current_user.is_teacher %}
-        <div class="btn-group">
-            <a href="{{ url_for('add_question', quiz_id=quiz.id) }}" class="btn btn-primary">
-                <i class="bx bx-plus"></i> Add Question
+        <div class="d-flex gap-2 flex-nowrap align-items-stretch">
+            <a href="{{ url_for('add_question', quiz_id=quiz.id) }}" class="btn btn-primary btn-sm text-nowrap flex-fill" style="flex:1 1 0; min-width:0;">
+                <i class="bx bx-plus me-1"></i>Add Question
             </a>
-            <a href="{{ url_for('edit_quiz', quiz_id=quiz.id) }}" class="btn btn-outline-primary">
-                <i class="bx bx-edit"></i> Edit Quiz
+            <a href="{{ url_for('edit_quiz', quiz_id=quiz.id) }}" class="btn btn-outline-primary btn-sm text-nowrap flex-fill" style="flex:1 1 0; min-width:0;">
+                <i class="bx bx-edit me-1"></i>Edit Quiz
             </a>
         </div>
         {% else %}
@@ -40,7 +40,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start mb-2">
                     <h5 class="card-title mb-0">Question {{ loop.index }}</h5>
-                    <span class="badge bg-primary">{{ question.points }} points</span>
+                    <span class="quiz-points">{{ question.points }} points</span>
                 </div>
                 
                 <div class="question-text mb-3">

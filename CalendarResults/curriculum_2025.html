@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software Development, AI & Data Analytics Curriculum 2025</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            color: white;
+            padding: 4rem 0;
+            margin-bottom: 2rem;
+        }
+        .card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            border: none;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+            background: white;
+            padding: 2rem;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .nav-links {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 1000;
+            display: flex;
+            gap: 6px;
+            background: transparent;
+        }
+        .nav-links a {
+            background: transparent;
+            padding: 3px 8px;
+            text-decoration: none;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 400;
+            letter-spacing: 0.4px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        .nav-links a:hover {
+            background: transparent;
+            color: rgba(255,255,255,0.85);
+            transform: translateY(-1px);
+            border: none;
+        }
+        .nav-links a i {
+            margin-right: 3px;
+        }
+        .stat-badge {
+            background: rgba(26, 35, 126, 0.1);
+            color: #1a237e;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            display: inline-block;
+            margin: 0.25rem;
+            font-size: 0.9rem;
+        }
+        .tech-stack {
+            background-color: #e9ecef;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            margin: 0.25rem;
+            display: inline-block;
+            font-size: 0.9rem;
+            color: #495057;
+        }
+        a.tech-stack {
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        a.tech-stack:hover {
+            background-color: #007bff;
+            color: white;
+            transform: translateY(-2px);
+        }
+        .module-list i {
+            margin-right: 0.5rem;
+        }
+        .module-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .module-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        .module-list li:last-child {
+            border-bottom: none;
+        }
+        .module-list a {
+            color: #495057;
+            transition: color 0.3s ease;
+        }
+        .module-list a:hover {
+            color: #007bff;
+        }
+        .partner-logo {
+            height: 30px;
+            width: auto;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        .partner-name {
+            vertical-align: middle;
+        }
+        .icon-momentum {
+            color: #000;
+            font-weight: bold;
+            font-style: normal;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            display: inline-block;
+            width: 16px;
+            text-align: center;
+            margin-right: 3px;
+        }
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        .course-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        .course-card:hover {
+            transform: translateY(-5px);
+        }
+        .instructor-card {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+        .instructor-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .feature-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-links">
+        <a href="index.html"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="python_report.html"><i class="fab fa-python"></i> Python</a>
+        <a href="java_report.html"><i class="fab fa-java"></i> Java</a>
+        <a href="powerbi_report.html"><i class="fas fa-chart-bar"></i> Power BI</a>
+        <a href="azure_report.html"><i class="fas fa-cloud"></i> Azure</a>
+        <a href="ai_report.html"><i class="fas fa-brain"></i> AI</a>
+        <a href="curriculum_2025.html" class="active"><i class="fas fa-book"></i> Curriculum</a>
+        <a href="calendar_2025.html"><i class="fas fa-calendar"></i> Calendar</a>
+    </div>
+
+    <div class="header">
+        <div class="container">
+            <h1 class="display-4">Software Development, Artificial Intelligence & Data Analytics</h1>
+            <p class="lead">Comprehensive Professional Development Curriculum 2025</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Key Statistics -->
+        <div class="card">
+            <h2>Program Overview</h2>
+            <div class="mb-4">
+                <span class="stat-badge">12-Month Program</span>
+                <span class="stat-badge">5 International Certifications</span>
+                <span class="stat-badge">3 Specialization Tracks</span>
+                <span class="stat-badge">1000+ Hours of Training</span>
+            </div>
+            <p>A comprehensive program designed to create well-rounded technology professionals with expertise in software development, artificial intelligence, and data analytics.</p>
+        </div>
+
+        <!-- Core Technologies -->
+        <div class="card">
+            <h2>Core Technologies</h2>
+            <div class="mb-3">
+                <a href="java_report.html" class="tech-stack">Java</a>
+                <a href="python_report.html" class="tech-stack">Python</a>
+                <a href="azure_report.html" class="tech-stack">Azure Cloud</a>
+                <a href="powerbi_report.html" class="tech-stack">Power BI</a>
+                <a href="ai_report.html" class="tech-stack">Artificial Intelligence</a>
+                <span class="tech-stack">SQL</span>
+                <span class="tech-stack">Git</span>
+                <span class="tech-stack">Excel</span>
+            </div>
+        </div>
+
+        <!-- Program Structure -->
+        <div class="card">
+            <h2>Program Structure</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="course-card">
+                        <h3>Phase 1: Software Development</h3>
+                        <p class="text-muted">4 Months</p>
+                        <ul class="module-list">
+                            <li><i class="fas fa-check text-success"></i> <a href="java_report.html" class="text-decoration-none">Java Fundamentals & OCA</a></li>
+                            <li><i class="fas fa-check text-success"></i> <a href="python_report.html" class="text-decoration-none">Python Programming & PCAP</a></li>
+                            <li><i class="fas fa-check text-success"></i> Git Version Control</li>
+                            <li><i class="fas fa-check text-success"></i> Database Design</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="course-card">
+                        <h3>Phase 2: Cloud & Artificial Intelligence</h3>
+                        <p class="text-muted">5 Months</p>
+                        <ul class="module-list">
+                            <li><i class="fas fa-check text-success"></i> <a href="azure_report.html" class="text-decoration-none">Azure Fundamentals (AZ-900)</a></li>
+                            <li><i class="fas fa-check text-success"></i> <a href="ai_report.html" class="text-decoration-none">AI Fundamentals (AI-900)</a></li>
+                            <li><i class="fas fa-check text-success"></i> Machine Learning</li>
+                            <li><i class="fas fa-check text-success"></i> Cloud Development</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="course-card">
+                        <h3>Phase 3: Data Analytics</h3>
+                        <p class="text-muted">3 Months</p>
+                        <ul class="module-list">
+                            <li><i class="fas fa-check text-success"></i> <a href="powerbi_report.html" class="text-decoration-none">Power BI (PL-300)</a></li>
+                            <li><i class="fas fa-check text-success"></i> IBM Data Analytics</li>
+                            <li><i class="fas fa-check text-success"></i> Business Intelligence</li>
+                            <li><i class="fas fa-check text-success"></i> Advanced Excel</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Course Content -->
+        <div class="card">
+            <h2>Detailed Course Content</h2>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="course-card">
+                        <h3><i class="fab fa-java"></i> Advanced Java Development</h3>
+                        <ul class="module-list">
+                            <li><i class="fas fa-code"></i> Spring Boot Framework</li>
+                            <li><i class="fas fa-database"></i> Hibernate & JPA</li>
+                            <li><i class="fas fa-server"></i> RESTful Web Services</li>
+                            <li><i class="fas fa-shield-alt"></i> Security & Authentication</li>
+                            <li><i class="fas fa-vial"></i> Unit Testing with JUnit</li>
+                            <li><i class="fas fa-project-diagram"></i> Microservices Architecture</li>
+                            <li><i class="fas fa-tasks"></i> Build Tools (Maven/Gradle)</li>
+                            <li><i class="fas fa-bug"></i> Debugging & Optimization</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="course-card">
+                        <h3><i class="fab fa-python"></i> Python Specialization</h3>
+                        <ul class="module-list">
+                            <li><i class="fas fa-brain"></i> Machine Learning with scikit-learn</li>
+                            <li><i class="fas fa-chart-bar"></i> Data Analysis with pandas</li>
+                            <li><i class="fas fa-flask"></i> Scientific Computing (NumPy)</li>
+                            <li><i class="fas fa-chart-line"></i> Data Visualization (Matplotlib)</li>
+                            <li><i class="fas fa-database"></i> SQL & Database Integration</li>
+                            <li><i class="fas fa-network-wired"></i> Web Scraping & APIs</li>
+                            <li><i class="fas fa-cogs"></i> Automation Scripts</li>
+                            <li><i class="fas fa-file-code"></i> Django Web Framework</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tools & Technologies -->
+        <div class="card">
+            <h2>Development Tools & Technologies</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="course-card">
+                        <h3><i class="fas fa-code-branch"></i> Version Control</h3>
+                        <ul class="module-list">
+                            <li><i class="fab fa-github"></i> GitHub</li>
+                            <li><i class="fab fa-git-alt"></i> Git</li>
+                            <li><i class="fas fa-code-branch"></i> Branching Strategies</li>
+                            <li><i class="fas fa-users"></i> Collaborative Development</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="course-card">
+                        <h3><i class="fas fa-tools"></i> Development Tools</h3>
+                        <ul class="module-list">
+                            <li><i class="fas fa-edit"></i> VS Code & IntelliJ</li>
+                            <li><i class="fas fa-bug"></i> Debugging Tools</li>
+                            <li><i class="fas fa-terminal"></i> Command Line</li>
+                            <li><i class="fas fa-project-diagram"></i> UML & Design Tools</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="course-card">
+                        <h3><i class="fas fa-cloud"></i> Cloud Platforms</h3>
+                        <ul class="module-list">
+                            <li><i class="fab fa-microsoft"></i> Azure Services</li>
+                            <li><i class="fas fa-server"></i> Virtual Machines</li>
+                            <li><i class="fas fa-database"></i> Cloud Databases</li>
+                            <li><i class="fas fa-shield-alt"></i> Security Services</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Industry Projects -->
+        <div class="card">
+            <h2>Industry Projects</h2>
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="course-card">
+                        <h3><i class="fas fa-project-diagram"></i> Software Development Projects</h3>
+                        <ul class="module-list">
+                            <li><i class="fas fa-shopping-cart"></i> E-commerce Platform
+                                <p class="text-muted small">Build a full-stack e-commerce solution using Java Spring Boot and React</p>
+                            </li>
+                            <li><i class="fas fa-tasks"></i> Task Management System
+                                <p class="text-muted small">Develop a Kanban-style project management tool with real-time updates</p>
+                            </li>
+                            <li><i class="fas fa-mobile-alt"></i> Mobile Banking App
+                                <p class="text-muted small">Create a secure mobile banking application with authentication</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="course-card">
+                        <h3><i class="fas fa-brain"></i> AI & Analytics Projects</h3>
+                        <ul class="module-list">
+                            <li><i class="fas fa-chart-pie"></i> Business Analytics Dashboard
+                                <p class="text-muted small">Build interactive Power BI dashboards for business intelligence</p>
+                            </li>
+                            <li><i class="fas fa-robot"></i> Customer Service AI
+                                <p class="text-muted small">Develop an AI-powered customer service chatbot using Azure AI</p>
+                            </li>
+                            <li><i class="fas fa-chart-line"></i> Predictive Analytics System
+                                <p class="text-muted small">Create a machine learning model for sales prediction</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learning Resources -->
+        <div class="card">
+            <h2>Learning Resources & Support</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="course-card">
+                        <h3><i class="fas fa-book"></i> Study Materials</h3>
+                        <p>Comprehensive and structured learning resources that enhance educational development and technical proficiency:</p>
+                        <ul class="module-list">
+                            <li><i class="fas fa-video"></i> Instructional Videos</li>
+                            <li><i class="fas fa-graduation-cap"></i> Class Room Lectures</li>
+                            <li><i class="fas fa-laptop-code"></i> Hands-on Labs</li>
+                            <li><i class="fas fa-book-reader"></i> Learning Management System</li>
+                            <li><i class="fas fa-tasks"></i> Exam Simulation Tests</li>
+                            <li><i class="fas fa-file-pdf"></i> Documentation</li>
+                            <li><i class="fas fa-code"></i> Code Examples</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="course-card">
+                        <h3><i class="fas fa-users"></i> Support System</h3>
+                        <p>Dedicated support network providing guidance and ensuring success throughout the learning journey:</p>
+                        <ul class="module-list">
+                            <li><i class="fas fa-user-tie"></i> Experienced Mentors</li>
+                            <li><i class="fas fa-comments"></i> Discussion Forums</li>
+                            <li><i class="fas fa-hands-helping"></i> Peer Learning</li>
+                            <li><i class="fas fa-calendar-check"></i> 1-on-1 Sessions</li>
+                            <li><i class="fas fa-users-cog"></i> Study Groups</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="course-card">
+                        <h3><i class="fas fa-graduation-cap"></i> Career Support</h3>
+                        <p>Professional career guidance and industry preparation focused on growth and career advancement:</p>
+                        <ul class="module-list">
+                            <li><i class="fas fa-briefcase"></i> Job Placement</li>
+                            <li><i class="fas fa-file-alt"></i> CV Writing</li>
+                            <li><i class="fas fa-handshake"></i> Interview Prep</li>
+                            <li><i class="fas fa-network-wired"></i> Industry Network</li>
+                            <li><i class="fas fa-certificate"></i> Career Counseling</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Industry Partners -->
+        <div class="card">
+            <h2>Industry Partnerships</h2>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="course-card">
+                        <h3><i class="fas fa-handshake"></i> Corporate Partners</h3>
+                        <p class="mb-2">Strategic partnerships with industry leaders providing certification, technology, and career opportunities:</p>
+                        <ul class="module-list mb-0">
+                            <li class="mb-2"><i class="fas fa-building"></i> Belron
+                                <p class="text-muted small mb-1">Global leader in vehicle glass repair and replacement</p>
+                            </li>
+                            <li class="mb-2"><i class="fas fa-hand-holding-medical"></i> Momentum
+                                <p class="text-muted small mb-1">Leading insurance and health insurance provider in South Africa</p>
+                            </li>
+                            <li class="mb-2"><i class="fas fa-heart"></i> Afrika Tikkun
+                                <p class="text-muted small mb-1">NGO focused on youth development and education</p>
+                            </li>
+                            <li class="mb-2"><i class="fas fa-laptop-code"></i> XH Smart Technology Africa
+                                <p class="text-muted small mb-1">Technology solutions and innovation partner</p>
+                            </li>
+                            <li class="mb-2"><i class="fab fa-microsoft"></i> Microsoft
+                                <p class="text-muted small mb-1">Azure certification and cloud technology partner</p>
+                            </li>
+                            <li class="mb-2"><i class="fab fa-java"></i> Oracle
+                                <p class="text-muted small mb-1">Java certification and cloud technology partner</p>
+                            </li>
+                            <li class="mb-2"><i class="fab fa-python"></i> OpenEDG Python Institute
+                                <p class="text-muted small mb-1">PCAP certification and Python education partner</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="course-card">
+                        <h3><i class="fas fa-building"></i> Industry Benefits</h3>
+                        <p>Our industry partnerships provide you with numerous benefits, including:</p>
+                        <ul class="module-list">
+                            <li><i class="fas fa-laptop-code"></i> Internship Opportunities</li>
+                            <li><i class="fas fa-users"></i> Industry Mentorship</li>
+                            <li><i class="fas fa-lightbulb"></i> Real-world Projects</li>
+                            <li><i class="fas fa-briefcase"></i> Job Placement Support</li>
+                            <li><i class="fas fa-certificate"></i> Industry Certifications</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Metrics -->
+        <div class="card">
+            <h2>Program Success Metrics</h2>
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="course-card text-center">
+                        <h3><i class="fas fa-user-graduate"></i></h3>
+                        <h4>95%</h4>
+                        <p>Certification Success Rate</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="course-card text-center">
+                        <h3><i class="fas fa-briefcase"></i></h3>
+                        <h4>87%</h4>
+                        <p>Job Placement Rate</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="course-card text-center">
+                        <h3><i class="fab fa-java"></i></h3>
+                        <h4>100%</h4>
+                        <p>Java Track Completion</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="course-card text-center">
+                        <h3><i class="fas fa-star"></i></h3>
+                        <h4>4.8/5</h4>
+                        <p>Student Satisfaction</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Certifications -->
+        <div class="card">
+            <h2>International Certifications</h2>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="course-card">
+                        <h3>International Certifications</h3>
+                        <p>Our program includes five international certifications, which are highly valued in the industry:</p>
+                        <ul class="module-list">
+                            <li><i class="fas fa-certificate text-warning"></i> Java Oracle Certified Associate (1Z0-808)</li>
+                            <li><i class="fas fa-certificate text-warning"></i> Python Certified Associate PCAP (Exam PCAP-31-0x)</li>
+                            <li><i class="fas fa-certificate text-warning"></i> Microsoft Azure Fundamentals (AZ-900)</li>
+                            <li><i class="fas fa-certificate text-warning"></i> Microsoft AI Fundamentals (AI-900)</li>
+                            <li><i class="fas fa-certificate text-warning"></i> Microsoft Power BI Data Analyst (PL-300)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="course-card">
+                        <h3>Certificates of Completion</h3>
+                        <p>Upon completing the program, you will receive certificates of completion for the following modules:</p>
+                        <ul class="module-list">
+                            <li><i class="fas fa-award text-primary"></i> Advanced Excel for Analytics</li>
+                            <li><i class="fas fa-award text-primary"></i> IBM Data Analytics</li>
+                            <li class="text-muted small mt-3">* These are program completion certificates awarded upon successful completion of the respective modules</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Career Paths -->
+        <div class="card">
+            <h2>Career Paths</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="course-card">
+                        <h3><i class="fas fa-laptop-code"></i> Software Dev</h3>
+                        <p>Our program prepares candidates for a career in software development, with potential job roles including:</p>
+                        <ul class="module-list">
+                            <li>Full Stack Developer</li>
+                            <li>Java Developer</li>
+                            <li>Python Developer</li>
+                            <li>Application Developer</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="course-card">
+                        <h3><i class="fas fa-brain"></i> AI & Cloud</h3>
+                        <p>Our program also prepares candidates for a career in AI and cloud computing, with potential job roles including:</p>
+                        <ul class="module-list">
+                            <li>Cloud Developer</li>
+                            <li>AI Engineer</li>
+                            <li>Machine Learning Engineer</li>
+                            <li>Cloud Solutions Architect</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="course-card">
+                        <h3><i class="fas fa-chart-line"></i> Data Analytics</h3>
+                        <p>Our program prepares candidates for a career in data analytics, with potential job roles including:</p>
+                        <ul class="module-list">
+                            <li>Data Analyst</li>
+                            <li>Business Intelligence Analyst</li>
+                            <li>Power BI Developer</li>
+                            <li>Analytics Consultant</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Portfolio Development -->
+        <div class="card">
+            <h2><i class="fas fa-briefcase"></i> Portfolio Development</h2>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="course-card">
+                        <h3><i class="fas fa-folder-open"></i> Your Professional Portfolio</h3>
+                        <p>Throughout the program, you'll build a comprehensive portfolio showcasing your technical skills and real-world project experience. Each student will complete:</p>
+                        <ul class="module-list">
+                            <li><i class="fas fa-code"></i> Full-Stack Web Applications</li>
+                            <li><i class="fas fa-robot"></i> AI & Machine Learning Projects</li>
+                            <li><i class="fas fa-chart-bar"></i> Data Analytics Dashboards</li>
+                            <li><i class="fas fa-cloud"></i> Cloud-Based Solutions</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="course-card">
+                        <h3><i class="fas fa-rocket"></i> Career Impact</h3>
+                        <p>A strong portfolio is crucial for your career success:</p>
+                        <ul class="module-list">
+                            <li><i class="fas fa-check-circle"></i> Practical Experience</li>
+                            <li><i class="fas fa-eye"></i> Visual Proof</li>
+                            <li><i class="fas fa-comments"></i> Interview Talking Points</li>
+                            <li><i class="fas fa-users"></i> Industry Relevance</li>
+                            <li><i class="fas fa-laptop-code"></i> Technical Proficiency</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="alert alert-success mt-3">
+                <i class="fas fa-star"></i> <strong>Portfolio Advantage:</strong>
+                <p class="mb-0">A strong portfolio is a powerful differentiator in the tech industry. Each project in the portfolio demonstrates practical problem-solving abilities, modern tech stack implementation, and industry best practices. Hiring managers look for portfolios that showcase not just technical skills, but also project management, documentation, and collaborative development capabilities. This hands-on experience often fast-tracks candidates into roles at leading tech companies.</p>
+            </div>
+        </div>
+
+        <!-- Learning Schedule -->
+        <div class="card">
+            <h2><i class="fas fa-clock"></i> Learning Schedule & Structure</h2>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="course-card">
+                        <h3><i class="fas fa-calendar-alt"></i> Daily Schedule</h3>
+                        <p>Immersive in-person learning environment with structured daily sessions designed for maximum knowledge retention and skill development:</p>
+                        <ul class="module-list">
+                            <li><i class="fas fa-sun"></i> Full-Day Immersion
+                                <p class="text-muted small">Intensive 7-hour daily sessions from 9:00 AM to 4:00 PM, carefully structured with theory, practical work, and collaborative projects to maintain peak learning engagement</p>
+                            </li>
+                            <li><i class="fas fa-chalkboard-teacher"></i> Expert-Led Instruction
+                                <p class="text-muted small">Direct mentorship from industry veterans with extensive real-world experience, providing insights, best practices, and practical knowledge transfer</p>
+                            </li>
+                            <li><i class="fas fa-users"></i> Dynamic Learning Environment
+                                <p class="text-muted small">Interactive sessions combining peer programming, group discussions, code reviews, and team projects that mirror real workplace scenarios</p>
+                            </li>
+                            <li><i class="fas fa-laptop-code"></i> Practical Application
+                                <p class="text-muted small">Over 70% of daily schedule dedicated to hands-on coding, problem-solving, and building real-world applications using industry-standard tools</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="course-card">
+                        <h3><i class="fas fa-chart-line"></i> Program Benefits</h3>
+                        <p>Comprehensive year-long professional development program designed to transform beginners into industry-ready developers:</p>
+                        <ul class="module-list">
+                            <li><i class="fas fa-graduation-cap"></i> Accelerated Career Transformation
+                                <p class="text-muted small">Intensive daily training compresses years of traditional learning into one focused year, fast-tracking career transition into tech industry</p>
+                            </li>
+                            <li><i class="fas fa-sync"></i> Continuous Skill Building
+                                <p class="text-muted small">Progressive learning path ensures each day builds upon previous knowledge, creating a strong foundation of practical skills and theoretical understanding</p>
+                            </li>
+                            <li><i class="fas fa-bullseye"></i> Structured Career Development
+                                <p class="text-muted small">Clear learning objectives, weekly assessments, and monthly project deliverables ensure steady progress toward becoming a professional developer</p>
+                            </li>
+                            <li><i class="fas fa-shield-alt"></i> Industry-Aligned Training
+                                <p class="text-muted small">Curriculum constantly updated to match industry demands, incorporating latest technologies, tools, and methodologies used by leading tech companies</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="alert alert-primary mt-3">
+                <i class="fas fa-lightbulb"></i> <strong>The Power of Full-Time Learning:</strong>
+                <p class="mb-0">The intensive, full-time learning structure represents a proven path to accelerated professional development in the technology sector. Through daily immersion in coding, problem-solving, and real-world projects, participants develop not just technical skills, but also the mindset and work patterns essential for success in tech careers. This rigorous approach, combined with expert mentorship and peer collaboration, creates an optimal learning environment that consistently produces industry-ready professionals. The structured daily schedule maintains high engagement levels and ensures rapid skill acquisition, while the year-long duration allows for deep understanding and practical mastery of complex technical concepts.</p>
+            </div>
+        </div>
+
+        <!-- Our Instructors -->
+        <div class="card mb-4">
+            <h2>Our Expert Instructors</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="instructor-card p-3">
+                        <h3 class="h4 mb-3"><i class="fas fa-chalkboard-teacher"></i> Pedagogical Excellence</h3>
+                        <ul class="feature-list">
+                            <li>15+ years average industry experience</li>
+                            <li>Research driven teaching</li>
+                            <li>Proven track record of success</li>
+                            <li>Certified in multiple technologies</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="instructor-card p-3">
+                        <h3 class="h4 mb-3"><i class="fas fa-lightbulb"></i> Teaching Excellence</h3>
+                        <ul class="feature-list">
+                            <li>Innovative teaching methodologies</li>
+                            <li>90%+ certification success rate</li>
+                            <li>Hands-on project-based approach</li>
+                            <li>Personalized learning paths</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="instructor-card p-3">
+                        <h3 class="h4 mb-3"><i class="fas fa-users"></i> Professional Qualities</h3>
+                        <ul class="feature-list">
+                            <li>Strong work ethic and dedication</li>
+                            <li>Collaborative team players</li>
+                            <li>Continuous learners</li>
+                            <li>Student-focused mentoring</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <p class="lead mb-0">Our instructors are the cornerstone of our program's success, bringing together technical expertise, instructional excellence, and a passion for teaching while fostering innovation, problem-solving, professional growth, and student excellence</p>
+            </div>
+        </div>
+
+        <!-- Important Disclaimer -->
+        <div class="card bg-light">
+            <h2><i class="fas fa-exclamation-circle text-info"></i> Important Program Disclaimer</h2>
+            <div class="alert alert-info">
+                <h4 class="alert-heading"><i class="fas fa-info-circle"></i> Please Note:</h4>
+                <p><strong>Guaranteed Completions:</strong></p>
+                <ul>
+                    <li>All five international certifications will be completed during the program duration</li>
+                </ul>
+                <p><strong>Cohort-Dependent Components:</strong></p>
+                <p>The completion of additional course materials, advanced topics, and supplementary curriculum components is subject to:</p>
+                <ul>
+                    <li>Current Cohort learning pace and capability</li>
+                    <li>Overall cohort progress and learning velocity</li>
+                    <li>Available time within the designated program duration</li>
+                    <li>Continuous program flow without significant interruptions</li>
+                    <li>Successful completion of prerequisites for each module</li>
+                </ul>
+                <hr>
+                <p class="mb-0">The program structure and timeline for non-certification components may be adjusted based on the current cohort's needs while maintaining our commitment to educational excellence and quality standards.</p>
+            </div>
+        </div>
+
+        <footer class="bg-light py-3 mt-5">
+            <div class="container text-center">
+                <p class="text-muted mb-0"> Technology Curriculum Developed by Andre Snell: Senior Facilitator • March 2025</p>
+            </div>
+        </footer>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>

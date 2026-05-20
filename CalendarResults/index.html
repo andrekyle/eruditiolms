@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Results Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1a237e">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            color: white;
+            padding: 4rem 0;
+            margin-bottom: 2rem;
+        }
+        .card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            border: none;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .report-card {
+            height: 100%;
+        }
+        .report-link {
+            text-decoration: none;
+            color: inherit;
+        }
+        .report-link:hover {
+            color: inherit;
+        }
+        .stat-badge {
+            background: rgba(26, 35, 126, 0.1);
+            color: #1a237e;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            display: inline-block;
+            margin: 0.25rem;
+            font-size: 0.9rem;
+        }
+        .nav-links {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 1000;
+            display: flex;
+            gap: 6px;
+            background: transparent;
+        }
+        .nav-links a {
+            background: transparent;
+            padding: 3px 8px;
+            text-decoration: none;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 400;
+            letter-spacing: 0.4px;
+            transition: color 0.2s ease, transform 0.2s ease;
+            border: none;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        .nav-links a:hover {
+            background: transparent;
+            color: rgba(255,255,255,0.85);
+            transform: translateY(-1px);
+            border: none;
+        }
+        .nav-links a i {
+            margin-right: 3px;
+            font-size: 11px;
+        }
+        footer {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        footer p {
+            font-size: 0.8rem;
+        }
+        .card-description {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        .tech-stack {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        .tech-stack span {
+            display: inline-block;
+            background: #f8f9fa;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            color: #555;
+            margin: 0.25rem;
+            border: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-links">
+        <a href="index.html" class="active"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="python_report.html"><i class="fab fa-python"></i> Python</a>
+        <a href="java_report.html"><i class="fab fa-java"></i> Java</a>
+        <a href="powerbi_report.html"><i class="fas fa-chart-bar"></i> Power BI</a>
+        <a href="azure_report.html"><i class="fas fa-cloud"></i> Azure</a>
+        <a href="ai_report.html"><i class="fas fa-brain"></i> AI</a>
+        <a href="curriculum_2025.html"><i class="fas fa-book"></i> Curriculum</a>
+        <a href="calendar_2025.html"><i class="fas fa-calendar"></i> Calendar</a>
+    </div>
+
+    <div class="header">
+        <div class="container">
+            <h1 class="display-4">Certification Exam Results Dashboard for the year 2024-2025</h1>
+            <p class="lead">Comprehensive Overview of All Certification Results</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Overview -->
+        <div class="card mb-4 p-4">
+            <h2>Overview</h2>
+            <p>This dashboard provides access to detailed reports for various certification exams. Each report includes comprehensive analysis, visualizations, and recommendations based on student performance.</p>
+        </div>
+
+        <!-- Report Cards -->
+        <div class="row g-4">
+            <!-- Python Report -->
+            <div class="col-md-6 col-lg-4">
+                <a href="python_report.html" class="report-link">
+                    <div class="card report-card p-4">
+                        <h3><i class="fab fa-python"></i> Python Certification</h3>
+                        <div class="mb-3">
+                            <span class="stat-badge">94.6% Pass Rate</span>
+                            <span class="stat-badge">Avg Score: 78.37%</span>
+                        </div>
+                        <div class="card-description">
+                            <p>Python Certification Exam (PCAP-31-0x):</p>
+                            <ul>
+                                <li>Object-Oriented Programming Concepts</li>
+                                <li>Exception Handling and File I/O</li>
+                                <li>Modules and Packages</li>
+                                <li>Standard Library Functions</li>
+                            </ul>
+                            <div class="tech-stack">
+                                <span>PCAP</span>
+                                <span>Python 3.x</span>
+                                <span>OOP</span>
+                                <span>Modules</span>
+                                <span>Libraries</span>
+                            </div>
+                        </div>
+                        <p>Comprehensive analysis of Python certification results including performance metrics and recommendations.</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Java Report -->
+            <div class="col-md-6 col-lg-4">
+                <a href="java_report.html" class="report-link">
+                    <div class="card report-card p-4">
+                        <h3><i class="fab fa-java"></i> Java Certification</h3>
+                        <div class="mb-3">
+                            <span class="stat-badge">100% Pass Rate</span>
+                            <span class="stat-badge">Avg Score: 89.71%</span>
+                        </div>
+                        <div class="card-description">
+                            <p>Java Oracle Certified Associate (1Z0-808):</p>
+                            <ul>
+                                <li>Java Language Fundamentals</li>
+                                <li>Java Class Design</li>
+                                <li>Arrays and Loops</li>
+                                <li>Methods and Encapsulation</li>
+                            </ul>
+                            <div class="tech-stack">
+                                <span>1Z0-808</span>
+                                <span>Java SE</span>
+                                <span>OOP</span>
+                                <span>Core Java</span>
+                                <span>JDK</span>
+                            </div>
+                        </div>
+                        <p>Detailed analysis of Java certification performance with student progress tracking.</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- AI Report -->
+            <div class="col-md-6 col-lg-4">
+                <a href="ai_report.html" class="report-link">
+                    <div class="card report-card p-4">
+                        <h3><i class="fas fa-brain"></i> Azure AI-900</h3>
+                        <div class="mb-3">
+                            <span class="stat-badge">92% Pass Rate</span>
+                            <span class="stat-badge">Avg Score: 86%</span>
+                        </div>
+                        <div class="card-description">
+                            <p>Microsoft AI Fundamentals (AI-900):</p>
+                            <ul>
+                                <li>AI Workloads and Considerations</li>
+                                <li>Fundamental AI Principles</li>
+                                <li>Machine Learning in Azure</li>
+                                <li>Computer Vision Solutions</li>
+                            </ul>
+                            <div class="tech-stack">
+                                <span>AI-900</span>
+                                <span>Azure AI</span>
+                                <span>ML Services</span>
+                                <span>Cognitive</span>
+                                <span>Bot Service</span>
+                            </div>
+                        </div>
+                        <p>Analysis of Azure AI Fundamentals certification results and key learning areas.</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Power BI Report -->
+            <div class="col-md-6 col-lg-4">
+                <a href="powerbi_report.html" class="report-link">
+                    <div class="card report-card p-4">
+                        <h3><i class="fas fa-chart-bar"></i> Power BI</h3>
+                        <div class="mb-3">
+                            <span class="stat-badge">84.7% Pass Rate</span>
+                            <span class="stat-badge">Avg Score: 72.3%</span>
+                        </div>
+                        <div class="card-description">
+                            <p>Microsoft Power BI Data Analyst (PL-300):</p>
+                            <ul>
+                                <li>Data Preparation and Modeling</li>
+                                <li>DAX Calculations</li>
+                                <li>Data Visualization</li>
+                                <li>Report Development</li>
+                            </ul>
+                            <div class="tech-stack">
+                                <span>PL-300</span>
+                                <span>Power BI</span>
+                                <span>DAX</span>
+                                <span>M Query</span>
+                                <span>Analytics</span>
+                            </div>
+                        </div>
+                        <p>Analysis of Power BI certification results with data visualization insights.</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Azure Report -->
+            <div class="col-md-6 col-lg-4">
+                <a href="azure_report.html" class="report-link">
+                    <div class="card report-card p-4">
+                        <h3><i class="fas fa-cloud"></i> Azure Fundamentals</h3>
+                        <div class="mb-3">
+                            <span class="stat-badge">91% Pass Rate</span>
+                            <span class="stat-badge">Avg Score: 85%</span>
+                        </div>
+                        <div class="card-description">
+                            <p>Microsoft Azure Fundamentals (AZ-900):</p>
+                            <ul>
+                                <li>Cloud Concepts</li>
+                                <li>Azure Services</li>
+                                <li>Security and Privacy</li>
+                                <li>Pricing and Support</li>
+                            </ul>
+                            <div class="tech-stack">
+                                <span>AZ-900</span>
+                                <span>Azure</span>
+                                <span>Cloud</span>
+                                <span>Services</span>
+                                <span>Security</span>
+                            </div>
+                        </div>
+                        <p>Detailed analysis of Azure Fundamentals certification performance and cloud computing skills.</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Calendar Report -->
+            <div class="col-md-6 col-lg-4">
+                <a href="calendar_2025.html" class="report-link">
+                    <div class="card report-card p-4">
+                        <h3><i class="fas fa-calendar-alt"></i> Academic Calendar</h3>
+                        <div class="mb-3">
+                            <span class="stat-badge">2025-2026</span>
+                            <span class="stat-badge">11 Months</span>
+                        </div>
+                        <div class="card-description">
+                            <p>Comprehensive academic calendar covering:</p>
+                            <ul>
+                                <li>Course schedule and assessments</li>
+                                <li>Key milestones and deadlines</li>
+                                <li>Academic policies and procedures</li>
+                                <li>Student support services</li>
+                            </ul>
+                            <div class="tech-stack">
+                                <span>Google Calendar</span>
+                                <span>Microsoft Teams</span>
+                                <span>Canvas</span>
+                                <span>Zoom</span>
+                                <span>Office 365</span>
+                            </div>
+                        </div>
+                        <p>Comprehensive academic calendar showing course schedule, assessments, and key milestones.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Overall Statistics -->
+        <div class="card mb-4 p-4 mt-4">
+            <h2>Overall Statistics</h2>
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="card p-3">
+                        <h4 class="h5">Certifications Achieved</h4>
+                        <p class="h2">352</p>
+                        <small class="text-muted">Successfully Certified</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-3">
+                        <h4 class="h5">Average Pass Rate</h4>
+                        <p class="h2">93%</p>
+                        <small class="text-muted">All certifications combined</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-3">
+                        <h4 class="h5">Retake Success</h4>
+                        <p class="h2">85%</p>
+                        <small class="text-muted">Pass rate on second attempts</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-3">
+                        <h4 class="h5">Top Performers</h4>
+                        <p class="h2">35%</p>
+                        <small class="text-muted">Scored above 90%</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="container my-5">
+        <div class="text-center mb-4">
+            <h2 class="h3"><i class="fas fa-graduation-cap text-primary"></i> Why These Certifications Matter</h2>
+            <p class="text-muted mb-0">A short rationale for each pathway and how the skills connect.</p>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fab fa-python text-primary"></i> Python (PCAP)</h5>
+                        <p class="card-text small mb-0">Validates real coding ability beyond syntax — OOP, modules, exceptions and file I/O. It's the language employers list most for automation, data work and AI. A recognised baseline that opens doors to backend, scripting and ML roles.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fab fa-java text-danger"></i> Java (1Z0-808)</h5>
+                        <p class="card-text small mb-0">Oracle's associate cert proves fluency in a language that powers enterprise systems, Android and large-scale backends. It builds strong OOP and JVM fundamentals that transfer to Kotlin, Scala and Spring. Highly valued by banks, telcos and government tenders.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-chart-bar text-warning"></i> Power BI (PL-300)</h5>
+                        <p class="card-text small mb-0">Turns raw data into the dashboards executives actually use to decide. Covers modelling, DAX and storytelling — the front line of modern BI. One of the fastest-growing data analyst credentials globally.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-cloud text-info"></i> Azure Fundamentals (AZ-900)</h5>
+                        <p class="card-text small mb-0">Gives students the cloud vocabulary every employer now expects — compute, storage, identity and pricing. It's the gateway to deeper Azure roles in data, security and DevOps. Vendor-neutral concepts also transfer to AWS and GCP.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-database text-success"></i> Azure SQL (DP-300)</h5>
+                        <p class="card-text small mb-0">Proves the ability to deploy, secure and tune relational databases on the cloud. SQL skills remain the single highest-demand technical ability across data jobs. Pairs perfectly with Power BI and Python pipelines.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-brain text-purple" style="color:#7e57c2"></i> Azure AI (AI-900)</h5>
+                        <p class="card-text small mb-0">Introduces machine learning, computer vision and language services on Azure. Students learn responsible-AI principles and how to use prebuilt models in real apps. A practical springboard into the AI economy.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fab fa-github"></i> GitHub Copilot (GH-300)</h5>
+                        <p class="card-text small mb-0">Certifies effective, secure use of AI-pair programming — now standard in modern engineering teams. Boosts productivity while teaching prompt design and code-review discipline. Future-proofs students for AI-augmented development workflows.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4 border-0 shadow-sm" style="background:linear-gradient(135deg,#1a237e,#3949ab);color:#fff;">
+            <div class="card-body p-4">
+                <h4 class="card-title mb-2"><i class="fas fa-link"></i> How It All Connects</h4>
+                <p class="card-text mb-0">Together these certifications build a full-stack data professional: Python and Java provide the <strong>coding</strong> foundation, AZ-900, DP-300 and AI-900 deliver the <strong>cloud</strong> and AI services that host modern workloads, and Power BI with SQL proves the <strong>analytics and data</strong> skills that turn information into decisions. Graduates leave able to write, deploy, query and visualise — the exact mix today's employers are hiring for.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-light py-3 mt-5">
+        <div class="container text-center">
+            <p class="text-muted mb-0">Report Dashboard • Generated by Andre Snell, Senior Facilitator • March 2025</p>
+        </div>
+    </footer>
+
+    <script>
+        // PWA Testing Functions
+        async function testPWAFeatures() {
+            const results = document.createElement('div');
+            results.style.position = 'fixed';
+            results.style.top = '10px';
+            results.style.right = '10px';
+            results.style.backgroundColor = 'rgba(0,0,0,0.8)';
+            results.style.color = 'white';
+            results.style.padding = '15px';
+            results.style.borderRadius = '5px';
+            results.style.zIndex = '9999';
+            
+            // Test Service Worker
+            const swStatus = navigator.serviceWorker ? 
+                (await navigator.serviceWorker.getRegistration() ? ' Service Worker Registered' : ' Service Worker Not Registered') :
+                ' Service Worker Not Supported';
+            
+            // Test Cache API
+            const cacheStatus = 'caches' in window ? ' Cache API Available' : ' Cache API Not Available';
+            
+            // Test Manifest
+            const manifestLink = document.querySelector('link[rel="manifest"]');
+            const manifestStatus = manifestLink ? ' Manifest Linked' : ' Manifest Not Found';
+            
+            // Check if running in standalone mode
+            const displayMode = window.matchMedia('(display-mode: standalone)').matches ? 
+                ' Running as PWA' : 'Running in Browser';
+
+            results.innerHTML = `
+                <h6>PWA Feature Test</h6>
+                <div>${swStatus}</div>
+                <div>${cacheStatus}</div>
+                <div>${manifestStatus}</div>
+                <div>${displayMode}</div>
+                <small style="font-size: 0.8em">Click to dismiss</small>
+            `;
+            
+            results.onclick = () => results.remove();
+            document.body.appendChild(results);
+        }
+
+        // Run tests when page loads
+        window.addEventListener('load', testPWAFeatures);
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

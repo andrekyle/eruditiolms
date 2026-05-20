@@ -14,10 +14,19 @@
     </div>
 
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <form method="POST">
+        <div class="col-md-9 col-lg-8">
+            <div class="uui-edit-card uui-edit-card--bordered uui-edit-card--lg">
+                <form method="POST">
+                        <div class="row g-2 mb-3">
+                            <div class="col">
+                                <label for="first_name" class="form-label">First name</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name">
+                            </div>
+                            <div class="col">
+                                <label for="last_name" class="form-label">Last name</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name">
+                            </div>
+                        </div>
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
                             <input type="text" class="form-control" id="username" name="username" required>
@@ -31,23 +40,27 @@
                             <input type="password" class="form-control" id="password" name="password" required>
                         </div>
                         <div class="mb-3">
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="is_teacher" name="is_teacher">
-                                <label class="form-check-label" for="is_teacher">Teacher Account</label>
+                            <label for="role" class="form-label">Role</label>
+                            <select class="form-select" id="role" name="role" required>
+                                <option value="student" selected>Student</option>
+                                <option value="teacher">Teacher</option>
+                                <option value="admin">Administrator</option>
+                                <option value="superuser">Super User</option>
+                            </select>
+                            <div class="form-text">
+                                Super User has full access. Administrator manages users only. Teacher creates courses. Student enrolls.
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="is_superadmin" name="is_superadmin">
-                                <label class="form-check-label" for="is_superadmin">Super Admin Account</label>
-                            </div>
-                        </div>
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">Create User</button>
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <a href="{{ url_for('manage_users') }}" class="btn btn-outline-secondary">
+                                <i class="bx bx-arrow-back me-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary text-nowrap">
+                                <i class="bx bx-user-plus me-1"></i>Create user
+                            </button>
                         </div>
                     </form>
                 </div>
-            </div>
         </div>
     </div>
 </div>

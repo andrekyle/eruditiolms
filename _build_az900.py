@@ -1,0 +1,210 @@
+"""Parse the 6 AZ-900 content-agent outputs, validate the QUESTIONS literals,
+write _az900_data_l{3..8}.py data modules, then upsert into the DB.
+
+Idempotent.
+"""
+import ast
+import importlib
+import re
+import sys
+from pathlib import Path
+
+from app import app, db, Course, Lesson, Quiz, Question, QuestionOption
+
+WORKSPACE = Path(__file__).resolve().parent
+
+# (lesson_number, topic, quiz_description, agent_output_path)
+AGENT = Path(r"c:\Users\hp\AppData\Roaming\Code\User\workspaceStorage\25f723a0a07d7e81c8ab2371048eef31\GitHub.copilot-chat\chat-session-resources\7cdafd4c-d586-4bc9-9b47-be8b70ffb17b")
+
+SPEC = [
+    (3, "Cloud Concepts",
+     "Practise cloud computing, shared responsibility, cloud models, consumption-based pricing, serverless, benefits and IaaS/PaaS/SaaS.",
+     AGENT / "toolu_vrtx_01U47wUFrdxoGqEknAREsPZk__vscode-1779227169357" / "content.txt"),
+    (4, "Azure Architecture and Core Services",
+     "Practise Azure regions, region pairs, sovereign regions, availability zones, datacenters, resources, resource groups, subscriptions and management groups.",
+     AGENT / "toolu_vrtx_01Az236DA1YBv5Z1UbA9EBNQ__vscode-1779227169358" / "content.txt"),
+    (5, "Azure Compute and Networking Services",
+     "Practise VMs, scale sets, availability sets, AVD, containers, functions, App Service, VNets, peering, DNS, VPN Gateway, ExpressRoute and endpoints.",
+     AGENT / "toolu_vrtx_015RLaSoPV8JS3vQPSNgkd1g__vscode-1779227169359" / "content.txt"),
+    (6, "Azure Storage Services",
+     "Practise Blob/File/Queue/Table/Disk, storage tiers, redundancy, storage account types, AzCopy, Storage Explorer, File Sync, Migrate and Data Box.",
+     AGENT / "toolu_vrtx_01DZ7LM31P15zNN6WAx79Zy2__vscode-1779227169360" / "content.txt"),
+    (7, "Azure Identity, Access, and Security",
+     "Practise Microsoft Entra ID, Entra Domain Services, SSO/MFA/passwordless, external identities, Conditional Access, RBAC, Zero Trust, defense-in-depth and Defender for Cloud.",
+     AGENT / "toolu_vrtx_01JvSNUZYh6b8MLqsgpBF8tA__vscode-1779227169361" / "content.txt"),
+    (8, "Azure Cost Management, SLAs, and Governance",
+     "Practise cost factors, pricing/TCO calculators, Cost Management, tags, Purview, Azure Policy, resource locks, portal, Cloud Shell, Arc, IaC, ARM/Bicep, Advisor, Service Health and Azure Monitor.",
+     AGENT / "toolu_vrtx_01KxLoSiubVtma7CmPAmy6LH__vscode-1779227169362" / "content.txt"),
+]
+
+COURSE_TITLE_LIKE = 'AZ-900%'
+FINAL_EXAM_TITLE = 'Lesson 3: Exam'
+
+
+def parse_agent_output(text: str):
+    # LESSON_HTML: between the first "===LESSON_HTML===" line and the "===QUESTIONS===" line.
+    m_q = re.search(r'^\s*===QUESTIONS===\s*$', text, flags=re.MULTILINE)
+    m_e = re.search(r'^\s*===END===\s*$', text, flags=re.MULTILINE)
+    m_l = re.search(r'^\s*===LESSON_HTML===\s*$', text, flags=re.MULTILINE)
+    if not (m_l and m_q and m_e):
+        raise ValueError("missing markers")
+
+    lesson_html = text[m_l.end():m_q.start()].strip()
+    # Some agents repeat ===LESSON_HTML=== as a closing marker; strip it.
+    lesson_html = re.sub(r'\n?\s*===LESSON_HTML===\s*$', '', lesson_html).strip()
+
+    questions_src = text[m_q.end():m_e.start()].strip()
+    # Validate as a Python literal
+    questions = ast.literal_eval(questions_src)
+    if not isinstance(questions, list) or len(questions) != 8:
+        raise ValueError(f"expected list of 8 questions, got {type(questions).__name__} len={len(questions) if hasattr(questions, '__len__') else '?'}")
+    for i, q in enumerate(questions):
+        if not (isinstance(q, tuple) and len(q) == 4):
+            raise ValueError(f"q{i}: expected 4-tuple")
+        qtype, qhtml, opts, fb = q
+        if qtype != 'multiple_choice':
+            raise ValueError(f"q{i}: qtype={qtype}")
+        if len(opts) != 4 or sum(int(o[1]) for o in opts) != 1:
+            raise ValueError(f"q{i}: need 4 options with exactly 1 correct, got {len(opts)} opts {[o[1] for o in opts]}")
+
+    return lesson_html, questions_src, questions
+
+
+CODE_BLOCK_RE = re.compile(
+    r'(<pre><code class="language-[a-zA-Z0-9_-]+">)(.*?)(</code></pre>)',
+    flags=re.DOTALL,
+)
+
+
+def escape_code_blocks(html: str) -> str:
+    def _esc(m):
+        inner = m.group(2)
+        inner = inner.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+        return m.group(1) + inner + m.group(3)
+    return CODE_BLOCK_RE.sub(_esc, html)
+
+
+def write_data_modules():
+    """Write _az900_data_l{N}.py modules with LESSON_HTML + QUESTIONS."""
+    for num, topic, _qdesc, path in SPEC:
+        text = path.read_text(encoding='utf-8')
+        lesson_html, questions_src, _ = parse_agent_output(text)
+        # Write as a raw module — use triple-double-quoted string for HTML.
+        # Escape any embedded triple-double-quote sequences (very unlikely in HTML).
+        safe_html = lesson_html.replace('"""', '\\"\\"\\"')
+        out = WORKSPACE / f"_az900_data_l{num}.py"
+        body = (
+            '# Auto-generated by _build_az900.py\n'
+            f'LESSON_HTML = """\n{safe_html}\n"""\n\n'
+            f'QUESTIONS = {questions_src}\n'
+        )
+        out.write_text(body, encoding='utf-8')
+        # Validate it imports cleanly
+        modname = out.stem
+        if modname in sys.modules:
+            importlib.reload(sys.modules[modname])
+        else:
+            importlib.import_module(modname)
+        print(f"wrote {out.name}  (lesson {len(lesson_html)} chars, {len(questions_src)} qsrc chars)")
+
+
+def upsert():
+    with app.app_context():
+        course = Course.query.filter(Course.title.like(COURSE_TITLE_LIKE)).first()
+        if not course:
+            print('AZ-900 course not found.')
+            return
+
+        final = Lesson.query.filter_by(course_id=course.id, title=FINAL_EXAM_TITLE).first()
+        if final:
+            final.order = 999
+            db.session.flush()
+            print(f'parked final exam lesson {final.id} at order 999')
+        else:
+            print('NOTE: Final Exam lesson not found by title.')
+
+        next_order = 4  # lessons 1,2,3 are About / Intro Video / Task
+        for num, topic, qdesc, _path in SPEC:
+            modname = f'_az900_data_l{num}'
+            data = importlib.reload(sys.modules[modname]) if modname in sys.modules else importlib.import_module(modname)
+            lesson_html = escape_code_blocks(data.LESSON_HTML)
+            questions = data.QUESTIONS
+
+            ltitle = f'Lesson {num}: {topic}'
+            qtitle = f'Lesson {num} Quiz \u2014 {topic}'
+
+            lesson = Lesson.query.filter_by(course_id=course.id, title=ltitle).first()
+            if lesson:
+                lesson.content = lesson_html
+                lesson.content_type = 'lesson'
+                lesson.order = next_order
+                lesson.points = 1.0
+                print(f'updated content lesson {lesson.id} ({ltitle}) order={next_order}')
+            else:
+                lesson = Lesson(
+                    title=ltitle, content=lesson_html, course_id=course.id,
+                    content_type='lesson', order=next_order, points=1.0,
+                )
+                db.session.add(lesson)
+                db.session.flush()
+                print(f'inserted content lesson {lesson.id} ({ltitle}) order={next_order}')
+            next_order += 1
+
+            quiz = Quiz.query.filter_by(course_id=course.id, title=qtitle).first()
+            if not quiz:
+                quiz = Quiz(course_id=course.id, title=qtitle, description=qdesc)
+                db.session.add(quiz)
+                db.session.flush()
+                print(f'  inserted quiz {quiz.id}')
+            else:
+                quiz.description = qdesc
+                for q in list(quiz.questions):
+                    db.session.delete(q)
+                db.session.flush()
+                print(f'  rebuilt quiz {quiz.id}')
+
+            for qtype, qhtml, opts, feedback in questions:
+                q = Question(
+                    quiz_id=quiz.id, question_type=qtype, question_html=qhtml,
+                    points=1.0, feedback=feedback,
+                )
+                db.session.add(q)
+                db.session.flush()
+                for i, (ohtml, correct) in enumerate(opts):
+                    db.session.add(QuestionOption(
+                        question_id=q.id, option_html=ohtml,
+                        is_correct=bool(correct), order=i,
+                    ))
+
+            exam = Lesson.query.filter_by(
+                course_id=course.id, title=qtitle, content_type='exam',
+            ).first()
+            if exam:
+                exam.quiz_id = quiz.id
+                exam.order = next_order
+                exam.points = 1.0
+                print(f'  updated exam lesson {exam.id} order={next_order}')
+            else:
+                exam = Lesson(
+                    title=qtitle, content='', course_id=course.id,
+                    content_type='exam', quiz_id=quiz.id,
+                    order=next_order, points=1.0,
+                )
+                db.session.add(exam)
+                db.session.flush()
+                print(f'  inserted exam lesson {exam.id} order={next_order}')
+            next_order += 1
+
+        if final:
+            final.order = next_order
+            print(f'restored final exam lesson {final.id} to order {next_order}')
+
+        db.session.commit()
+        print('done.')
+
+
+if __name__ == '__main__':
+    print('--- Writing data modules ---')
+    write_data_modules()
+    print('--- Upserting into DB ---')
+    upsert()

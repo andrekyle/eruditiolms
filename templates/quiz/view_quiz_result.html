@@ -2,95 +2,200 @@
 
 {% block title %}Quiz Results{% endblock %}
 
+{% block extra_head %}
+<style>
+.qr-page { max-width: 920px; margin: 0 auto; }
+.qr-page h1.qr-title { font-size: 1.6rem; font-weight: 600; margin: 0 0 .25rem; color: inherit; }
+.qr-page .qr-subtitle { color: var(--light-text, #9a9a9a); font-size: .9rem; margin: 0; }
+
+.qr-card {
+    background: transparent !important;
+    border: 1px solid rgba(127,127,127,.18);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: none;
+}
+.qr-card:hover { transform: none; background: transparent !important; }
+
+.qr-score {
+    display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
+}
+.qr-score__label { font-size: .85rem; text-transform: uppercase; letter-spacing: .08em; color: var(--light-text, #9a9a9a); margin: 0 0 .25rem; }
+.qr-score__value { font-size: 2.25rem; font-weight: 600; line-height: 1; }
+.qr-score__pct { font-size: 1rem; color: var(--light-text, #9a9a9a); margin-left: .5rem; }
+.qr-score__bar { flex: 1; height: 6px; background: rgba(127,127,127,.18); border-radius: 999px; overflow: hidden; max-width: 320px; }
+.qr-score__bar > span { display: block; height: 100%; background: #6B6B6B; border-radius: 999px; }
+
+.qr-q__head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: .35rem; }
+.qr-q__num { font-size: 1.05rem; font-weight: 600; margin: 0; }
+.qr-q__pts {
+    font-size: .78rem; font-weight: 600; letter-spacing: .04em;
+    padding: .22rem .55rem; border-radius: 999px;
+    background: rgba(127,127,127,.18); color: inherit;
+    border: 1px solid rgba(127,127,127,.28);
+    white-space: nowrap;
+}
+.qr-q__pts--full { background: rgba(127,127,127,.28); }
+.qr-q__pts--zero { background: rgba(127,127,127,.10); color: var(--light-text, #9a9a9a); }
+
+.qr-q__text { font-size: .98rem; line-height: 1.5; margin: 0 0 1rem; }
+.qr-q__text code { background: transparent !important; border: none !important; padding: 0 !important; color: inherit !important; font-size: .92em; }
+
+.qr-options { list-style: none; padding: 0; margin: 0 0 .75rem; }
+.qr-opt {
+    display: flex; align-items: flex-start; gap: .65rem;
+    padding: .55rem .75rem;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    margin-bottom: .35rem;
+    background: transparent;
+}
+.qr-opt__mark {
+    flex: 0 0 auto; width: 18px; height: 18px; border-radius: 4px;
+    border: 1px solid rgba(127,127,127,.45);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: .8rem; line-height: 1; margin-top: 2px;
+    color: inherit;
+}
+.qr-opt__text { flex: 1; line-height: 1.4; }
+.qr-opt__text code { background: transparent !important; border: none !important; padding: 0 !important; color: inherit !important; }
+.qr-opt__tag {
+    font-size: .7rem; letter-spacing: .06em; text-transform: uppercase;
+    padding: .12rem 0; border-radius: 0;
+    background: transparent; color: var(--light-text, #9a9a9a);
+    align-self: center;
+}
+
+/* States — gray-only palette */
+.qr-opt--correct       { background: rgba(127,127,127,.10); border-color: rgba(127,127,127,.28); }
+.qr-opt--correct .qr-opt__mark { background: #4B4B4B; border-color: #4B4B4B; color: #fff; }
+.qr-opt--selected-wrong { background: rgba(127,127,127,.06); border-color: rgba(127,127,127,.22); opacity: .85; }
+.qr-opt--selected-wrong .qr-opt__mark { background: transparent; border-color: #6B6B6B; color: inherit; }
+.qr-opt--selected-wrong .qr-opt__text { text-decoration: line-through; text-decoration-color: rgba(127,127,127,.55); }
+.qr-opt--missed .qr-opt__mark { background: transparent; border-style: dashed; }
+.qr-opt--neutral { opacity: .65; }
+
+.qr-feedback {
+    margin-top: .85rem; padding-top: .85rem;
+    border-top: 1px solid rgba(127,127,127,.18);
+    font-size: .9rem; color: var(--light-text, #b0b0b0); line-height: 1.55;
+}
+.qr-feedback code { background: transparent !important; border: none !important; padding: 0 !important; color: inherit !important; }
+.qr-feedback strong { color: inherit; }
+.qr-feedback__label { font-weight: 600; color: inherit; margin-right: .35rem; }
+
+.qr-actions { display: flex; gap: .5rem; }
+.qr-btn {
+    display: inline-flex; align-items: center; gap: .45rem;
+    padding: .45rem .9rem; border-radius: 6px;
+    background: rgba(127,127,127,.14); color: var(--text-color, inherit) !important;
+    border: 1px solid rgba(127,127,127,.25);
+    text-decoration: none !important; font-size: .9rem;
+}
+.qr-btn:hover { background: rgba(127,127,127,.22); color: var(--text-color, inherit) !important; }
+.qr-btn .qr-btn__icon, .qr-btn .bx { color: inherit; }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h2">
-            <i class="bx bx-check-circle text-success"></i> Quiz Results
-        </h1>
-        <a href="{{ url_for('view_quiz', quiz_id=quiz.id) }}" class="btn btn-outline-primary">
-            <i class="bx bx-arrow-back"></i> Back to Quiz
-        </a>
-    </div>
+<div class="container py-4 qr-page">
 
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="card-title">{{ quiz.title }}</h5>
-            <p class="text-muted mb-0">Completed on {{ quiz_response.created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+    <div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-3">
+        <div>
+            <h1 class="qr-title">{{ quiz.title }}</h1>
+            <p class="qr-subtitle">Submitted {{ quiz_response.created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+        </div>
+        <div class="qr-actions">
+            <a href="{{ url_for('view_quiz', quiz_id=quiz.id) }}" class="qr-btn">
+                <i class="bx bx-arrow-back"></i> Back to quiz
+            </a>
+            <a href="{{ url_for('take_quiz', quiz_id=quiz.id) }}" class="qr-btn qr-btn--primary">
+                <svg class="qr-btn__icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M3 12a9 9 0 0 1 15.5-6.3L21 8"/>
+                    <polyline points="21 3 21 8 16 8"/>
+                    <path d="M21 12a9 9 0 0 1-15.5 6.3L3 16"/>
+                    <polyline points="3 21 3 16 8 16"/>
+                </svg>
+                Retake
+            </a>
         </div>
     </div>
 
-    <div class="card mb-4">
-        <div class="card-body">
-            <div class="row align-items-center">
-                <div class="col">
-                    <h5 class="mb-0">Your Score</h5>
-                </div>
-                <div class="col-auto">
-                    <h3 class="mb-0">
-                        {{ "%.1f"|format(quiz_response.points) }} / {{ "%.1f"|format(quiz_response.total_points) }}
-                        <small class="text-muted">
-                            ({{ "%.1f"|format(quiz_response.points / quiz_response.total_points * 100) }}%)
-                        </small>
-                    </h3>
+    {% set pct = (quiz_response.points / quiz_response.total_points * 100) if quiz_response.total_points else 0 %}
+    <div class="qr-card">
+        <div class="qr-score">
+            <div>
+                <p class="qr-score__label">Your score</p>
+                <div class="qr-score__value">
+                    {{ "%.1f"|format(quiz_response.points) }}<span class="qr-score__pct"> / {{ "%.1f"|format(quiz_response.total_points) }} &middot; {{ "%.0f"|format(pct) }}%</span>
                 </div>
             </div>
+            <div class="qr-score__bar"><span style="width: {{ pct }}%"></span></div>
         </div>
     </div>
 
-    <div class="questions-list">
-        {% for response in quiz_response.question_responses %}
-        <div class="card mb-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                    <h5 class="card-title mb-0">Question {{ loop.index }}</h5>
-                    <div>
-                        <span class="badge {% if response.is_correct %}bg-success{% else %}bg-danger{% endif %}">
-                            {{ "%.1f"|format(response.points) }} / {{ "%.1f"|format(response.question.points) }}
-                        </span>
-                    </div>
-                </div>
-
-                <div class="question-text mb-3">
-                    {{ response.question.question_html|safe }}
-                </div>
-
-                {% if response.question.question_type == 'drag_and_drop' %}
-                <div class="your-answer mb-3">
-                    <h6 class="mb-2">Your Answer:</h6>
-                    <div class="d-flex flex-wrap gap-2">
-                        {% for option in response.selected_options %}
-                        <span class="badge bg-light text-dark border">
-                            {{ option.option_html|safe }}
-                        </span>
-                        {% endfor %}
-                    </div>
-                </div>
-
-                <div class="correct-answer">
-                    <h6 class="mb-2">Correct Answer:</h6>
-                    <div class="d-flex flex-wrap gap-2">
-                        {% for option in response.question.options %}
-                            {% if option.drag_zone == 'target' %}
-                            <span class="badge bg-light text-dark border">
-                                {{ option.option_html|safe }}
-                            </span>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endif %}
-
-                {% if response.question.feedback %}
-                <div class="mt-3 pt-3 border-top">
-                    <small class="text-muted">
-                        <i class="bx bx-info-circle"></i> {{ response.question.feedback }}
-                    </small>
-                </div>
-                {% endif %}
+    {% for response in quiz_response.question_responses %}
+        {% set q = response.question %}
+        {% set selected_ids = response.selected_options|map(attribute='id')|list %}
+        {% set is_full = response.points >= q.points %}
+        {% set is_zero = response.points <= 0 %}
+        <div class="qr-card">
+            <div class="qr-q__head">
+                <h5 class="qr-q__num">Question {{ loop.index }}</h5>
+                <span class="qr-q__pts {% if is_full %}qr-q__pts--full{% elif is_zero %}qr-q__pts--zero{% endif %}">
+                    {{ "%.1f"|format(response.points) }} / {{ "%.1f"|format(q.points) }}
+                </span>
             </div>
+
+            <div class="qr-q__text">{{ q.question_html|safe }}</div>
+
+            {% if q.question_type in ('multiple_choice', 'single_choice', 'true_false') %}
+            <ul class="qr-options">
+                {% for option in q.options|sort(attribute='order') %}
+                    {% set was_selected = option.id in selected_ids %}
+                    {% set is_correct = option.is_correct %}
+                    {% if is_correct and was_selected %}
+                        {% set cls = 'qr-opt--correct' %}{% set tag = 'Correct &mdash; you chose this' %}{% set mark = '&#10003;' %}
+                    {% elif is_correct and not was_selected %}
+                        {% set cls = 'qr-opt--correct qr-opt--missed' %}{% set tag = 'Correct answer' %}{% set mark = '&#10003;' %}
+                    {% elif was_selected and not is_correct %}
+                        {% set cls = 'qr-opt--selected-wrong' %}{% set tag = 'You chose this' %}{% set mark = '&#10005;' %}
+                    {% else %}
+                        {% set cls = 'qr-opt--neutral' %}{% set tag = '' %}{% set mark = '' %}
+                    {% endif %}
+                    <li class="qr-opt {{ cls }}">
+                        <span class="qr-opt__mark">{{ mark|safe }}</span>
+                        <span class="qr-opt__text">{{ option.option_html|safe }}</span>
+                        {% if tag %}<span class="qr-opt__tag">{{ tag|safe }}</span>{% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+            {% elif q.question_type == 'drag_and_drop' %}
+            <div class="qr-q__text">
+                <strong>Your answer:</strong>
+                <ul class="qr-options">
+                    {% for option in response.selected_options %}
+                    <li class="qr-opt"><span class="qr-opt__text">{{ option.option_html|safe }}</span></li>
+                    {% endfor %}
+                </ul>
+                <strong>Correct answer:</strong>
+                <ul class="qr-options">
+                    {% for option in q.options if option.drag_zone == 'target' %}
+                    <li class="qr-opt qr-opt--correct"><span class="qr-opt__text">{{ option.option_html|safe }}</span></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            {% if q.feedback %}
+            <div class="qr-feedback">
+                <span class="qr-feedback__label"><i class="bx bx-info-circle"></i> Explanation:</span>
+                {{ q.feedback|safe }}
+            </div>
+            {% endif %}
         </div>
-        {% endfor %}
-    </div>
+    {% endfor %}
+
 </div>
 {% endblock %}

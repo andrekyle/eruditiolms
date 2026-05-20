@@ -15,7 +15,7 @@
         </div>
         <div class="page-header-actions">
             {% if current_user.is_teacher %}
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCourseModal">
+            <button class="btn btn-primary btn-create-course" data-bs-toggle="modal" data-bs-target="#createCourseModal">
                 <i class="bx bx-plus"></i> Create New Course
             </button>
             {% endif %}
@@ -23,26 +23,26 @@
     </div>
 
     {% if current_user.is_teacher %}
-    <div class="row dashboard-stats g-3 mb-4">
-        <div class="col-md-4">
-            <div class="stat-card card">
-                <div class="stat-icon"><i class="bx bx-book"></i></div>
-                <h3>{{ courses|length }}</h3>
-                <p>Total Courses</p>
+    <div class="uui-stat-grid mb-4">
+        <div class="uui-stat">
+            <div class="uui-stat__icon uui-stat__icon--blue"><i class="bx bx-book"></i></div>
+            <div>
+                <p class="uui-stat__label">Total Courses</p>
+                <p class="uui-stat__value">{{ courses|length }}</p>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="stat-card card">
-                <div class="stat-icon"><i class="bx bx-user-voice"></i></div>
-                <h3>{{ courses|map(attribute='students')|map('length')|sum }}</h3>
-                <p>Active Students</p>
+        <div class="uui-stat">
+            <div class="uui-stat__icon uui-stat__icon--violet"><i class="bx bx-user-voice"></i></div>
+            <div>
+                <p class="uui-stat__label">Active Students</p>
+                <p class="uui-stat__value">{{ courses|map(attribute='enrollments')|map('length')|sum }}</p>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="stat-card card">
-                <div class="stat-icon"><i class="bx bx-task"></i></div>
-                <h3>{{ courses|map(attribute='quizzes')|map('length')|sum }}</h3>
-                <p>Total Quizzes</p>
+        <div class="uui-stat">
+            <div class="uui-stat__icon uui-stat__icon--green"><i class="bx bx-task"></i></div>
+            <div>
+                <p class="uui-stat__label">Total Quizzes</p>
+                <p class="uui-stat__value">{{ courses|map(attribute='quizzes')|map('length')|sum }}</p>
             </div>
         </div>
     </div>
@@ -55,38 +55,34 @@
         </h2>
         <div class="row g-4">
             {% for course in courses %}
+            {% set st = course_stats[course.id] %}
             <div class="col-md-4">
-                <div class="card course-card h-100">
+                <div class="card course-card h-100 position-relative">
+                    {% if course.image_url %}
+                    <img src="{{ course.image_url }}" class="course-card__img" alt="{{ course.title }}" crossorigin="anonymous">
+                    {% else %}
+                    <div class="course-card__img course-card__img--placeholder"><i class="bx bx-book-open"></i></div>
+                    {% endif %}
                     <div class="card-body">
-                        <h5 class="card-title">{{ course.title }}</h5>
-                        <p class="card-text text-muted">{{ course.description }}</p>
-                        <div class="mt-3 d-flex justify-content-between align-items-center">
-                            <a href="{{ url_for('view_course', course_id=course.id) }}" class="btn btn-primary">
-                                <i class="bx bx-edit"></i> View Course
-                            </a>
-                            <button class="btn btn-outline-danger">
-                                <i class="bx bx-trash"></i>
-                            </button>
+                        <h5 class="card-title">
+                            <a href="{{ url_for('view_course', course_id=course.id) }}" class="stretched-link text-reset text-decoration-none">{{ course.title }}</a>
+                        </h5>
+                        <div class="course-progress mt-3 position-relative" style="z-index:2;">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <small class="course-progress__label"><strong>Progress</strong></small>
+                                <small class="course-progress__value"><strong>{{ st.percent }}%</strong> &middot; {{ st.lessons_done }}/{{ st.lessons_total }} lessons</small>
+                            </div>
+                            <div class="progress course-progress__bar" style="height:8px;border-radius:9999px;">
+                                <div class="progress-bar js-img-tinted" role="progressbar" style="width: {{ st.percent }}%;" aria-valuenow="{{ st.percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
                         </div>
                     </div>
                     <div class="card-footer bg-white">
                         <small class="text-muted">
-                            <i class="bx bx-user"></i> {{ course_stats[course.id].student_count }} Students
+                            <i class="bx bx-user"></i> {{ st.student_count }} Students
                             <span class="mx-2">|</span>
-                            <i class="bx bx-task"></i> {{ course_stats[course.id].quiz_count }} Quizzes
+                            <i class="bx bx-task"></i> {{ st.quiz_count }} Quizzes
                         </small>
-                        {% if course_stats[course.id].student_count > 0 %}
-                        <div class="mt-2">
-                            <small class="d-block text-muted">Enrolled Students:</small>
-                            <div class="enrolled-students">
-                                {% for student in course.students %}
-                                <span class="badge bg-light text-dark me-1">
-                                    <i class="bx bx-user-circle"></i> {{ student.username }}
-                                </span>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -101,20 +97,33 @@
         </h2>
         <div class="row g-4">
             {% for course in enrolled_courses %}
+            {% set st = course_stats[course.id] %}
             <div class="col-md-4">
-                <div class="card course-card h-100">
+                <div class="card course-card h-100 position-relative">
+                    {% if course.image_url %}
+                    <img src="{{ course.image_url }}" class="course-card__img" alt="{{ course.title }}" crossorigin="anonymous">
+                    {% else %}
+                    <div class="course-card__img course-card__img--placeholder"><i class="bx bx-book-open"></i></div>
+                    {% endif %}
                     <div class="card-body">
-                        <h5 class="card-title">{{ course.title }}</h5>
-                        <p class="card-text text-muted">{{ course.description }}</p>
-                        <a href="{{ url_for('view_course', course_id=course.id) }}" class="btn btn-primary mt-3">
-                            <i class="bx bx-right-arrow-alt"></i> Continue Learning
-                        </a>
+                        <h5 class="card-title">
+                            <a href="{{ url_for('view_course', course_id=course.id) }}" class="stretched-link text-reset text-decoration-none">{{ course.title }}</a>
+                        </h5>
+                        <div class="course-progress mt-3 position-relative" style="z-index:2;">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <small class="course-progress__label"><strong>Progress</strong></small>
+                                <small class="course-progress__value"><strong>{{ st.percent }}%</strong> &middot; {{ st.lessons_done }}/{{ st.lessons_total }} lessons</small>
+                            </div>
+                            <div class="progress course-progress__bar" style="height:8px;border-radius:9999px;">
+                                <div class="progress-bar js-img-tinted" role="progressbar" style="width: {{ st.percent }}%;" aria-valuenow="{{ st.percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-footer bg-white">
                         <small class="text-muted">
-                            <i class="bx bx-user"></i> {{ course_stats[course.id].student_count }} Students enrolled
+                            <i class="bx bx-user"></i> {{ st.student_count }} Students enrolled
                             <span class="mx-2">|</span>
-                            <i class="bx bx-task"></i> {{ course_stats[course.id].quiz_count }} Quizzes
+                            <i class="bx bx-task"></i> {{ st.quiz_count }} Quizzes
                             <br>
                             <i class="bx bx-user-voice"></i> Teacher: {{ course.teacher.username }}
                         </small>
@@ -134,13 +143,16 @@
         <div class="row g-4">
             {% for course in courses %}
             <div class="col-md-4">
-                <div class="card course-card h-100">
+                <div class="card course-card h-100 position-relative">
+                    {% if course.image_url %}
+                    <img src="{{ course.image_url }}" class="course-card__img" alt="{{ course.title }}">
+                    {% else %}
+                    <div class="course-card__img course-card__img--placeholder"><i class="bx bx-book-open"></i></div>
+                    {% endif %}
                     <div class="card-body">
-                        <h5 class="card-title">{{ course.title }}</h5>
-                        <p class="card-text text-muted">{{ course.description }}</p>
-                        <a href="{{ url_for('view_course', course_id=course.id) }}" class="btn btn-primary mt-3">
-                            <i class="bx bx-right-arrow-alt"></i> View Course
-                        </a>
+                        <h5 class="card-title">
+                            <a href="{{ url_for('view_course', course_id=course.id) }}" class="stretched-link text-reset text-decoration-none">{{ course.title }}</a>
+                        </h5>
                     </div>
                     <div class="card-footer bg-white">
                         <small class="text-muted">
@@ -172,7 +184,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form method="POST" action="{{ url_for('create_course') }}">
+                <form method="POST" action="{{ url_for('create_course') }}" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label for="title" class="form-label">Course Title</label>
                         <input type="text" class="form-control" id="title" name="title" required>
@@ -181,9 +193,21 @@
                         <label for="description" class="form-label">Description</label>
                         <textarea class="form-control" id="description" name="description" rows="3"></textarea>
                     </div>
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bx bx-plus"></i> Create Course
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Course Image <span class="text-muted">(optional)</span></label>
+                        <input type="file" class="form-control" id="image" name="image" accept="image/png,image/jpeg,image/gif,image/webp">
+                        <div class="form-text">PNG, JPG, GIF, or WEBP. Recommended <strong>800&nbsp;×&nbsp;360&nbsp;px</strong> (20:9). Images are cropped to fit the tile.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="image_url" class="form-label">…or paste an image URL</label>
+                        <input type="url" class="form-control" id="image_url" name="image_url" placeholder="https://…">
+                    </div>
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary text-nowrap">
+                            <i class="bx bx-plus me-1"></i>Create Course
                         </button>
                     </div>
                 </form>
@@ -192,4 +216,79 @@
     </div>
 </div>
 {% endif %}
+
+<script>
+(function () {
+    // Tint each course-card's progress bar with the dominant color of its cover image.
+    const FALLBACK = '#0078D4';
+
+    function dominantColor(img) {
+        try {
+            const w = 32, h = 32;
+            const canvas = document.createElement('canvas');
+            canvas.width = w; canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            const data = ctx.getImageData(0, 0, w, h).data;
+            // Bucket by hue, weight by saturation*alpha; ignore near-white/black/transparent.
+            const buckets = new Array(36).fill(0);
+            const sums = Array.from({ length: 36 }, () => [0, 0, 0, 0]); // r,g,b,count
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i], g = data[i + 1], b = data[i + 2], a = data[i + 3];
+                if (a < 200) continue;
+                const max = Math.max(r, g, b), min = Math.min(r, g, b);
+                const l = (max + min) / 2;
+                if (l < 25 || l > 235) continue; // skip near black/white
+                const d = max - min;
+                if (d < 25) continue; // skip greys
+                let hue = 0;
+                if (max === r) hue = ((g - b) / d) % 6;
+                else if (max === g) hue = (b - r) / d + 2;
+                else hue = (r - g) / d + 4;
+                hue = Math.round(hue * 60);
+                if (hue < 0) hue += 360;
+                const idx = Math.floor(hue / 10);
+                const weight = d; // saturation proxy
+                buckets[idx] += weight;
+                sums[idx][0] += r * weight;
+                sums[idx][1] += g * weight;
+                sums[idx][2] += b * weight;
+                sums[idx][3] += weight;
+            }
+            let best = -1, bestVal = 0;
+            for (let i = 0; i < 36; i++) {
+                if (buckets[i] > bestVal) { bestVal = buckets[i]; best = i; }
+            }
+            if (best < 0) return null;
+            const s = sums[best];
+            const r = Math.round(s[0] / s[3]);
+            const g = Math.round(s[1] / s[3]);
+            const b = Math.round(s[2] / s[3]);
+            return 'rgb(' + r + ',' + g + ',' + b + ')';
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function applyTint(card) {
+        const img = card.querySelector('img.course-card__img');
+        const bar = card.querySelector('.progress-bar.js-img-tinted');
+        if (!bar) return;
+        if (!img) { bar.style.backgroundColor = FALLBACK; return; }
+        const run = () => {
+            const color = dominantColor(img);
+            bar.style.backgroundColor = color || FALLBACK;
+        };
+        if (img.complete && img.naturalWidth) run();
+        else {
+            img.addEventListener('load', run);
+            img.addEventListener('error', () => { bar.style.backgroundColor = FALLBACK; });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.course-card').forEach(applyTint);
+    });
+})();
+</script>
 {% endblock %}

@@ -1,65 +1,161 @@
 {% extends "base.html" %}
 
-{% block title %}Edit User Profile{% endblock %}
+{% block title %}Edit {{ user.full_name or user.username }}{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-body">
-                    <h2 class="card-title text-center mb-4">
-                        {% if current_user.id == user.id %}
-                            Edit Your Profile
-                        {% else %}
-                            Edit Profile for {{ user.username }}
+{% set r = user.role or ('superuser' if user.is_superadmin and user.is_teacher else ('admin' if user.is_superadmin else ('teacher' if user.is_teacher else 'student'))) %}
+{% set role_labels = {'superuser':'Super User','admin':'Administrator','teacher':'Teacher','student':'Student'} %}
+{% set role_classes = {'superuser':'uui-role--violet','admin':'uui-role--blue','teacher':'uui-role--green','student':'uui-role--gray'} %}
+{% set initials = ((user.first_name or user.username or '?')[0] ~ (user.last_name or '')[:1])|upper %}
+
+<div class="uui-page">
+<div class="container py-4" style="max-width: 880px;">
+
+    <form method="POST" enctype="multipart/form-data" class="d-flex flex-column gap-3">
+
+        <!-- Profile header card -->
+        <div class="uui-edit-card">
+            <div class="d-flex flex-wrap align-items-center gap-3">
+                <label class="uui-edit-avatar uui-edit-avatar--clickable" title="Click to change photo">
+                    {% if user.avatar_url %}
+                        <img src="{{ user.avatar_url }}" alt="{{ user.full_name or user.username }}">
+                    {% else %}
+                        <span>{{ initials }}</span>
+                    {% endif %}
+                    <span class="uui-edit-avatar__overlay">
+                        <i class="bx bx-camera"></i>
+                    </span>
+                    <input type="file" name="avatar" accept="image/*" hidden id="avatar-input">
+                </label>
+                <div class="flex-grow-1 min-width-0">
+                    <h2 class="uui-edit-name">{{ user.full_name or user.username }}</h2>
+                    <div class="uui-edit-role">{{ role_labels.get(r, r|title) }}</div>
+                    <div class="uui-edit-meta">
+                        <span><i class="bx bx-envelope"></i> {{ user.email }}</span>
+                        {% if user.created_at %}
+                        <span><i class="bx bx-calendar"></i> Joined {{ user.created_at.strftime('%b %Y') }}</span>
                         {% endif %}
-                    </h2>
-
-                    <form method="POST">
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
-                        </div>
-
-                        {% if current_user.is_superadmin %}
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="is_teacher" name="is_teacher" {% if user.is_teacher %}checked{% endif %}>
-                                <label class="form-check-label" for="is_teacher">Teacher</label>
-                            </div>
-                            {% if current_user.id != user.id %}
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="is_superadmin" name="is_superadmin" {% if user.is_superadmin %}checked{% endif %}>
-                                <label class="form-check-label" for="is_superadmin">Super Admin</label>
-                            </div>
-                            {% endif %}
-                        </div>
-                        {% endif %}
-
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-sm">
-                                <i class="bx bx-save me-1"></i>Save Changes
-                            </button>
-                            {% if current_user.is_superadmin and current_user.id != user.id %}
-                            <a href="{{ url_for('manage_users') }}" class="btn btn-secondary btn-sm">
-                                <i class="bx bx-arrow-back me-1"></i>Back to Users
-                            </a>
-                            {% else %}
-                            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-sm">
-                                <i class="bx bx-arrow-back me-1"></i>Back to Dashboard
-                            </a>
-                            {% endif %}
-                        </div>
-                    </form>
+                    </div>
+                    <div id="avatar-filename" class="uui-edit-meta" style="margin-top:4px; display:none;">
+                        <span><i class="bx bx-image"></i> <span class="filename"></span></span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+
+        <!-- Personal information card -->
+        <div class="uui-edit-card">
+            <h3 class="uui-edit-section-title">Personal information</h3>
+            <p class="uui-edit-section-sub">This information will be displayed publicly on your profile.</p>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="first_name" class="form-label">First name</label>
+                    <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name or '' }}">
+                </div>
+                <div class="col-md-6">
+                    <label for="last_name" class="form-label">Last name</label>
+                    <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.last_name or '' }}">
+                </div>
+                <div class="col-md-6">
+                    <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="email" class="form-label">Email address <span class="text-danger">*</span></label>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="phone" class="form-label">Phone</label>
+                    <input type="text" class="form-control" id="phone" name="phone" value="{{ user.phone or '' }}" placeholder="Optional">
+                </div>
+                <div class="col-md-6">
+                    <label for="location" class="form-label">Location</label>
+                    <input type="text" class="form-control" id="location" name="location" value="{{ user.location or '' }}" placeholder="City, Country">
+                </div>
+                <div class="col-12">
+                    <label for="bio" class="form-label">Bio</label>
+                    <textarea class="form-control" id="bio" name="bio" rows="4" placeholder="Tell us a little about yourself…">{{ user.bio or '' }}</textarea>
+                </div>
+                {% if (current_user.role or '') == 'superuser' %}
+                <div class="col-md-6">
+                    <label for="role" class="form-label">Role</label>
+                    <select class="form-select" id="role" name="role" {% if current_user.id == user.id %}disabled{% endif %}>
+                        <option value="student"   {% if r == 'student'   %}selected{% endif %}>Student</option>
+                        <option value="teacher"   {% if r == 'teacher'   %}selected{% endif %}>Teacher</option>
+                        <option value="admin"     {% if r == 'admin'     %}selected{% endif %}>Administrator</option>
+                        <option value="superuser" {% if r == 'superuser' %}selected{% endif %}>Super User</option>
+                    </select>
+                    {% if current_user.id == user.id %}
+                    <input type="hidden" name="role" value="{{ r }}">
+                    <div class="form-text">You can't change your own role.</div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Change password card -->
+        <div class="uui-edit-card">
+            <h3 class="uui-edit-section-title">Change password</h3>
+            <p class="uui-edit-section-sub">Leave blank if you don't want to change
+                {% if current_user.id == user.id %}your{% else %}this user's{% endif %} password.</p>
+
+            <div class="row g-3">
+                {% if current_user.id == user.id %}
+                <div class="col-12">
+                    <label for="current_password" class="form-label">Current password</label>
+                    <input type="password" class="form-control" id="current_password" name="current_password" autocomplete="current-password">
+                </div>
+                {% endif %}
+                <div class="col-md-6">
+                    <label for="new_password" class="form-label">New password</label>
+                    <input type="password" class="form-control" id="new_password" name="new_password" autocomplete="new-password">
+                </div>
+                <div class="col-md-6">
+                    <label for="confirm_password" class="form-label">Confirm new password</label>
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" autocomplete="new-password">
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer actions -->
+        <div class="d-flex justify-content-end gap-2">
+            <a href="{{ url_for('manage_users') }}" class="btn btn-outline-secondary text-nowrap">Cancel</a>
+            <button type="submit" class="btn btn-primary text-nowrap">
+                <i class="bx bx-save me-1"></i>Save changes
+            </button>
+        </div>
+    </form>
 </div>
+</div>
+
+<script>
+(function () {
+    var input = document.getElementById('avatar-input');
+    if (!input) return;
+    var label = input.closest('.uui-edit-avatar');
+    var fileBox = document.getElementById('avatar-filename');
+    var fileSpan = fileBox ? fileBox.querySelector('.filename') : null;
+    input.addEventListener('change', function () {
+        var file = input.files && input.files[0];
+        if (!file) return;
+        if (fileBox && fileSpan) { fileSpan.textContent = file.name; fileBox.style.display = ''; }
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            label.innerHTML = '';
+            var img = document.createElement('img');
+            img.src = e.target.result;
+            img.alt = 'Preview';
+            label.appendChild(img);
+            var overlay = document.createElement('span');
+            overlay.className = 'uui-edit-avatar__overlay';
+            overlay.innerHTML = '<i class="bx bx-camera"></i>';
+            label.appendChild(overlay);
+            label.appendChild(input);
+        };
+        reader.readAsDataURL(file);
+    });
+})();
+</script>
 {% endblock %}

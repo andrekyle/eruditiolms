@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign in - African Code Academy</title>
+    <title>Sign in - Eruditio</title>
     <style>
         :root {
             --primary-color: #0078D4;
@@ -220,19 +220,14 @@
 
         /* Flash messages */
         .auth-flash {
-            background: #FDE7E9;
-            border: 1px solid var(--danger-color);
-            border-left: 3px solid var(--danger-color);
+            background: transparent;
+            border: none;
             color: var(--danger-color);
-            padding: 10px 14px;
-            border-radius: 2px;
+            padding: 0;
             font-size: 13px;
             margin-bottom: 18px;
         }
         .auth-flash.success {
-            background: #DFF6DD;
-            border-color: var(--success-color);
-            border-left-color: var(--success-color);
             color: var(--success-color);
         }
 
@@ -306,7 +301,7 @@
                 </div>
 
                 <div class="auth-create">
-                    New to African Code Academy? <a href="#" onclick="return false;">Create an account</a>
+                    New to Eruditio? <a href="{{ url_for('register') }}">Create an account</a>
                 </div>
             </div>
         </div>

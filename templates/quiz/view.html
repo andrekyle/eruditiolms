@@ -31,26 +31,30 @@
         <h1 class="h2">
             <i class="bx bx-help-circle text-primary"></i> {{ quiz.title }}
         </h1>
-        <div class="btn-group">
+        <div class="btn-group flex-wrap">
             {% if current_user.is_teacher and current_user.id == quiz.course.teacher_id %}
-            <a href="{{ url_for('edit_quiz', quiz_id=quiz.id) }}" class="btn btn-outline-primary btn-sm">
+            <a href="{{ url_for('edit_quiz', quiz_id=quiz.id) }}" class="btn btn-outline-primary btn-sm text-nowrap">
                 <i class="bx bx-edit"></i> Edit Quiz
             </a>
-            <a href="{{ url_for('add_question', quiz_id=quiz.id) }}" class="btn btn-primary btn-sm">
+            <a href="{{ url_for('add_question', quiz_id=quiz.id) }}" class="btn btn-primary btn-sm text-nowrap">
                 <i class="bx bx-plus"></i> Add Question
             </a>
-            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteQuizModal">
+            <button type="button" class="btn btn-outline-danger btn-sm text-nowrap" data-bs-toggle="modal" data-bs-target="#deleteQuizModal">
                 <i class="bx bx-trash"></i> Delete Quiz
             </button>
             {% endif %}
             {% if not current_user.is_teacher %}
-            <form id="resetQuizForm" action="{{ url_for('reset_quiz', quiz_id=quiz.id) }}" method="POST" class="d-inline-block">
-                <button type="submit" class="btn btn-outline-warning btn-sm" onclick="return confirm('Are you sure you want to reset this quiz? Your current results will be deleted.')">
+            <form id="resetQuizForm" action="{{ url_for('reset_quiz', quiz_id=quiz.id) }}" method="POST" class="d-inline-block"
+                  data-confirm="Are you sure you want to reset this quiz? Your current results will be deleted."
+                  data-confirm-title="Reset quiz"
+                  data-confirm-ok="Reset"
+                  data-confirm-variant="danger">
+                <button type="submit" class="btn btn-outline-warning btn-sm text-nowrap">
                     <i class="bx bx-reset"></i> Reset Quiz
                 </button>
             </form>
             {% endif %}
-            <a href="{{ url_for('view_course', course_id=quiz.course_id) }}" class="btn btn-outline-secondary btn-sm">
+            <a href="{{ url_for('view_course', course_id=quiz.course_id) }}" class="btn btn-outline-secondary btn-sm text-nowrap">
                 <i class="bx bx-arrow-back"></i> Back to Course
             </a>
         </div>

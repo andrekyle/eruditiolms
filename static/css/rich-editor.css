@@ -7,8 +7,8 @@
 
 .rich-editor-toolbar {
     padding: 8px;
-    border-bottom: 1px solid #ddd;
-    background: #f8f9fa;
+    border-bottom: none;
+    background: #121212;
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
@@ -16,8 +16,9 @@
 
 .rich-editor-button {
     padding: 6px 10px;
-    background: #fff;
-    border: 1px solid #ddd;
+    background: #121212;
+    color: #fff;
+    border: none;
     border-radius: 4px;
     cursor: pointer;
     display: inline-flex;
@@ -26,13 +27,16 @@
     transition: all 0.2s ease;
 }
 
+.rich-editor-button i,
+.rich-editor-button svg { color: #fff; fill: currentColor; }
+
 .rich-editor-button:hover {
-    background: #e9ecef;
-    border-color: #ced4da;
+    background: #1f1f1f;
+    color: #fff;
 }
 
 .rich-editor-button:active {
-    background: #dee2e6;
+    background: #2A2A2A;
 }
 
 .rich-editor-button i {
@@ -40,9 +44,19 @@
 }
 
 .rich-editor-content {
-    padding: 12px;
+    padding: 14px;
     min-height: 200px;
     overflow-y: auto;
+    font-size: 1.125rem;
+    line-height: 1.6;
+}
+
+/* Inline / block code shown inside the editor */
+.rich-editor-content code,
+.rich-editor-content pre,
+.rich-editor-content pre code {
+    font-size: 1rem;
+    line-height: 1.55;
 }
 
 .rich-editor-content:empty:before {

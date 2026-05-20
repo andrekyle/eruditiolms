@@ -38,6 +38,10 @@
         "bx-trophy": "trophy",
         "bx-arrow-back": "arrow-left",
         "bx-right-arrow-alt": "arrow-right",
+        "bx-chevron-left": "chevron-left",
+        "bx-chevron-right": "chevron-right",
+        "bx-chevron-up": "chevron-up",
+        "bx-chevron-down": "chevron-down",
         "bx-log-in": "log-in",
         "bx-log-in-circle": "log-in",
         "bx-log-out": "log-out",
@@ -47,7 +51,23 @@
         "bx-user-check": "user-check",
         "bx-user-minus": "user-minus",
         "bx-user-x": "user-x",
-        "bx-user-voice": "users"
+        "bx-user-voice": "users",
+        "bx-medal": "trophy",
+        "bx-list-ol": "list-ordered",
+        "bx-list-check": "list-checks",
+        "bx-list-ul": "list",
+        "bx-play-circle": "play-circle",
+        "bx-edit-alt": "pencil-line",
+        "bx-pencil": "pencil",
+        "bx-pencil-square": "square-pen",
+        "bx-time": "clock",
+        "bx-line-chart": "line-chart",
+        "bx-bar-chart": "bar-chart-3",
+        "bx-bar-chart-alt": "bar-chart-3",
+        "bx-bar-chart-alt-2": "bar-chart-3",
+        "bx-bar-chart-square": "bar-chart-3",
+        "bx-stats": "activity",
+        "bx-trending-up": "trending-up"
     };
 
     var FALLBACK = "circle";

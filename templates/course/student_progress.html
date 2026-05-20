@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% block title %}{{ student.username }} — {{ course.title }}{% endblock %}
+{% block content %}
+<div class="uui-page uui-page--white">
+<div class="container py-4" style="max-width: 1100px;">
+
+    <nav class="uui-page__breadcrumb mb-3" aria-label="Breadcrumb">
+        <a href="{{ url_for('view_course', course_id=course.id) }}">{{ course.title }}</a>
+        <span aria-hidden="true">/</span>
+        <span class="uui-muted">{{ student.username }}</span>
+    </nav>
+
+    <!-- Profile header -->
+    <div class="card mb-4 sp-header">
+        <div class="card-body d-flex align-items-center gap-4 flex-wrap">
+            {% if student.avatar_url %}
+            <img src="{{ student.avatar_url }}" alt="{{ student.username }}" class="sp-avatar">
+            {% else %}
+            <span class="sp-avatar sp-avatar--initial">{{ student.username[:1]|upper }}</span>
+            {% endif %}
+            <div class="flex-grow-1 min-width-0">
+                <h2 class="sp-name mb-1">{{ student.full_name or student.username }}</h2>
+                <div class="sp-meta">
+                    <span><i class="bx bx-user"></i> {{ student.username }}</span>
+                    {% if student.email %}<span><i class="bx bx-envelope"></i> {{ student.email }}</span>{% endif %}
+                    <span><i class="bx bx-calendar"></i> Enrolled {{ enrollment.created_at.strftime('%b %d, %Y') }}</span>
+                </div>
+                {% if student.bio %}<p class="sp-bio mt-2 mb-0">{{ student.bio }}</p>{% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card sp-stat">
+                <div class="card-body">
+                    <div class="sp-stat__head">
+                        <span class="sp-stat__icon sp-stat__icon--blue"><i class="bx bx-book-open"></i></span>
+                        <div class="sp-stat__label">Lessons completed</div>
+                    </div>
+                    <div class="sp-stat__value">{{ completed_lessons }}<span class="sp-stat__total"> / {{ total_lessons }}</span></div>
+                    <div class="progress mt-2" style="height: 6px;">
+                        <div class="progress-bar" style="width: {{ pct }}%; background:#0078D4;"></div>
+                    </div>
+                    <div class="sp-stat__sub mt-2">{{ pct }}% complete</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card sp-stat">
+                <div class="card-body">
+                    <div class="sp-stat__head">
+                        <span class="sp-stat__icon sp-stat__icon--green"><i class="bx bx-trophy"></i></span>
+                        <div class="sp-stat__label">Points earned</div>
+                    </div>
+                    <div class="sp-stat__value">{{ '%g' % points_earned }}<span class="sp-stat__total"> / {{ '%g' % total_points }}</span></div>
+                    <div class="progress mt-2" style="height: 6px;">
+                        <div class="progress-bar" style="width: {{ points_pct }}%; background:#067647;"></div>
+                    </div>
+                    <div class="sp-stat__sub mt-2">{{ points_pct }}% scored</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card sp-stat">
+                <div class="card-body">
+                    <div class="sp-stat__head">
+                        <span class="sp-stat__icon sp-stat__icon--purple"><i class="bx bx-list-check"></i></span>
+                        <div class="sp-stat__label">Quiz attempts</div>
+                    </div>
+                    <div class="sp-stat__value">{{ quiz_responses|length }}</div>
+                    <div class="sp-stat__sub mt-3">
+                        {% if progress and progress.last_activity %}
+                            Last active {{ progress.last_activity.strftime('%b %d, %Y') }}
+                        {% else %}
+                            No activity yet
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lessons progress -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="mb-3">Course progress</h5>
+            {% if lessons %}
+            <ul class="sp-lesson-list">
+                {% for lesson in lessons %}
+                {% set done = lesson.id in completed_ids %}
+                {% set type_icon = {'lesson':'bx-book-open','video':'bx-play','task':'bx-task','exam':'bx-trophy'}.get(lesson.content_type, 'bx-book-open') %}
+                {% set type_tone = {'lesson':'blue','video':'purple','task':'amber','exam':'green'}.get(lesson.content_type, 'blue') %}
+                <li class="sp-lesson-list__item">
+                    <span class="sp-lesson-type sp-lesson-type--{{ type_tone }} {% if done %}is-done{% endif %}">
+                        <i class="bx {{ type_icon }}"></i>
+                        {% if done %}<span class="sp-lesson-type__check"><i class="bx bx-check"></i></span>{% endif %}
+                    </span>
+                    <div class="flex-grow-1 min-width-0">
+                        <div class="sp-lesson-list__title">{{ lesson.title }}</div>
+                        <div class="sp-lesson-list__meta">
+                            {{ ({'lesson':'Reading','video':'Video','task':'Task','exam':'Exam'}).get(lesson.content_type, 'Lesson') }}
+                            · {{ '%g' % (lesson.points or 0) }} pts
+                            {% if lesson.content_type == 'task' and lesson.id in submissions_by_lesson %}
+                            · Submitted {{ submissions_by_lesson[lesson.id].submitted_at.strftime('%b %d') }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if done %}
+                    <span class="badge bg-success-subtle text-success">Completed</span>
+                    {% else %}
+                    <span class="badge bg-light text-muted">Not started</span>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-muted mb-0">This course has no lessons yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quiz attempts -->
+    {% if quiz_responses %}
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="mb-3">Quiz attempts</h5>
+            <div class="table-responsive">
+                <table class="table table-sm uui-table mb-0">
+                    <thead>
+                        <tr><th>Quiz</th><th>Score</th><th>Date</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for r in quiz_responses %}
+                        <tr>
+                            <td>{{ r.quiz.title if r.quiz else 'Quiz' }}</td>
+                            <td>{{ '%g' % (r.points or 0) }} / {{ '%g' % (r.total_points or 0) }}</td>
+                            <td>{{ r.created_at.strftime('%b %d, %Y %H:%M') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="d-flex justify-content-end">
+        <a href="{{ url_for('view_course', course_id=course.id) }}" class="btn btn-secondary">
+            <i class="bx bx-arrow-back me-1"></i> Back to course
+        </a>
+    </div>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1a237e">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="nav-links">
+        <a href="/"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="/python-report"><i class="fab fa-python"></i> Python</a>
+        <a href="/java-report"><i class="fab fa-java"></i> Java</a>
+        <a href="/ai-report"><i class="fas fa-brain"></i> AI</a>
+        <a href="/azure-report"><i class="fab fa-microsoft"></i> Azure</a>
+        <a href="/powerbi-report" class="active"><i class="fas fa-chart-bar"></i> Power BI</a>
+        <a href="/calendar"><i class="far fa-calendar-alt"></i> Calendar</a>
+        <a href="/curriculum"><i class="fas fa-book"></i> Curriculum</a>
+    </div>
+
+    <div class="header">
+        <div class="container">
+            <h1 class="display-4">Power BI Certification Report</h1>
+            <p class="lead">Analysis of Power BI certification results with visualization performance metrics</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="card p-4">
+                    <h2>Overview</h2>
+                    <p>This report provides a detailed analysis of the Power BI certification exam results. The exam was taken by 42 students with a 95% pass rate. The average score was 88.7%.</p>
+                    
+                    <div class="mt-4">
+                        <h3>Key Findings</h3>
+                        <ul>
+                            <li>40 out of 42 students passed the certification exam</li>
+                            <li>45% of students scored above 90%</li>
+                            <li>The highest score was 98%</li>
+                            <li>The lowest score was 68%</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-4">
+                    <h3>Statistics</h3>
+                    <div class="mb-3">
+                        <span class="stat-badge"><i class="fas fa-users"></i> 42 Students</span>
+                        <span class="stat-badge"><i class="fas fa-award"></i> 95% Pass Rate</span>
+                        <span class="stat-badge"><i class="fas fa-chart-line"></i> 88.7% Avg. Score</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card p-4">
+                    <h3>Performance by Topic</h3>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Topic</th>
+                                <th>Average Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Data Preparation</td>
+                                <td>92%</td>
+                            </tr>
+                            <tr>
+                                <td>Data Modeling</td>
+                                <td>89%</td>
+                            </tr>
+                            <tr>
+                                <td>Visualization</td>
+                                <td>94%</td>
+                            </tr>
+                            <tr>
+                                <td>Data Analysis</td>
+                                <td>87%</td>
+                            </tr>
+                            <tr>
+                                <td>DAX Formulas</td>
+                                <td>82%</td>
+                            </tr>
+                            <tr>
+                                <td>Deployment & Collaboration</td>
+                                <td>88%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card p-4">
+                    <h3>Strengths & Areas for Improvement</h3>
+                    <div class="mb-3">
+                        <h5>Strengths</h5>
+                        <ul>
+                            <li>Creating and configuring visualizations</li>
+                            <li>Data preparation and transformation</li>
+                            <li>Report design and formatting</li>
+                            <li>Dashboard creation</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5>Areas for Improvement</h5>
+                        <ul>
+                            <li>Advanced DAX formulas</li>
+                            <li>Complex data modeling relationships</li>
+                            <li>Row-level security implementation</li>
+                            <li>Performance optimization techniques</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card p-4">
+                    <h3>Recommendations</h3>
+                    <ul>
+                        <li>Organize specialized workshops focused on advanced DAX formula techniques</li>
+                        <li>Provide additional hands-on exercises for complex data modeling scenarios</li>
+                        <li>Create more real-world business intelligence projects for practical experience</li>
+                        <li>Develop a mentorship program pairing top performers with those who need additional support</li>
+                        <li>Introduce Power BI performance tuning as a dedicated module in the curriculum</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card p-4">
+                    <h3>Next Steps</h3>
+                    <p>Based on the certification results, we recommend the following next steps:</p>
+                    <ol>
+                        <li>Power BI Desktop Advanced Training (2-week intensive course)</li>
+                        <li>DAX Formula Mastery Workshop (3-day workshop)</li>
+                        <li>Power BI Service & Administration Course (1-week course)</li>
+                        <li>Power BI Developer Certification Preparation (4-week course)</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-light py-3 mt-5">
+        <div class="container text-center">
+            <p class="text-muted mb-0">Power BI Certification Report • Generated by Andre Snell, Senior Facilitator • March 2025</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/main.js"></script>
+</body>
+</html>

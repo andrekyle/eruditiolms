@@ -3,54 +3,189 @@
 {% block title %}Manage Users{% endblock %}
 
 {% block content %}
+{% set total = users|length %}
+{% set count_super = users|selectattr('role', 'equalto', 'superuser')|list|length %}
+{% set count_admin = users|selectattr('role', 'equalto', 'admin')|list|length %}
+{% set count_teacher = users|selectattr('role', 'equalto', 'teacher')|list|length %}
+{% set count_student = users|selectattr('role', 'equalto', 'student')|list|length %}
 <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h2">
-            <i class="bx bx-user text-primary"></i> Manage Users
-        </h1>
-    </div>
-
-    <div class="card">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Username</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Created</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for user in users %}
-                        <tr>
-                            <td>{{ user.username }}</td>
-                            <td>{{ user.email }}</td>
-                            <td>
-                                {% if user.is_superadmin %}
-                                    <span class="badge bg-danger">Superadmin</span>
-                                {% elif user.is_teacher %}
-                                    <span class="badge bg-primary">Teacher</span>
-                                {% else %}
-                                    <span class="badge bg-secondary">Student</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ user.created_at.strftime('%Y-%m-%d') }}</td>
-                            <td>
-                                <div class="btn-group">
-                                    <a href="{{ url_for('change_password', user_id=user.id) }}" class="btn btn-sm btn-outline-primary">
-                                        <i class="bx bx-key"></i> Change Password
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    <div class="uui-table-card">
+        <div class="uui-table-card__header">
+            <div class="uui-table-card__title-wrap">
+                <h1 class="uui-table-card__title">Users</h1>
             </div>
+            <div class="uui-table-card__actions">
+                <div class="uui-search">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input id="uui-user-search" type="search" placeholder="Search users" aria-label="Search users">
+                </div>
+                <select id="uui-filter-joined" class="uui-filter-select" aria-label="Filter by joined date">
+                    <option value="all">All time</option>
+                    <option value="7">Last 7 days</option>
+                    <option value="30">Last 30 days</option>
+                    <option value="90">Last 90 days</option>
+                    <option value="365">Last year</option>
+                </select>
+                <select id="uui-filter-role" class="uui-filter-select" aria-label="Filter by role">
+                    <option value="all" selected>View all ({{ total }})</option>
+                    <option value="superuser">Super users ({{ count_super }})</option>
+                    <option value="admin">Admins ({{ count_admin }})</option>
+                    <option value="teacher">Teachers ({{ count_teacher }})</option>
+                    <option value="student">Students ({{ count_student }})</option>
+                </select>
+                <select id="uui-filter-sort" class="uui-filter-select" aria-label="Sort users">
+                    <option value="name-asc">Name A–Z</option>
+                    <option value="name-desc">Name Z–A</option>
+                    <option value="joined-desc" selected>Newest first</option>
+                    <option value="joined-asc">Oldest first</option>
+                </select>
+                {% if (current_user.role or '') == 'superuser' %}
+                <a href="{{ url_for('create_user') }}" class="btn btn-primary btn-sm">
+                    <i class="bx bx-user-plus"></i> Add user
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="uui-table-wrap">
+            <table class="uui-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Role</th>
+                        <th class="uui-hide-md">Email address</th>
+                        <th class="uui-hide-md">Joined</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="uui-user-tbody">
+                    {% for user in users %}
+                    {% set r = user.role or ('superuser' if user.is_superadmin and user.is_teacher else ('admin' if user.is_superadmin else ('teacher' if user.is_teacher else 'student'))) %}
+                    {% set role_label = {'superuser':'Super User','admin':'Administrator','teacher':'Teacher','student':'Student'}[r] %}
+                    {% set display_name = (user.full_name or ((user.first_name or '') ~ ' ' ~ (user.last_name or '')).strip() or user.username) %}
+                    {% set parts = display_name.split() %}
+                    {% set initials = (parts[0][0] if parts else 'U') ~ (parts[-1][0] if parts|length > 1 else '') %}
+                    <tr data-role="{{ r }}" data-search="{{ display_name|lower }} @{{ user.username|lower }} {{ user.email|lower }}" data-joined="{{ user.created_at.strftime('%Y-%m-%d') }}" data-name="{{ display_name|lower }}">
+                        <td>
+                            <div class="uui-user-cell">
+                                <span class="uui-avatar">
+                                    {% if user.avatar_url %}
+                                        <img src="{{ user.avatar_url if (user.avatar_url.startswith('http') or user.avatar_url.startswith('/')) else url_for('static', filename=user.avatar_url) }}" alt="{{ display_name }}">
+                                    {% else %}
+                                        {{ initials|upper }}
+                                    {% endif %}
+                                </span>
+                                <div>
+                                    <p class="uui-user-cell__name">{{ display_name }}</p>
+                                    <p class="uui-user-cell__sub">@{{ user.username }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="uui-badge-dot uui-badge-dot--success">Active</span>
+                        </td>
+                        <td>{{ role_label }}</td>
+                        <td class="uui-hide-md">{{ user.email }}</td>
+                        <td class="uui-hide-md">{{ user.created_at.strftime('%b %d, %Y') }}</td>
+                        <td class="uui-actions-cell">
+                            {% if (current_user.role or '') == 'superuser' %}
+                            <a href="{{ url_for('edit_user', user_id=user.id) }}" class="uui-icon-btn" title="Edit" aria-label="Edit">
+                                <i class="bx bx-pencil-square"></i>
+                            </a>
+                            {% if user.id != current_user.id %}
+                            <form action="{{ url_for('delete_user', user_id=user.id) }}" method="POST" class="d-inline"
+                                  data-confirm="Delete user {{ display_name }}? This cannot be undone."
+                                  data-confirm-title="Delete user"
+                                  data-confirm-ok="Delete"
+                                  data-confirm-variant="danger">
+                                <button type="submit" class="uui-icon-btn uui-icon-btn--danger" title="Delete" aria-label="Delete">
+                                    <i class="bx bx-trash"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-5">No users yet.</td>
+                    </tr>
+                    {% endfor %}
+                    <tr id="uui-empty-row" style="display:none;">
+                        <td colspan="6" class="text-center text-muted py-5">No users match your filter.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="uui-table-card__footer">
+            <span>Showing {{ users|length }} of {{ users|length }}</span>
+            <nav class="uui-pagination" aria-label="Pagination">
+                <span class="is-disabled"><i class="bx bx-chevron-left"></i></span>
+                <span class="is-active">1</span>
+                <span class="is-disabled"><i class="bx bx-chevron-right"></i></span>
+            </nav>
         </div>
     </div>
 </div>
+
+<script>
+(function() {
+    var roleSel = document.getElementById('uui-filter-role');
+    var search = document.getElementById('uui-user-search');
+    var joinedSel = document.getElementById('uui-filter-joined');
+    var sortSel = document.getElementById('uui-filter-sort');
+    var tbody = document.getElementById('uui-user-tbody');
+    var emptyRow = document.getElementById('uui-empty-row');
+    if (!tbody) return;
+    var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr[data-role]'));
+    var currentFilter = 'all';
+
+    function withinDays(dateStr, days) {
+        if (!dateStr) return false;
+        var d = new Date(dateStr);
+        if (isNaN(d)) return false;
+        return (Date.now() - d.getTime()) / 86400000 <= days;
+    }
+    function applyFilter() {
+        var q = (search && search.value || '').trim().toLowerCase();
+        var joined = joinedSel ? joinedSel.value : 'all';
+        var visible = 0;
+        rows.forEach(function(row) {
+            var roleMatch = currentFilter === 'all' || row.getAttribute('data-role') === currentFilter;
+            var searchMatch = !q || (row.getAttribute('data-search') || '').indexOf(q) !== -1;
+            var joinedMatch = joined === 'all' || withinDays(row.getAttribute('data-joined'), parseInt(joined, 10));
+            var show = roleMatch && searchMatch && joinedMatch;
+            row.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+        if (emptyRow) emptyRow.style.display = visible === 0 ? '' : 'none';
+    }
+    function applySort() {
+        if (!sortSel) return;
+        var mode = sortSel.value;
+        var sorted = rows.slice().sort(function(a, b) {
+            if (mode === 'name-asc' || mode === 'name-desc') {
+                var an = a.getAttribute('data-name') || '';
+                var bn = b.getAttribute('data-name') || '';
+                return mode === 'name-asc' ? an.localeCompare(bn) : bn.localeCompare(an);
+            }
+            var ad = a.getAttribute('data-joined') || '';
+            var bd = b.getAttribute('data-joined') || '';
+            return mode === 'joined-asc' ? ad.localeCompare(bd) : bd.localeCompare(ad);
+        });
+        sorted.forEach(function(r) { tbody.appendChild(r); });
+        if (emptyRow) tbody.appendChild(emptyRow);
+    }
+    if (roleSel) roleSel.addEventListener('change', function() {
+        currentFilter = roleSel.value || 'all';
+        applyFilter();
+    });
+    if (search) search.addEventListener('input', applyFilter);
+    if (joinedSel) joinedSel.addEventListener('change', applyFilter);
+    if (sortSel) sortSel.addEventListener('change', applySort);
+    applySort();
+})();
+</script>
 {% endblock %}

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1a237e">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="nav-links">
+        <a href="/"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="/python-report"><i class="fab fa-python"></i> Python</a>
+        <a href="/java-report"><i class="fab fa-java"></i> Java</a>
+        <a href="/ai-report"><i class="fas fa-brain"></i> AI</a>
+        <a href="/azure-report" class="active"><i class="fab fa-microsoft"></i> Azure</a>
+        <a href="/powerbi-report"><i class="fas fa-chart-bar"></i> Power BI</a>
+        <a href="/calendar"><i class="far fa-calendar-alt"></i> Calendar</a>
+        <a href="/curriculum"><i class="fas fa-book"></i> Curriculum</a>
+    </div>
+
+    <div class="header">
+        <div class="container">
+            <h1 class="display-4">Azure Certification Report</h1>
+            <p class="lead">Comprehensive analysis of Azure Fundamentals certification results</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="card p-4">
+                    <h2>Overview</h2>
+                    <p>This report provides a detailed analysis of the Azure Fundamentals (AZ-900) certification exam results. The exam was taken by 65 students with an 89% pass rate. The average score was 842 out of 1000.</p>
+                    
+                    <div class="mt-4">
+                        <h3>Key Findings</h3>
+                        <ul>
+                            <li>58 out of 65 students passed the certification exam</li>
+                            <li>28% of students scored above 900</li>
+                            <li>The highest score was 957</li>
+                            <li>The lowest score was 685</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-4">
+                    <h3>Statistics</h3>
+                    <div class="mb-3">
+                        <span class="stat-badge"><i class="fas fa-users"></i> 65 Students</span>
+                        <span class="stat-badge"><i class="fas fa-award"></i> 89% Pass Rate</span>
+                        <span class="stat-badge"><i class="fas fa-chart-line"></i> 842 Avg. Score</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card p-4">
+                    <h3>Score Distribution</h3>
+                    <img src="/images/azure_histogram.png" alt="Score Distribution" class="img-fluid">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card p-4">
+                    <h3>Score Categories</h3>
+                    <img src="/images/azure_pie_chart.png" alt="Score Categories" class="img-fluid">
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card p-4">
+                    <h3>Individual Student Scores</h3>
+                    <img src="/images/azure_bar_chart.png" alt="Individual Student Scores" class="img-fluid">
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card p-4">
+                    <h3>Strengths</h3>
+                    <p>Students performed exceptionally well in these areas:</p>
+                    <ul>
+                        <li>Cloud concepts and service models</li>
+                        <li>Azure core services and management tools</li>
+                        <li>Security, privacy, compliance, and trust</li>
+                        <li>Azure pricing and support</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card p-4">
+                    <h3>Areas for Improvement</h3>
+                    <p>These topics need additional focus:</p>
+                    <ul>
+                        <li>Networking concepts and connectivity options</li>
+                        <li>Identity, governance, and compliance features</li>
+                        <li>Azure resource management and deployment</li>
+                        <li>Cost management and optimization</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card p-4">
+                    <h3>Certification Path</h3>
+                    <p>Based on the results, we recommend the following certification path for students:</p>
+                    <ol>
+                        <li>Azure Fundamentals (AZ-900) - Completed</li>
+                        <li>Azure Administrator Associate (AZ-104)</li>
+                        <li>Azure Developer Associate (AZ-204)</li>
+                        <li>Azure Solutions Architect Expert (AZ-305)</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-light py-3 mt-5">
+        <div class="container text-center">
+            <p class="text-muted mb-0">Azure Certification Report • Generated by Andre Snell, Senior Facilitator • March 2025</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/main.js"></script>
+</body>
+</html>

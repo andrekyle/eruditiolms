@@ -2,7 +2,7 @@
 
 {% block title %}Take Quiz{% endblock %}
 
-{% block styles %}
+{% block extra_head %}
 <style>
 .draggable {
     cursor: move;
@@ -38,6 +38,63 @@
 
 .target-zone .draggable {
     background-color: #fff;
+}
+
+/* Quiz question cards: no white border, no hover lift, no hover background */
+form .card {
+    border: none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    transition: none !important;
+}
+form .card:hover {
+    transform: none !important;
+    background-color: transparent !important;
+}
+form .card .card-body {
+    background-color: transparent !important;
+}
+.option-item,
+.option-item:hover,
+.form-check,
+.form-check:hover {
+    background-color: transparent !important;
+    border: none !important;
+}
+/* Strip Bootstrap's white code-background and any border around inline code/pre in option labels.
+   Selector must out-specify [data-theme="dark"] code rules in style.css. */
+html form .form-check-label,
+html form .form-check-label:hover,
+html form .question-text,
+html form .question-text:hover,
+html form code,
+html form pre,
+html form code:hover,
+html form pre:hover,
+html form kbd,
+html form samp,
+[data-theme="dark"] form code,
+[data-theme="dark"] form pre,
+[data-theme="dark"] form kbd,
+[data-theme="dark"] form samp,
+[data-theme="dark"] form code:hover,
+[data-theme="dark"] form pre:hover {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: inherit !important;
+}
+
+/* Slightly smaller question + option text */
+form .card .card-title {
+    font-size: 1rem;
+}
+form .question-text,
+form .question-text p,
+form .form-check-label {
+    font-size: 0.9rem;
+    line-height: 1.45;
 }
 </style>
 {% endblock %}
@@ -337,6 +394,32 @@
                     }
                 });
                 </script>
+                {% else %}
+                {# Standard choice-based questions: multiple_choice (checkboxes), single_choice / true_false (radios) #}
+                <div class="question-group" data-question-id="{{ question.id }}">
+                    {% for option in question.options|sort(attribute='order') %}
+                    <div class="option-item mb-2">
+                        <div class="form-check">
+                            {% if question.question_type == 'multiple_choice' %}
+                            <input type="checkbox"
+                                   class="form-check-input"
+                                   id="option_{{ question.id }}_{{ option.id }}"
+                                   name="question_{{ question.id }}[]"
+                                   value="{{ option.id }}">
+                            {% else %}
+                            <input type="radio"
+                                   class="form-check-input"
+                                   id="option_{{ question.id }}_{{ option.id }}"
+                                   name="question_{{ question.id }}"
+                                   value="{{ option.id }}">
+                            {% endif %}
+                            <label class="form-check-label" for="option_{{ question.id }}_{{ option.id }}">
+                                {{ option.option_html|safe }}
+                            </label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
                 {% endif %}
             </div>
         </div>

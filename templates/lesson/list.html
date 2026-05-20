@@ -1,41 +1,77 @@
 {% extends "base.html" %}
 {% block title %}{{ course.title }} — Lessons{% endblock %}
 {% block content %}
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1><i class="bx bx-book-content text-primary"></i> {{ course.title }} — Lessons</h1>
-        <a href="{{ url_for('view_course', course_id=course.id) }}" class="btn btn-outline-primary">
-            <i class="bx bx-arrow-back"></i> Back to Course
-        </a>
+{% set type_icon  = {'lesson':'bx-book-open','video':'bx-play-circle','task':'bx-edit-alt','exam':'bx-task'} %}
+{% set type_label = {'lesson':'Lesson','video':'Video','task':'Task','exam':'Exam'} %}
+{% set type_class = {'lesson':'uui-lesson-type--blue','video':'uui-lesson-type--violet','task':'uui-lesson-type--orange','exam':'uui-lesson-type--green'} %}
+{% set _t = (course.title or '')|lower %}
+{% set ns = namespace(brand='microsoft') %}
+{% if '1z0' in _t or 'oracle' in _t or 'java' in _t %}{% set ns.brand = 'oracle' %}
+{% elif 'power bi' in _t or 'pl-' in _t %}{% set ns.brand = 'powerbi' %}
+{% elif 'az-' in _t or 'azure' in _t %}{% set ns.brand = 'azure' %}
+{% elif 'sql' in _t %}{% set ns.brand = 'sql' %}
+{% elif 'pcap' in _t or 'python' in _t %}{% set ns.brand = 'python' %}
+{% elif 'aws' in _t %}{% set ns.brand = 'aws' %}
+{% elif 'gcp' in _t or 'google cloud' in _t %}{% set ns.brand = 'gcp' %}
+{% endif %}
+<div class="uui-page">
+<div class="container py-4" style="max-width: 960px;">
+
+    <!-- Breadcrumb / back -->
+    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+        <nav class="uui-page__breadcrumb" aria-label="breadcrumb">
+            <a href="{{ url_for('view_course', course_id=course.id) }}">{{ course.title }}</a>
+            <span>/</span>
+            <span class="current">Lessons</span>
+        </nav>
+    </div>
+
+    <!-- Branded hero -->
+    <div class="uui-edit-card mb-3 lesson-hero lesson-hero--{{ ns.brand }}">
+        <div class="d-flex align-items-start gap-3 flex-wrap">
+            <div class="uui-lesson-type lesson-hero__icon">
+                <i class="bx bx-book-content"></i>
+            </div>
+            <div class="flex-grow-1 min-width-0">
+                <div class="lesson-hero__eyebrow">Course</div>
+                <h1 class="uui-edit-name lesson-hero__title" style="font-size:1.5rem;margin-top:2px;">{{ course.title }}</h1>
+                <div class="lesson-hero__meta uui-edit-meta">
+                    <span><i class="bx bx-list-ul"></i> {{ lessons|length }} lesson{{ '' if lessons|length == 1 else 's' }}</span>
+                    {% if lessons %}
+                    <span><i class="bx bx-medal"></i> {{ lessons|map(attribute='points')|select|sum }} total pts</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
 
     {% if lessons %}
-    <div class="card">
-        <ul class="list-group list-group-flush">
+    <div class="uui-edit-card" style="padding:0;">
+        <ul class="lesson-list">
             {% for lesson in lessons %}
-            {% set type_icon = {'lesson': 'bx-book', 'video': 'bx-play', 'task': 'bx-edit', 'exam': 'bx-task'} %}
-            <li class="list-group-item d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center" style="gap: .75rem;">
-                    <i class="bx {{ type_icon.get(lesson.content_type, 'bx-book') }} text-primary"></i>
-                    <div>
-                        <div style="font-weight:600;">{{ lesson.title }}</div>
-                        <small class="text-muted">{{ lesson.content_type|capitalize }} · {{ lesson.points or 0 }} pts</small>
-                    </div>
-                </div>
-                <div class="d-flex align-items-center" style="gap:.5rem;">
+            <li>
+                <a href="{{ url_for('view_lesson', lesson_id=lesson.id) }}" class="lesson-list__item">
+                    <span class="uui-lesson-type lesson-list__icon {{ type_class.get(lesson.content_type, 'uui-lesson-type--blue') }}">
+                        <i class="bx {{ type_icon.get(lesson.content_type, 'bx-book-open') }}"></i>
+                    </span>
+                    <span class="lesson-list__body">
+                        <span class="lesson-list__title">{{ lesson.title }}</span>
+                        <span class="lesson-list__meta">{{ type_label.get(lesson.content_type, 'Lesson') }} · {{ lesson.points or 0 }} pts</span>
+                    </span>
                     {% if lesson.id in completed_ids %}
-                        <span class="badge bg-success"><i class="bx bx-check"></i> Done</span>
+                    <span class="uui-badge-dot uui-badge-dot--success"><i class="bx bx-check"></i> Done</span>
                     {% endif %}
-                    <a href="{{ url_for('view_lesson', lesson_id=lesson.id) }}" class="btn btn-sm btn-primary">
-                        Open <i class="bx bx-right-arrow-alt"></i>
-                    </a>
-                </div>
+                </a>
             </li>
             {% endfor %}
         </ul>
     </div>
     {% else %}
-    <div class="alert alert-info">No lessons have been added to this course yet.</div>
+    <div class="uui-edit-card text-center" style="color:#667085;">
+        No lessons have been added to this course yet.
+    </div>
     {% endif %}
+
+</div>
 </div>
 {% endblock %}

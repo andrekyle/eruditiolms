@@ -116,6 +116,35 @@ body {
 
 .course-card {
     height: 100%;
+    cursor: pointer;
+    transition: box-shadow 150ms ease, transform 150ms ease, border-color 150ms ease;
+}
+.course-card:hover {
+    box-shadow: 0 6.4px 14.4px rgba(0,0,0,0.10), 0 1.2px 3.6px rgba(0,0,0,0.08);
+    border-color: #0078D4;
+    transform: translateY(-2px);
+}
+.course-card .card-title a { color: inherit; }
+.course-card:hover .card-title a { color: #0078D4; }
+
+/* Course tile image header */
+.course-card { overflow: hidden; }
+.course-card__img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    object-fit: contain;
+    border-bottom: 1px solid #EAECF0;
+    background: #F3F4F6;
+}
+.course-card__img--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 2.25rem;
+    background: linear-gradient(135deg, #0078D4 0%, #50A2DC 100%);
 }
 
 .course-card .card-body {
@@ -573,7 +602,41 @@ h2 {
 
 .add-question-view .option-controls {
     font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
+.add-question-view .option-controls .form-check {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: auto;
+}
+.add-question-view .option-controls .form-check-input {
+    margin: 0;
+    float: none;
+}
+.add-question-view .option-controls .form-check-label {
+    margin: 0;
+    line-height: 1;
+}
+
+.add-question-view .delete-option {
+    background: transparent;
+    border: 0;
+    padding: 4px;
+    color: #98A2B3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    cursor: pointer;
+    transition: color .15s;
+}
+.add-question-view .delete-option:hover { color: #B42318; }
+.add-question-view .delete-option:focus { outline: none; color: #B42318; }
+.add-question-view .delete-option svg { display: block; }
 
 .add-question-view .form-check-label {
     font-size: 0.9rem;
@@ -676,6 +739,17 @@ h2 {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+.rich-editor-button svg {
+    width: 16px;
+    height: 16px;
+    color: #495057;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: block;
 }
 
 .rich-editor-button:hover {
@@ -972,14 +1046,14 @@ h2 {
     --secondary-color: #F3F2F1;
     --accent-color: #323130;
     --success-color: #107C10;
-    --danger-color: #A4262C;
+    --danger-color: #E81123;
     --warning-color: #797673;
     --info-color: #0078D4;
     --text-color: #323130;
     --light-text: #605E5C;
     --border-color: #EDEBE9;
     --surface: #FFFFFF;
-    --canvas: #FAF9F8;
+    --canvas: #FFFFFF;
 }
 
 html, body {
@@ -1363,7 +1437,6 @@ body { background-color: var(--canvas) !important; }
     font-weight: 500;
     border-radius: 4px;
     text-decoration: none !important;
-    border-left: 3px solid transparent;
     margin-bottom: 2px;
 }
 .sidebar-link i { font-size: 18px; color: var(--light-text); }
@@ -1374,7 +1447,6 @@ body { background-color: var(--canvas) !important; }
 .sidebar-link.active {
     background-color: #DEECF9;
     color: var(--primary-color) !important;
-    border-left-color: var(--primary-color);
     font-weight: 600;
 }
 .sidebar-link.active i { color: var(--primary-color); }
@@ -1431,7 +1503,7 @@ body { background-color: var(--canvas) !important; }
 }
 .sidebar-user-role { font-size: 12px; color: var(--light-text); }
 .sidebar-signout i { color: var(--danger-color); }
-.sidebar-signout:hover { background-color: #FDE7E9; }
+.sidebar-signout:hover { background-color: transparent !important; color: inherit !important; }
 
 /* Main content area shifted right of sidebar */
 .app-main {
@@ -1442,6 +1514,12 @@ body { background-color: var(--canvas) !important; }
 }
 .app-main-full { margin-left: 0; }
 
+/* Bare layout (lesson viewer): no padding, full bleed */
+.app-content--bare {
+    padding: 0 !important;
+    max-width: none !important;
+}
+
 .app-content {
     flex-grow: 1;
     padding: 32px 40px;
@@ -1449,6 +1527,82 @@ body { background-color: var(--canvas) !important; }
     width: 100%;
 }
 .app-flash { padding: 16px 40px 0; }
+
+/* ========== Azure-style toasts (right side) ========== */
+.azure-toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1080;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 360px;
+    width: calc(100vw - 40px);
+    pointer-events: none;
+}
+.azure-toast {
+    pointer-events: auto;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    background: #ffffff;
+    color: #323130;
+    border: 1px solid #EDEBE9;
+    border-left: 4px solid #0078D4;
+    border-radius: 2px;
+    box-shadow: 0 6.4px 14.4px rgba(0,0,0,0.13), 0 1.2px 3.6px rgba(0,0,0,0.10);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.4;
+    transform: translateX(120%);
+    opacity: 0;
+    transition: transform 220ms cubic-bezier(.2,.9,.3,1), opacity 220ms ease;
+}
+.azure-toast--show { transform: translateX(0); opacity: 1; }
+.azure-toast--leaving { transform: translateX(120%); opacity: 0; }
+.azure-toast__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
+    margin-top: 1px;
+    color: #0078D4;
+}
+.azure-toast__body {
+    flex: 1 1 auto;
+    word-wrap: break-word;
+    color: #323130;
+}
+.azure-toast__close {
+    flex: 0 0 auto;
+    background: transparent;
+    border: 0;
+    color: #605E5C;
+    width: 24px;
+    height: 24px;
+    border-radius: 2px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 120ms ease, color 120ms ease;
+}
+.azure-toast__close:hover { background: #F3F2F1; color: #201F1E; }
+.azure-toast--success { border-left-color: #107C10; }
+.azure-toast--success .azure-toast__icon { color: #107C10; }
+.azure-toast--danger  { border-left-color: #A4262C; }
+.azure-toast--danger  .azure-toast__icon { color: #A4262C; }
+.azure-toast--warning { border-left-color: #F7630C; }
+.azure-toast--warning .azure-toast__icon { color: #F7630C; }
+.azure-toast--info    { border-left-color: #0078D4; }
+.azure-toast--info    .azure-toast__icon { color: #0078D4; }
+@media (max-width: 600px) {
+    .azure-toast-container { top: 12px; right: 12px; left: 12px; max-width: none; width: auto; }
+}
 .app-footer {
     padding: 16px 40px;
     border-top: 1px solid var(--border-color);
@@ -1594,3 +1748,4549 @@ img.profile-avatar { display: block; }
     text-decoration: underline;
 }
 .profile-avatar-remove:hover { color: #6E1A1F; }
+
+/* Clickable card link (e.g. Lessons summary card) */
+.lesson-card-link {
+    display: block;
+    transition: box-shadow 150ms ease, transform 150ms ease, border-color 150ms ease;
+    cursor: pointer;
+}
+.lesson-card-link:hover {
+    box-shadow: 0 6.4px 14.4px rgba(0,0,0,0.10), 0 1.2px 3.6px rgba(0,0,0,0.08);
+    border-color: #0078D4;
+    transform: translateY(-1px);
+}
+.lesson-card-link:hover .bx-chevron-right { color: #0078D4 !important; }
+
+/* ========== Azure-style confirm modal ========== */
+.az-confirm-content {
+    border: 1px solid #EDEBE9;
+    border-radius: 2px;
+    box-shadow: 0 25.6px 57.6px rgba(0,0,0,0.22), 0 4.8px 14.4px rgba(0,0,0,0.18);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: #323130;
+}
+.az-confirm-header {
+    border-bottom: 0;
+    padding: 20px 24px 8px;
+}
+.az-confirm-header .modal-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #201F1E;
+}
+.az-confirm-body {
+    padding: 4px 24px 16px;
+    font-size: 14px;
+    color: #323130;
+}
+.az-confirm-footer {
+    border-top: 0;
+    padding: 8px 24px 20px;
+    gap: 8px;
+}
+.az-btn-primary, .az-btn-secondary, .az-btn-danger {
+    min-width: 80px;
+    height: 32px;
+    padding: 0 20px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 2px;
+    border: 1px solid transparent;
+    transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+.az-btn-primary {
+    background: #0078D4; color: #fff; border-color: #0078D4;
+}
+.az-btn-primary:hover { background: #106EBE; border-color: #106EBE; color: #fff; }
+.az-btn-danger {
+    background: #A4262C; color: #fff; border-color: #A4262C;
+}
+.az-btn-danger:hover { background: #8E1F25; border-color: #8E1F25; color: #fff; }
+.az-btn-secondary {
+    background: #fff; color: #323130; border-color: #8A8886;
+}
+.az-btn-secondary:hover { background: #F3F2F1; border-color: #323130; }
+
+/* ===== UntitledUI-style data table card (used on Users page) ===== */
+.uui-table-card {
+    background: #ffffff;
+    border: 1px solid #EAECF0;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+    overflow: hidden;
+}
+.uui-table-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 20px 24px;
+    border-bottom: 1px solid #EAECF0;
+}
+.uui-table-card__title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+}
+.uui-table-card__title {
+    font-family: inherit;
+    font-size: 2rem;
+    font-weight: 500;
+    color: var(--text-color);
+    margin: 0;
+    line-height: 1.2;
+}
+.uui-table-card__count {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    background: #F9F5FF;
+    color: #0078D4;
+    border: 1px solid #DEECF9;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+}
+.uui-table-card__actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+.uui-table-wrap { overflow-x: auto; }
+.uui-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: inherit;
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
+.uui-table thead th {
+    background: #F9FAFB;
+    color: #344054;
+    font-weight: 600;
+    font-size: 1rem;
+    text-transform: none;
+    letter-spacing: 0;
+    text-align: left;
+    padding: 14px 24px;
+    border-bottom: 1px solid #EAECF0;
+    white-space: nowrap;
+}
+.uui-table tbody td {
+    padding: 16px 24px;
+    border-bottom: 1px solid #EAECF0;
+    color: #475467;
+    vertical-align: middle;
+}
+.uui-table tbody tr:nth-child(odd) { background: #F9FAFB; }
+.uui-table tbody tr:nth-child(even) { background: #ffffff; }
+.uui-table tbody tr:hover { background: #F4F6F9; }
+.uui-table tbody tr:last-child td { border-bottom: 0; }
+
+.uui-user-cell { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.uui-avatar {
+    width: 40px; height: 40px; border-radius: 9999px;
+    background: #F2F4F7; color: #344054;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 0.875rem;
+    flex: 0 0 auto; overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.04);
+}
+.uui-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.uui-user-cell__name { color: #101828; font-weight: 500; font-size: 0.875rem; line-height: 1.25rem; margin: 0; }
+.uui-user-cell__sub  { color: #667085; font-size: 0.875rem; line-height: 1.25rem; margin: 0; }
+
+.uui-badge-dot {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 2px 10px 2px 8px;
+    border-radius: 9999px;
+    font-size: 0.75rem; font-weight: 500;
+    border: 1px solid transparent;
+    background: #fff;
+}
+.uui-badge-dot::before {
+    content: ""; width: 6px; height: 6px; border-radius: 9999px;
+    background: currentColor; display: inline-block;
+}
+.uui-badge-dot--success { color: #067647; border-color: #ABEFC6; background: #ECFDF3; }
+.uui-badge-dot--gray    { color: #344054; border-color: #EAECF0; background: #F9FAFB; }
+.uui-badge-dot--info    { color: #175CD3; border-color: #B2DDFF; background: #EFF8FF; }
+.uui-badge-dot--warning { color: #B54708; border-color: #FEDF89; background: #FFFAEB; }
+.uui-badge-dot--danger  { color: #B42318; border-color: #FECDCA; background: #FEF3F2; }
+
+.uui-icon-btn {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: #667085; background: transparent; border: 0; padding: 0;
+    text-decoration: none; transition: background .15s ease, color .15s ease;
+}
+.uui-icon-btn:hover { background: #F2F4F7; color: #344054; }
+.uui-icon-btn:focus-visible { outline: 2px solid #0078D4; outline-offset: 2px; }
+.uui-icon-btn--danger:hover { background: #FEF3F2; color: #B42318; }
+.uui-icon-btn i { font-size: 18px; line-height: 1; }
+.uui-actions-cell { text-align: right; white-space: nowrap; }
+.uui-actions-cell .uui-icon-btn + .uui-icon-btn { margin-left: 2px; }
+
+.uui-table-card__footer {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem;
+    padding: 12px 24px 16px;
+    border-top: 1px solid #EAECF0;
+    color: #475467; font-size: 0.875rem;
+}
+.uui-pagination { display: inline-flex; gap: 6px; }
+.uui-pagination a,
+.uui-pagination span {
+    min-width: 32px; height: 32px; padding: 0 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 8px; text-decoration: none;
+    color: #475467; font-size: 0.875rem; font-weight: 500;
+    border: 1px solid transparent;
+}
+.uui-pagination a:hover { background: #F2F4F7; }
+.uui-pagination .is-active { background: #F2F4F7; color: #101828; border-color: #EAECF0; }
+.uui-pagination .is-disabled { color: #98A2B3; pointer-events: none; }
+
+@media (max-width: 768px) {
+    .uui-table-card__header { padding: 16px; }
+    .uui-table thead th,
+    .uui-table tbody td { padding: 12px 16px; }
+    .uui-hide-md { display: none; }
+}
+
+/* ===== UntitledUI-style data table card (used on Users page) ===== */
+.uui-table-card {
+    background: #ffffff;
+    border: 1px solid #EAECF0;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+    overflow: hidden;
+}
+.uui-table-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 20px 24px;
+    border-bottom: 1px solid #EAECF0;
+}
+.uui-table-card__title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+}
+.uui-table-card__title {
+    font-family: inherit;
+    font-size: 2rem;
+    font-weight: 500;
+    color: var(--text-color);
+    margin: 0;
+    line-height: 1.2;
+}
+.uui-table-card__count {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    background: #F9F5FF;
+    color: #0078D4;
+    border: 1px solid #DEECF9;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+}
+.uui-table-card__actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+.uui-table-wrap { overflow-x: auto; }
+.uui-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: inherit;
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
+.uui-table thead th {
+    background: #F9FAFB;
+    color: #344054;
+    font-weight: 600;
+    font-size: 1rem;
+    text-transform: none;
+    letter-spacing: 0;
+    text-align: left;
+    padding: 14px 24px;
+    border-bottom: 1px solid #EAECF0;
+    white-space: nowrap;
+}
+.uui-table tbody td {
+    padding: 16px 24px;
+    border-bottom: 1px solid #EAECF0;
+    color: #475467;
+    vertical-align: middle;
+}
+.uui-table tbody tr:nth-child(odd) { background: #F9FAFB; }
+.uui-table tbody tr:nth-child(even) { background: #ffffff; }
+.uui-table tbody tr:hover { background: #F4F6F9; }
+.uui-table tbody tr:last-child td { border-bottom: 0; }
+
+.uui-user-cell { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.uui-avatar {
+    width: 40px; height: 40px; border-radius: 9999px;
+    background: #F2F4F7; color: #344054;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 0.875rem;
+    flex: 0 0 auto; overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.04);
+}
+.uui-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.uui-user-cell__name { color: #101828; font-weight: 500; font-size: 0.875rem; line-height: 1.25rem; margin: 0; }
+.uui-user-cell__sub  { color: #667085; font-size: 0.875rem; line-height: 1.25rem; margin: 0; }
+
+.uui-badge-dot {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 2px 10px 2px 8px;
+    border-radius: 9999px;
+    font-size: 0.75rem; font-weight: 500;
+    border: 1px solid transparent;
+    background: #fff;
+}
+.uui-badge-dot::before {
+    content: ""; width: 6px; height: 6px; border-radius: 9999px;
+    background: currentColor; display: inline-block;
+}
+.uui-badge-dot--success { color: #067647; border-color: #ABEFC6; background: #ECFDF3; }
+.uui-badge-dot--gray    { color: #344054; border-color: #EAECF0; background: #F9FAFB; }
+.uui-badge-dot--info    { color: #175CD3; border-color: #B2DDFF; background: #EFF8FF; }
+.uui-badge-dot--warning { color: #B54708; border-color: #FEDF89; background: #FFFAEB; }
+.uui-badge-dot--danger  { color: #B42318; border-color: #FECDCA; background: #FEF3F2; }
+
+.uui-icon-btn {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: #667085; background: transparent; border: 0; padding: 0;
+    text-decoration: none; transition: background .15s ease, color .15s ease;
+}
+.uui-icon-btn:hover { background: #F2F4F7; color: #344054; }
+.uui-icon-btn:focus-visible { outline: 2px solid #0078D4; outline-offset: 2px; }
+.uui-icon-btn--danger:hover { background: #FEF3F2; color: #B42318; }
+.uui-icon-btn i { font-size: 18px; line-height: 1; }
+.uui-actions-cell { text-align: right; white-space: nowrap; }
+.uui-actions-cell .uui-icon-btn + .uui-icon-btn { margin-left: 2px; }
+
+.uui-table-card__footer {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem;
+    padding: 12px 24px 16px;
+    border-top: 1px solid #EAECF0;
+    color: #475467; font-size: 0.875rem;
+}
+.uui-pagination { display: inline-flex; gap: 6px; }
+.uui-pagination a,
+.uui-pagination span {
+    min-width: 32px; height: 32px; padding: 0 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 8px; text-decoration: none;
+    color: #475467; font-size: 0.875rem; font-weight: 500;
+    border: 1px solid transparent;
+}
+.uui-pagination a:hover { background: #F2F4F7; }
+.uui-pagination .is-active { background: #F2F4F7; color: #101828; border-color: #EAECF0; }
+.uui-pagination .is-disabled { color: #98A2B3; pointer-events: none; }
+
+@media (max-width: 768px) {
+    .uui-table-card__header { padding: 16px; }
+    .uui-table thead th,
+    .uui-table tbody td { padding: 12px 16px; }
+    .uui-hide-md { display: none; }
+}
+
+/* Danger zone block inside Edit Course modal */
+.danger-zone {
+    border: 1px solid #F5C2C7;
+    background: #FFF5F5;
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+}
+.danger-zone__header {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 600;
+    color: #B42318;
+    margin-bottom: .35rem;
+}
+.danger-zone__header i {
+    font-size: 1.15rem;
+}
+.danger-zone__header svg {
+    color: #D92D20;
+    flex-shrink: 0;
+}
+.danger-zone__text {
+    color: #6F2A2A;
+    font-size: .875rem;
+    margin: 0 0 .85rem 0;
+    line-height: 1.4;
+}
+.danger-zone .btn-danger {
+    background-color: #D92D20;
+    border-color: #D92D20;
+}
+.danger-zone .btn-danger:hover,
+.danger-zone .btn-danger:focus {
+    background-color: #B42318;
+    border-color: #B42318;
+}
+
+/* Users table: prevent ugly mid-word wrapping in name & date cells */
+.uui-user-cell__name { white-space: nowrap; }
+.uui-user-cell__sub  { white-space: nowrap; }
+.uui-table td.uui-nowrap,
+.uui-table th.uui-nowrap { white-space: nowrap; }
+
+/* ===== Users table polish � crisper, more refined design ===== */
+.uui-table-card {
+    border-color: #E4E7EC;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04), 0 1px 2px rgba(16, 24, 40, 0.03);
+}
+.uui-table-card__header {
+    padding: 20px 24px 18px;
+}
+.uui-table-card__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #101828;
+    letter-spacing: -0.01em;
+}
+.uui-table-card__count {
+    padding: 2px 10px;
+    background: #EFF8FF;
+    color: #175CD3;
+    border-color: #B2DDFF;
+    font-weight: 500;
+    font-size: 0.75rem;
+    line-height: 1.125rem;
+}
+.uui-table {
+    font-size: 0.875rem;
+}
+.uui-table thead th {
+    background: #F9FAFB;
+    color: #475467;
+    font-weight: 500;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 12px 24px;
+    border-bottom: 1px solid #EAECF0;
+}
+.uui-table tbody td {
+    padding: 16px 24px;
+    border-bottom: 1px solid #F2F4F7;
+}
+/* Kill zebra striping � modern tables don't use it */
+.uui-table tbody tr:nth-child(odd),
+.uui-table tbody tr:nth-child(even) { background: #ffffff; }
+.uui-table tbody tr:hover { background: #F9FAFB; }
+
+.uui-avatar {
+    width: 40px; height: 40px;
+    border: 1px solid rgba(16, 24, 40, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+.uui-user-cell__name {
+    color: #101828;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+.uui-user-cell__sub {
+    color: #667085;
+    font-size: 0.8125rem;
+}
+
+.uui-badge-dot {
+    padding: 2px 8px 2px 8px;
+    font-weight: 500;
+    font-size: 0.75rem;
+    line-height: 1.125rem;
+}
+.uui-badge-dot::before {
+    width: 6px; height: 6px;
+}
+
+.uui-icon-btn {
+    width: 32px; height: 32px;
+    color: #98A2B3;
+    border-radius: 6px;
+}
+.uui-icon-btn:hover { background: #F2F4F7; color: #475467; }
+.uui-icon-btn--danger:hover { background: #FEF3F2; color: #D92D20; }
+.uui-icon-btn i { font-size: 16px; }
+.uui-icon-btn svg { width: 16px; height: 16px; }
+
+.uui-table-card__footer {
+    padding: 14px 24px 16px;
+    border-top: 1px solid #EAECF0;
+    color: #475467;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+.uui-pagination span,
+.uui-pagination a {
+    min-width: 32px; height: 32px;
+    color: #475467;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border: 1px solid transparent;
+}
+.uui-pagination .is-active {
+    background: #F9FAFB;
+    color: #101828;
+    border-color: #EAECF0;
+}
+.uui-pagination .is-disabled { color: #D0D5DD; }
+.uui-pagination svg { display: block; }
+
+/* Refine Active badge � tighter, balanced padding */
+.uui-badge-dot {
+    padding: 2px 10px;
+    gap: 6px;
+    line-height: 1.125rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+.uui-badge-dot::before {
+    width: 6px;
+    height: 6px;
+    flex: 0 0 6px;
+}
+.uui-badge-dot--success {
+    color: #067647;
+    background: #ECFDF3;
+    border-color: #ABEFC6;
+}
+
+/* ===== Users page � premium redesign ===== */
+.uui-page { background: #FFFFFF; min-height: calc(100vh - 64px); }
+.uui-page__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #EAECF0;
+    margin-bottom: 1.5rem;
+}
+.uui-page__heading { min-width: 0; }
+.uui-page__breadcrumb {
+    margin: 0 0 0.5rem 0;
+    color: #667085;
+    font-size: 0.8125rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.uui-page__breadcrumb a { color: #475467; text-decoration: none; font-weight: 500; }
+.uui-page__breadcrumb a:hover { color: #0078D4; }
+.uui-page__breadcrumb span[aria-hidden] { color: #D0D5DD; }
+.uui-page__title {
+    font-size: 1.875rem;
+    font-weight: 600;
+    color: #101828;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin: 0 0 0.25rem 0;
+}
+.uui-page__subtitle { color: #475467; font-size: 1rem; margin: 0; }
+.uui-page__actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+/* Stat cards */
+.uui-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.uui-stat {
+    background: #fff;
+    border: 1px solid #EAECF0;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    box-shadow: 0 1px 2px rgba(16,24,40,0.04);
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+.uui-stat:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(16,24,40,0.06); }
+.uui-stat__icon {
+    width: 64px; height: 64px;
+    border-radius: 12px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 2rem;
+    flex: 0 0 auto;
+}
+.uui-stat__icon--blue   { background: #EFF8FF; color: #1570EF; }
+.uui-stat__icon--violet { background: #F4F3FF; color: #6938EF; }
+.uui-stat__icon--green  { background: #ECFDF3; color: #079455; }
+.uui-stat__icon--orange { background: #FEF6EE; color: #E04F16; }
+.uui-stat__label { margin: 0; color: #475467; font-size: 1rem; font-weight: 500; }
+.uui-stat__value { margin: 4px 0 0 0; color: #101828; font-size: 2.25rem; font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; }
+
+/* Search input inside header */
+.uui-search {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 12px;
+    border: 1px solid #D0D5DD;
+    border-radius: 8px;
+    background: #fff;
+    height: 40px;
+    min-width: 260px;
+    box-shadow: none;
+    color: #667085;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.uui-search:focus-within {
+    border-color: #84CAFF;
+    box-shadow: 0 0 0 4px #EFF8FF;
+    color: #475467;
+}
+.uui-search svg { flex: 0 0 16px; }
+.uui-search input {
+    border: 0; outline: 0; background: transparent;
+    height: 100%; width: 100%; min-width: 0;
+    font-size: 0.875rem; color: #101828;
+}
+.uui-search input::placeholder { color: #667085; }
+
+/* Role filter tabs - clean underline */
+.uui-tabs {
+    display: flex;
+    gap: 4px;
+    margin: 4px 24px 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid #EAECF0;
+    overflow-x: auto;
+}
+.uui-tab {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    padding: 12px 4px;
+    margin: 0 8px;
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: #101828;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    transition: color .15s ease, border-color .15s ease;
+}
+.uui-tab:first-child { margin-left: 0; }
+.uui-tab:hover { color: #101828; }
+.uui-tab.is-active {
+    color: #000000;
+    border-bottom-color: #000000;
+    background: transparent;
+    box-shadow: none;
+}
+.uui-tab__count {
+    display: inline-flex;
+    align-items: center;
+    color: #667085;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    line-height: 1;
+    background: transparent;
+    padding: 0;
+}
+.uui-tab.is-active .uui-tab__count { background: transparent; color: #000000; }
+
+/* Colored role pills */
+.uui-role-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.125rem;
+    border: 1px solid transparent;
+}
+.uui-role--violet { color: #5925DC; background: #F4F3FF; border-color: #D9D6FE; }
+.uui-role--blue   { color: #175CD3; background: #EFF8FF; border-color: #B2DDFF; }
+.uui-role--green  { color: #067647; background: #ECFDF3; border-color: #ABEFC6; }
+.uui-role--gray   { color: #344054; background: #F9FAFB; border-color: #EAECF0; }
+
+/* Subtle utility tweaks */
+.uui-email  { color: #475467; }
+.uui-muted  { color: #667085; }
+.uui-actions-cell { text-align: right; }
+.uui-table thead th.uui-actions-cell { color: transparent; } /* hide "Actions" header text but keep alignment */
+
+@media (max-width: 640px) {
+    .uui-search { min-width: 0; flex: 1 1 100%; }
+    .uui-page__header { align-items: flex-start; }
+}
+
+/* Remove bullet from status pill */
+.uui-badge-dot::before { display: none !important; }
+.uui-badge-dot { padding-left: 10px !important; }
+
+
+/* Active pill - Microsoft green */
+.uui-badge-dot--success { color: #107C10 !important; background: #DFF6DD !important; border-color: #9FD89F !important; }
+
+
+/* ===== Edit user page (Microsoft-style) ===== */
+.uui-edit-card {
+    background: #fff;
+    border: 0;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: none;
+}
+.uui-edit-card--bordered {
+    border: 1px solid #EAECF0;
+    box-shadow: 0 1px 2px rgba(16,24,40,0.04);
+}
+.uui-edit-avatar {
+    width: 112px; height: 112px;
+    border-radius: 50%;
+    background: #F2F4F7;
+    color: #475467;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 2rem;
+    overflow: hidden;
+    flex: 0 0 auto;
+    border: 1px solid rgba(16,24,40,0.08);
+}
+.uui-edit-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.uui-edit-name {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #101828;
+    letter-spacing: -0.01em;
+}
+.uui-edit-role {
+    margin-top: 2px;
+    color: #0078D4;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+.uui-edit-meta {
+    margin-top: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    color: #667085;
+    font-size: 0.8125rem;
+}
+.uui-edit-meta i { margin-right: 4px; vertical-align: -2px; }
+.uui-edit-section-title {
+    margin: 0 0 4px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #101828;
+}
+.uui-edit-section-sub {
+    margin: 0 0 1rem 0;
+    color: #667085;
+    font-size: 0.8125rem;
+}
+.uui-edit-card .form-label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #344054;
+    margin-bottom: 4px;
+}
+.uui-edit-card .form-control,
+.uui-edit-card .form-select {
+    border-color: #D0D5DD;
+    box-shadow: 0 1px 2px rgba(16,24,40,0.05);
+}
+.uui-edit-card .form-control:focus,
+.uui-edit-card .form-select:focus {
+    border-color: #84CAFF;
+    box-shadow: 0 0 0 4px #EFF8FF;
+}
+
+/* Clickable avatar with hover overlay */
+.uui-edit-avatar { position: relative; }
+.uui-edit-avatar--clickable { cursor: pointer; }
+.uui-edit-avatar__overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: rgba(16, 24, 40, 0.55);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    opacity: 0;
+    transition: opacity .15s ease;
+    pointer-events: none;
+}
+.uui-edit-avatar--clickable:hover .uui-edit-avatar__overlay,
+.uui-edit-avatar--clickable:focus-within .uui-edit-avatar__overlay {
+    opacity: 1;
+}
+
+/* ===== Edit user � premium polish ===== */
+.uui-edit-hero {
+    position: relative;
+    background: #fff;
+    border: 1px solid #EAECF0;
+    border-radius: 14px;
+    box-shadow: 0 1px 3px rgba(16,24,40,0.06);
+    overflow: hidden;
+}
+.uui-edit-hero__cover {
+    height: 88px;
+    background:
+        radial-gradient(120% 140% at 0% 0%, #DCEEFF 0%, transparent 55%),
+        radial-gradient(120% 140% at 100% 0%, #EDE7FF 0%, transparent 55%),
+        linear-gradient(135deg, #F5F8FF 0%, #F8F5FF 100%);
+    border-bottom: 1px solid #EAECF0;
+}
+.uui-edit-hero__body {
+    display: flex;
+    align-items: flex-end;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    padding: 0 1.5rem 1.25rem;
+    margin-top: -44px;
+}
+.uui-edit-hero__info { flex: 1 1 240px; min-width: 0; padding-bottom: 4px; }
+.uui-edit-hero__actions { padding-bottom: 6px; }
+.uui-edit-avatar--lg {
+    width: 96px; height: 96px;
+    border: 4px solid #fff;
+    box-shadow: 0 4px 12px rgba(16,24,40,0.12);
+    background: #F2F4F7;
+    font-size: 1.5rem;
+}
+.uui-edit-avatar--lg img { width: 100%; height: 100%; object-fit: cover; }
+.uui-edit-name { font-size: 1.25rem; font-weight: 600; color: #101828; margin: 0; letter-spacing: -0.01em; }
+.uui-edit-meta {
+    color: #667085;
+    font-size: 0.8125rem;
+    margin-top: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+.uui-edit-meta i { vertical-align: -2px; margin-right: 2px; }
+.uui-edit-meta__sep { color: #D0D5DD; }
+.uui-edit-meta__file { color: #175CD3; }
+
+/* Card heads */
+.uui-edit-card__head {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #F2F4F7;
+}
+.uui-edit-card__head > div:last-child { flex: 1 1 auto; min-width: 0; }
+.uui-edit-card__head .uui-edit-section-title { margin-bottom: 2px; }
+.uui-edit-card__head .uui-edit-section-sub { margin: 0; }
+.uui-edit-card__icon {
+    width: 36px; height: 36px;
+    border-radius: 9px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.125rem;
+    flex: 0 0 auto;
+}
+.uui-edit-card__icon--blue   { background: #EFF8FF; color: #1570EF; }
+.uui-edit-card__icon--violet { background: #F4F3FF; color: #6938EF; }
+.uui-edit-card__icon--green  { background: #ECFDF3; color: #079455; }
+
+/* Inline text-only action (Remove photo) */
+.uui-link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: 0;
+    padding: 6px 8px;
+    border-radius: 6px;
+    color: #B42318;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    margin: 0;
+}
+.uui-link-btn:hover { background: #FEF3F2; }
+.uui-link-btn.is-on { background: #FEE4E2; color: #912018; }
+
+/* Sticky footer bar */
+.uui-edit-footer {
+    position: sticky;
+    bottom: 0;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid #EAECF0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    box-shadow: 0 6px 18px rgba(16,24,40,0.06);
+    z-index: 10;
+}
+
+/* Refined inputs */
+.uui-edit-card .form-control,
+.uui-edit-card .form-select {
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    color: #101828;
+}
+.uui-edit-card .form-control::placeholder { color: #98A2B3; }
+
+/* Remove background tile from stat icons */
+.uui-stat__icon { background: transparent !important; }
+
+
+/* ===== Lesson view page ===== */
+.uui-lesson-type {
+    width: 56px; height: 56px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    flex: 0 0 auto;
+}
+.uui-lesson-type--blue   { background: #EFF8FF; color: #1570EF; }
+.uui-lesson-type--violet { background: #F4F3FF; color: #6938EF; }
+.uui-lesson-type--green  { background: #ECFDF3; color: #079455; }
+.uui-lesson-type--orange { background: #FEF6EE; color: #E04F16; }
+
+/* Lesson body typography */
+.lesson-content {
+    color: #344054;
+    font-size: 1rem;
+    line-height: 1.7;
+}
+.lesson-content h1, .lesson-content h2, .lesson-content h3 {
+    color: #101828;
+    letter-spacing: -0.01em;
+    margin: 1.5rem 0 0.75rem;
+}
+.lesson-content h1 { font-size: 1.875rem; }
+.lesson-content h2 { font-size: 1.5rem; }
+.lesson-content h3 { font-size: 1.25rem; font-weight: 600; }
+.lesson-content p { margin-bottom: 0.85rem; }
+.lesson-content ol { padding-left: 1.25rem; margin-bottom: 0.85rem; }
+.lesson-content ol li { margin: 0.25rem 0; }
+.lesson-content ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0.85rem;
+}
+.lesson-content ul li {
+    position: relative;
+    padding-left: 1.75rem;
+    margin: 0.35rem 0;
+}
+.lesson-content ul li::before {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 0.6em;
+    width: 9px;
+    height: 5px;
+    border-left: 1px solid #98A2B3;
+    border-bottom: 1px solid #98A2B3;
+    transform: rotate(-45deg);
+}
+.lesson-content ul ul li::before { border-color: #667085; }
+.lesson-content code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    border-radius: 0;
+    font-size: 0.95em;
+}
+.lesson-content pre {
+    background: transparent;
+    color: inherit;
+    padding: 8px 0;
+    border-radius: 0;
+    overflow-x: auto;
+}
+.lesson-content pre code { background: transparent; color: inherit; padding: 0; }
+.lesson-content a { color: #0078D4; text-decoration: none; }
+.lesson-content a:hover { text-decoration: underline; }
+.lesson-content blockquote {
+    border-left: 0;
+    padding: 4px 14px;
+    color: inherit;
+    background: rgba(127,127,127,0.10);
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+
+/* ===== Lesson content tables: visible bordered tables ===== */
+.lesson-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0 1.25rem;
+    font-size: 0.95rem;
+    background: transparent;
+    color: inherit;
+    border: 1px solid currentColor;
+}
+.lesson-content table th,
+.lesson-content table td {
+    border: 1px solid currentColor;
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top;
+}
+.lesson-content table th {
+    background: rgba(127,127,127,0.14);
+    font-weight: 600;
+}
+.lesson-content table tbody tr:nth-child(even) td,
+.lesson-content table > tr:nth-child(even) td {
+    background: rgba(127,127,127,0.06);
+}
+/* Make sure borders read as solid black on light theme and light on dark */
+html:not([data-theme="dark"]) .lesson-content table,
+html:not([data-theme="dark"]) .lesson-content table th,
+html:not([data-theme="dark"]) .lesson-content table td {
+    border-color: #111827;
+}
+[data-theme="dark"] .lesson-content table,
+[data-theme="dark"] .lesson-content table th,
+[data-theme="dark"] .lesson-content table td {
+    border-color: #E5E7EB;
+}
+
+/* ===== Oracle Education-style lesson page ===== */
+.oeu-page { background: #FFFFFF; }
+.oeu-breadcrumb-strip {
+    background: #F4F4F4;
+    border-bottom: 1px solid #E5E5E5;
+    padding: 10px 0;
+    font-size: 0.8125rem;
+}
+.oeu-breadcrumb a { color: #5A5A5A; text-decoration: none; }
+.oeu-breadcrumb a:hover { text-decoration: underline; }
+.oeu-breadcrumb span { color: #9A9A9A; margin: 0 6px; }
+
+.oeu-hero {
+    background: #FFFFFF;
+    border-bottom: 1px solid #EAECF0;
+    padding: 32px 0 24px;
+}
+.oeu-hero__title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #161513;
+    line-height: 1.2;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+.oeu-hero__sub {
+    display: block;
+    font-size: 0.9375rem;
+    font-weight: 400;
+    color: #5A5A5A;
+    margin-top: 6px;
+    letter-spacing: 0;
+}
+
+.oeu-section {
+    background: #FFFFFF;
+    border: 1px solid #EAECF0;
+    border-radius: 12px;
+    padding: 24px 28px;
+    box-shadow: 0 1px 2px rgba(16,24,40,.04);
+}
+.oeu-section + .oeu-section { margin-top: 16px; }
+.oeu-section__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #161513;
+    margin: 0 0 8px;
+}
+.oeu-section__lead {
+    color: #475467;
+    margin: 0 0 20px;
+}
+
+/* Oracle-like numbered steps */
+.oeu-steps {
+    list-style: none;
+    counter-reset: oeu-step;
+    padding: 0;
+    margin: 16px 0 0;
+}
+.oeu-steps > li {
+    counter-increment: oeu-step;
+    position: relative;
+    padding: 18px 0 18px 56px;
+    border-top: 1px solid #EAECF0;
+}
+.oeu-steps > li:first-child { border-top: 0; padding-top: 8px; }
+.oeu-steps > li::before {
+    content: counter(oeu-step);
+    position: absolute;
+    left: 0;
+    top: 18px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #F2F4F7;
+    color: #344054;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #EAECF0;
+}
+.oeu-steps > li:first-child::before { top: 8px; }
+.oeu-steps__title {
+    font-size: 1.0625rem;
+    font-weight: 600;
+    color: #161513;
+    margin: 0 0 8px;
+}
+.oeu-steps__body {
+    color: #475467;
+    margin: 0 0 8px;
+}
+
+/* Right summary card (sticky on desktop) */
+.oeu-summary {
+    background: #FFFFFF;
+    border: 1px solid #EAECF0;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 2px rgba(16,24,40,.04);
+    position: sticky;
+    top: 88px;
+}
+.oeu-summary__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 0;
+    border-bottom: 1px solid #F2F4F7;
+    font-size: 0.9375rem;
+}
+.oeu-summary__row:last-of-type { border-bottom: 0; }
+.oeu-summary__row span { color: #667085; }
+.oeu-summary__row strong { color: #161513; font-weight: 600; }
+
+@media (max-width: 991.98px) {
+    .oeu-summary { position: static; }
+    .oeu-hero { padding: 24px 0 16px; }
+    .oeu-hero__title { font-size: 1.5rem; }
+}
+
+/* Branded lesson hero — color set per course */
+.lesson-hero {
+    background: var(--hero-bg, #0078D4) !important;
+    border-color: var(--hero-bg, #0078D4) !important;
+    color: var(--hero-fg, #FFFFFF) !important;
+}
+.lesson-hero .lesson-hero__title,
+.lesson-hero .uui-edit-name { color: var(--hero-fg, #FFFFFF) !important; }
+.lesson-hero .lesson-hero__eyebrow {
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--hero-fg-muted, rgba(255,255,255,.85));
+}
+.lesson-hero .lesson-hero__meta,
+.lesson-hero .lesson-hero__meta span { color: var(--hero-fg-muted, rgba(255,255,255,.9)) !important; }
+.lesson-hero .lesson-hero__icon {
+    background: var(--hero-icon-bg, rgba(255,255,255,.15)) !important;
+    color: var(--hero-fg, #FFFFFF) !important;
+}
+
+/* Brand palettes */
+.lesson-hero--oracle    { --hero-bg: #C74634; }
+.lesson-hero--azure     { --hero-bg: #0078D4; }
+.lesson-hero--microsoft { --hero-bg: #0078D4; }
+.lesson-hero--powerbi   {
+    --hero-bg: transparent;
+    --hero-fg: #1A1A1A;
+    --hero-fg-muted: rgba(26,26,26,.75);
+    --hero-icon-bg: rgba(0,0,0,.08);
+}
+.lesson-hero--sql       { --hero-bg: #CC2927; }
+.lesson-hero--python    { --hero-bg: #1E5A8A; }
+.lesson-hero--aws       { --hero-bg: #232F3E; }
+.lesson-hero--gcp       { --hero-bg: #1A73E8; }
+
+/* Lesson list rows */
+.lesson-list { list-style: none; padding: 0; margin: 0; }
+.lesson-list > li + li { border-top: 1px solid #F2F4F7; }
+.lesson-list__item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    text-decoration: none;
+    color: inherit;
+    transition: background-color .15s ease;
+}
+.lesson-list__item:hover { background: #F9FAFB; color: inherit; text-decoration: none; }
+.lesson-list__icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    font-size: 1.25rem;
+    flex: 0 0 auto;
+}
+.lesson-list__body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+.lesson-list__title { font-weight: 600; color: #101828; }
+.lesson-list__meta  { font-size: .8125rem; color: #667085; margin-top: 2px; }
+.lesson-list__chev  { color: #98A2B3; font-size: 1.25rem; flex: 0 0 auto; }
+.lesson-list__item:hover .lesson-list__chev { color: #1570EF; }
+
+/* Ensure anchor edit icon matches delete icon (override Bootstrap link color) */
+a.uui-icon-btn,
+a.uui-icon-btn:link,
+a.uui-icon-btn:visited { color: #98A2B3 !important; text-decoration: none !important; }
+a.uui-icon-btn:hover   { color: #475467 !important; }
+
+/* Force black text for data table headers and cells */
+.uui-table thead th { color: #101828 !important; }
+.uui-table tbody td { color: #101828 !important; }
+.uui-table tbody td.uui-muted,
+.uui-table tbody td .uui-muted { color: #475467 !important; }
+
+/* About-style lesson layout */
+.about-lesson { margin-bottom: 1.25rem; }
+.about-lesson__eyebrow {
+    color: #98A2B3;
+    font-size: 1.5rem;
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+}
+.about-lesson__title {
+    color: #101828;
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin: 0 0 0.75rem;
+}
+.about-lesson__meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+}
+
+/* About-style right meta sidebar */
+.about-meta {
+    background: #FFFFFF;
+    border: 1px solid #EAECF0;
+    border-radius: 12px;
+    overflow: hidden;
+    position: sticky;
+    top: 88px;
+    box-shadow: 0 1px 2px rgba(16,24,40,.04);
+}
+.about-meta__row {
+    padding: 14px 18px;
+    border-bottom: 1px solid #F2F4F7;
+    font-size: 0.9375rem;
+    color: #344054;
+    line-height: 1.5;
+}
+.about-meta__row:last-child { border-bottom: 0; }
+.about-meta__row strong { color: #101828; font-weight: 600; margin-right: 4px; }
+@media (max-width: 991.98px) { .about-meta { position: static; } }
+
+/* Brand color top bar for lesson pages */
+.lesson-brandbar {
+    height: 8px;
+    border-radius: 999px;
+    margin: 4px 0 20px;
+    background: #0078D4;
+}
+.lesson-brandbar--oracle    { background: #C74634; }
+.lesson-brandbar--azure,
+.lesson-brandbar--microsoft { background: #0078D4; }
+.lesson-brandbar--powerbi   { background: #F2C811; }
+.lesson-brandbar--sql       { background: #CC2927; }
+.lesson-brandbar--python    { background: #1E5A8A; }
+.lesson-brandbar--aws       { background: #232F3E; }
+.lesson-brandbar--gcp       { background: #1A73E8; }
+
+/* Lesson page eyebrow + right-side facts sidebar */
+.lesson-eyebrow {
+    font-size: 1.0625rem;
+    color: #98A2B3;
+    font-weight: 400;
+    margin-bottom: 14px;
+    letter-spacing: 0;
+}
+.lesson-facts { padding: 4px 0 !important; }
+.lesson-facts__row {
+    display: block;
+    padding: 14px 20px;
+    border-bottom: 1px solid #EAECF0;
+    font-size: 0.9375rem;
+    color: #344054;
+    line-height: 1.5;
+}
+.lesson-facts__row:last-child { border-bottom: 0; }
+.lesson-facts__row strong { color: #101828; font-weight: 600; margin-right: 6px; }
+
+/* Big course title in lesson view (Python Institute style) */
+.lesson-course-title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #101828;
+    line-height: 1.2;
+    margin: 0 0 18px 0;
+    letter-spacing: -0.01em;
+}
+
+/* South African Code Institute logo */
+.sidebar-brand { display: flex; align-items: center; justify-content: center; padding: 16px 8px; }
+.sidebar-brand-logo {
+    max-height: 64px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
+}
+.navbar-brand-logo {
+    height: 44px;
+    width: auto;
+    display: block;
+}
+
+/* Lesson view: white background + plain (un-carded) main content */
+.uui-page--white { background: #ffffff !important; }
+.lesson-main {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+}
+
+/* Force entire shell white when lesson view uses --white modifier */
+body:has(.uui-page--white),
+body:has(.uui-page--white) .app-main,
+body:has(.uui-page--white) .app-content {
+    background: #ffffff !important;
+}
+.uui-page--white .container { background: #ffffff; }
+
+/* Enrolled students compact card */
+.enrolled-card {
+    border: 1px solid #EAECF0;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(16,24,40,.04);
+}
+.enrolled-card .card-body { padding: 16px 18px; }
+.enrolled-icon {
+    width: 44px; height: 44px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: #EAEAEA;
+    color: #4B4B4B;
+    font-size: 1.5rem;
+}
+.enrolled-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #101828;
+    line-height: 1.2;
+}
+.enrolled-sub {
+    font-size: 0.8125rem;
+    color: #667085;
+    margin-top: 2px;
+}
+.btn-icon {
+    width: 38px; height: 38px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 1.125rem;
+    line-height: 1;
+    border: 1px solid transparent;
+    transition: background .15s, border-color .15s, color .15s;
+}
+.btn-icon-light {
+    background: #ffffff;
+    color: #475467;
+    border-color: #EAECF0;
+}
+.btn-icon-light:hover {
+    background: #F9FAFB;
+    color: #101828;
+    border-color: #D0D5DD;
+}
+.btn-icon-primary {
+    background: #4B4B4B;
+    color: #ffffff;
+    border-color: #4B4B4B;
+}
+.btn-icon-primary:hover {
+    background: #2A2A2A;
+    color: #ffffff;
+    border-color: #2A2A2A;
+}
+.min-width-0 { min-width: 0; }
+
+/* Make .btn-icon override Bootstrap .btn defaults cleanly */
+.btn.btn-icon {
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    min-height: 0 !important;
+    line-height: 1 !important;
+    border-radius: 10px !important;
+    box-shadow: none !important;
+}
+.btn.btn-icon i { font-size: 1.125rem; line-height: 1; }
+.btn.btn-icon:focus,
+.btn.btn-icon:focus-visible { box-shadow: 0 0 0 3px rgba(0,120,212,.18) !important; }
+
+/* Enrolled students modal */
+.enrolled-modal { border: 0; border-radius: 14px; }
+.enrolled-modal .modal-header { border-bottom: 1px solid #EAECF0; padding: 20px 24px; }
+.enrolled-modal .modal-body { padding: 16px 24px; }
+.enrolled-modal .modal-footer { border-top: 1px solid #EAECF0; padding: 16px 24px; }
+.enrolled-list { list-style: none; padding: 0; margin: 0; }
+.enrolled-list__item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 4px;
+    border-bottom: 1px solid #F2F4F7;
+}
+.enrolled-list__item:last-child { border-bottom: 0; }
+.enrolled-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: #EFF8FF;
+    color: #0078D4;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.enrolled-list__body { flex: 1; min-width: 0; }
+.enrolled-list__name { font-weight: 600; color: #101828; font-size: 0.9375rem; }
+.enrolled-list__meta { color: #667085; font-size: 0.8125rem; margin-top: 2px; }
+
+/* Enrolled-list avatar image + clickable row */
+.enrolled-avatar--img {
+    object-fit: cover;
+    background: transparent;
+}
+.enrolled-list__link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+    min-width: 0;
+    text-decoration: none !important;
+    color: inherit;
+    padding: 4px;
+    border-radius: 8px;
+    transition: background .15s;
+}
+.enrolled-list__link:hover { background: #F9FAFB; }
+.enrolled-list__link:hover .enrolled-list__name { color: #0078D4; }
+
+/* Student progress page */
+.sp-header { border-radius: 14px; border: 1px solid #EAECF0; }
+.sp-avatar {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: #EFF8FF;
+}
+.sp-avatar--initial {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 600;
+    color: #0078D4;
+}
+.sp-name { font-size: 1.5rem; font-weight: 700; color: #101828; }
+.sp-meta { color: #667085; font-size: 0.9375rem; display: flex; gap: 18px; flex-wrap: wrap; }
+.sp-meta i { margin-right: 4px; color: #98A2B3; }
+.sp-bio { color: #475467; font-size: 0.9375rem; }
+.sp-stat {
+    border-radius: 14px;
+    border: 1px solid #EAECF0;
+    height: 100%;
+    background: #fff;
+    transition: box-shadow .15s, transform .15s;
+}
+.sp-stat:hover { box-shadow: 0 4px 16px rgba(16,24,40,.06); }
+.sp-stat .card-body { padding: 22px 22px 20px; }
+.sp-stat__head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.sp-stat__icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 1.125rem;
+    flex-shrink: 0;
+}
+.sp-stat__icon--blue   { background: #EFF8FF; color: #0078D4; }
+.sp-stat__icon--green  { background: #ECFDF3; color: #067647; }
+.sp-stat__icon--purple { background: #F4F3FF; color: #6938EF; }
+.sp-stat__label { color: #475467; font-size: 0.8125rem; text-transform: uppercase; letter-spacing: .04em; font-weight: 600; }
+.sp-stat__value { font-size: 2rem; font-weight: 700; color: #101828; line-height: 1.1; }
+.sp-stat__total { color: #98A2B3; font-size: 1rem; font-weight: 500; }
+.sp-stat__sub { color: #667085; font-size: 0.8125rem; }
+
+.sp-lesson-list { list-style: none; padding: 0; margin: 0; }
+.sp-lesson-list__item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 6px;
+    border-bottom: 1px solid #F2F4F7;
+    transition: background .15s;
+    border-radius: 8px;
+}
+.sp-lesson-list__item:last-child { border-bottom: 0; }
+.sp-lesson-list__item:hover { background: #F9FAFB; }
+.sp-lesson-status {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: #fff;
+    border: 1.5px solid #D0D5DD;
+    color: transparent;
+    font-size: 1rem;
+    flex-shrink: 0;
+    transition: all .15s;
+}
+.sp-lesson-status--done {
+    background: #12B76A;
+    border-color: #12B76A;
+    color: #fff;
+}
+.sp-lesson-status .icon { width: 16px; height: 16px; stroke-width: 2.5; }
+.sp-lesson-type {
+    position: relative;
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 1.125rem;
+    flex-shrink: 0;
+}
+.sp-lesson-type--blue   { background: #EFF8FF; color: #0078D4; }
+.sp-lesson-type--purple { background: #F4F3FF; color: #6938EF; }
+.sp-lesson-type--amber  { background: #FEF6E7; color: #B54708; }
+.sp-lesson-type--green  { background: #ECFDF3; color: #067647; }
+.sp-lesson-type__check {
+    position: absolute;
+    right: -4px; bottom: -4px;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: #12B76A;
+    color: #fff;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 2px solid #fff;
+    font-size: 0.75rem;
+}
+.sp-lesson-type__check .icon { width: 10px; height: 10px; stroke-width: 3; }
+.sp-lesson-list__title { font-weight: 600; color: #101828; font-size: 0.9375rem; }
+.sp-lesson-list__meta { color: #667085; font-size: 0.8125rem; margin-top: 2px; }
+
+/* User-management filter selects */
+.uui-filter-select {
+    height: 40px;
+    padding: 0 32px 0 12px;
+    border: 1px solid #D0D5DD;
+    border-radius: 8px;
+    background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23667085' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>") no-repeat right 10px center;
+    background-size: 14px;
+    font-size: 0.875rem;
+    color: #344054;
+    box-shadow: none;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    transition: border-color .15s, box-shadow .15s;
+}
+.uui-filter-select:hover { border-color: #98A2B3; }
+.uui-filter-select:focus {
+    outline: 0;
+    border-color: #D0D5DD;
+    box-shadow: none;
+}
+
+/* Remove browser autofill blue/yellow background */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
+    box-shadow: 0 0 0 1000px #fff inset !important;
+    -webkit-text-fill-color: #101828 !important;
+    caret-color: #101828;
+    transition: background-color 99999s ease-in-out 0s;
+}
+
+/* Dark-mode autofill: match dark input background, white text */
+html[data-theme="dark"] input:-webkit-autofill,
+html[data-theme="dark"] input:-webkit-autofill:hover,
+html[data-theme="dark"] input:-webkit-autofill:focus,
+html[data-theme="dark"] input:-webkit-autofill:active,
+html[data-theme="dark"] textarea:-webkit-autofill,
+html[data-theme="dark"] select:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #161616 inset !important;
+    box-shadow: 0 0 0 1000px #161616 inset !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+    caret-color: #FFFFFF !important;
+    border-color: #2A2A2A !important;
+}
+
+/* ===========================================================
+   Course shell - Podia/Kestra-style lesson viewer
+   =========================================================== */
+.course-shell {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    min-height: 100vh;
+    background: #FFFFFF;
+}
+
+/* Sidebar */
+.course-shell__sidebar {
+    border-right: 1px solid #EAECF0;
+    background: #FAFBFC;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+}
+.course-shell__sidebar-head {
+    padding: 20px 20px 16px;
+    border-bottom: 0;
+    background: #FFFFFF;
+}
+.course-shell__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #475467;
+    text-decoration: none;
+    margin-bottom: 10px;
+}
+.course-shell__back:hover { color: #0078D4; }
+.course-shell__back i { font-size: 1rem; }
+.course-shell__course-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #101828;
+    line-height: 1.35;
+    margin-bottom: 12px;
+}
+.course-shell__progress-meta {
+    font-size: 0.75rem;
+    color: #667085;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+.course-shell__progress-bar {
+    height: 6px;
+    border-radius: 9999px;
+    background: #EAECF0;
+    overflow: hidden;
+}
+.course-shell__progress-bar > span {
+    display: block;
+    height: 100%;
+    background: #0078D4;
+    border-radius: 9999px;
+    transition: width .3s ease;
+}
+
+.course-shell__outline {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 8px 24px;
+}
+.course-shell__section-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #667085;
+    padding: 8px 12px 6px;
+}
+.course-shell__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.course-shell__lesson {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--text-color);
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 2px;
+    transition: background-color .15s ease, color .15s ease;
+}
+.course-shell__lesson:hover { background: var(--secondary-color); color: var(--text-color); }
+.course-shell__lesson.is-current {
+    background: rgba(127,127,127,.18);
+    color: inherit;
+    font-weight: 600;
+}
+.course-shell__lesson.is-current .course-shell__lesson-icon { color: inherit; }
+.course-shell__lesson.is-current .course-shell__lesson-title { color: inherit; font-weight: 600; }
+[data-theme="dark"] .course-shell__lesson.is-current { background: #2A2A2A !important; color: var(--text-color) !important; }
+[data-theme="dark"] .course-shell__lesson.is-current .course-shell__lesson-icon,
+[data-theme="dark"] .course-shell__lesson.is-current .course-shell__lesson-title { color: var(--text-color) !important; }
+.course-shell__lesson-icon {
+    font-size: 18px;
+    color: var(--light-text);
+    flex: 0 0 auto;
+}
+.course-shell__lesson-title {
+    flex: 1;
+    min-width: 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-color);
+    line-height: 1.35;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.course-shell__lesson-check {
+    flex: 0 0 auto;
+    font-size: 16px;
+    color: #12B76A;
+}
+.course-shell__lesson-status,
+.course-shell__lesson-body,
+.course-shell__lesson-meta,
+.course-shell__lesson-dot { display: none !important; }
+
+/* Main content */
+.course-shell__main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: #FFFFFF;
+}
+.course-shell__topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 32px;
+    border-bottom: 0;
+    background: #FFFFFF;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+.course-shell__topbar-left {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+}
+.course-shell__step {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #475467;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.course-shell__completed-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 10px;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #067647;
+    background: #ECFDF3;
+    border: 1px solid #ABEFC6;
+}
+.course-shell__completed-pill i { font-size: 0.875rem; }
+
+.course-shell__article {
+    flex: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 32px 28px;
+    width: 100%;
+}
+.course-shell__type-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #175CD3;
+    background: #EFF8FF;
+    border: 1px solid #B2DDFF;
+    margin-bottom: 14px;
+}
+.course-shell__type-chip i { font-size: 0.875rem; }
+.course-shell__title {
+    font-size: 1.875rem;
+    font-weight: 600;
+    color: #101828;
+    line-height: 1.2;
+    margin: 0 0 24px;
+    letter-spacing: -0.02em;
+}
+.course-shell__article .lesson-content {
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    color: #344054;
+}
+.course-shell__article .lesson-content h2 {
+    font-size: 1.25rem; font-weight: 600; color: #101828;
+    margin-top: 1.75rem; margin-bottom: .5rem;
+}
+.course-shell__article .lesson-content h3 {
+    font-size: 1.0625rem; font-weight: 600; color: #101828;
+    margin-top: 1.25rem; margin-bottom: .5rem;
+}
+.course-shell__article .lesson-content p { margin-bottom: 1rem; }
+.course-shell__article .lesson-content ul,
+.course-shell__article .lesson-content ol { margin: 0 0 1rem 1.25rem; }
+.course-shell__article .lesson-content code {
+    background: transparent; padding: 0; border-radius: 0;
+    font-size: .95em; color: inherit;
+}
+.course-shell__article .lesson-content pre {
+    background: transparent; color: inherit;
+    padding: 8px 0; border-radius: 0; overflow-x: auto;
+    font-size: .875rem;
+}
+.course-shell__article .lesson-content img {
+    max-width: 100%; height: auto;
+    border-radius: 8px; margin: 12px 0;
+}
+.course-shell__video {
+    border-radius: 10px; overflow: hidden;
+    background: #000;
+    box-shadow: 0 1px 3px rgba(16,24,40,0.1);
+}
+.course-shell__complete-form {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #F2F4F7;
+}
+
+/* Prev / Next nav bar */
+.course-shell__nav {
+    border-top: 0;
+    background: #FFFFFF;
+    padding: 12px 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    align-items: stretch;
+}
+.course-shell__nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #EAECF0;
+    background: #FFFFFF;
+    text-decoration: none;
+    color: #344054;
+    transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+    min-width: 0;
+}
+.course-shell__nav-btn:hover {
+    border-color: #D0D5DD;
+    background: #F9FAFB;
+    color: #101828;
+}
+.course-shell__nav-btn:focus,
+.course-shell__nav-btn:focus-visible,
+.course-shell__nav-btn:active {
+    outline: none;
+    box-shadow: none;
+}
+.course-shell__nav-btn--prev { justify-self: start; max-width: 100%; }
+.course-shell__nav-btn--next {
+    justify-self: end;
+    flex-direction: row;
+    background: #FFFFFF;
+    border-color: #EAECF0;
+    color: #344054;
+}
+.course-shell__nav-btn--next:hover {
+    background: #F9FAFB;
+    border-color: #D0D5DD;
+    color: #101828;
+}
+.course-shell__nav-btn--next .course-shell__nav-text { text-align: right; }
+.course-shell__nav-btn i { font-size: 1.125rem; flex: 0 0 auto; color: #475467; }
+.course-shell__nav-text {
+    display: flex; flex-direction: column;
+    min-width: 0;
+    line-height: 1.15;
+}
+.course-shell__nav-label {
+    font-size: 0.625rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #667085;
+}
+.course-shell__nav-title {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #101828;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.course-shell__nav-btn--next,
+.course-shell__nav-btn--next i,
+.course-shell__nav-btn--next .course-shell__nav-label,
+.course-shell__nav-btn--next .course-shell__nav-title { color: #344054; }
+.course-shell__nav-btn--next .course-shell__nav-label { color: #667085; }
+.course-shell__nav-btn--next .course-shell__nav-title { color: #101828; }
+.course-shell__nav-btn--next i { color: #475467; }
+
+/* Responsive */
+@media (max-width: 960px) {
+    .course-shell { grid-template-columns: 1fr; }
+    .course-shell__sidebar {
+        position: static; height: auto;
+        border-right: 0; border-bottom: 1px solid #EAECF0;
+    }
+    .course-shell__outline { max-height: 360px; }
+    .course-shell__topbar, .course-shell__article, .course-shell__nav { padding-left: 20px; padding-right: 20px; }
+    .course-shell__article { padding-top: 24px; }
+    .course-shell__title { font-size: 1.5rem; }
+    .course-shell__nav { grid-template-columns: 1fr; }
+    .course-shell__nav-btn--prev, .course-shell__nav-btn--next { justify-self: stretch; }
+}
+
+/* Course shell sidebar footer (user + sign out) */
+.course-shell__sidebar-foot {
+    border-top: 1px solid #EAECF0;
+    background: #FFFFFF;
+    padding: 12px 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.course-shell__sidebar-foot .sidebar-user,
+.course-shell__sidebar-foot .sidebar-link {
+    padding: 8px 10px;
+    border-radius: 8px;
+}
+
+/* Kill any 1px hairline at top of viewport across all pages */
+body, html, .app-main, .app-content, .course-shell, .course-shell__sidebar, .course-shell__main, .course-shell__sidebar-head, .course-shell__topbar {
+    border-top: 0 !important;
+}
+.course-shell__topbar, .course-shell__sidebar-head {
+    border-bottom: 0 !important;
+    box-shadow: none !important;
+}
+
+/* =====================================================
+   DARK MODE
+   Activated via <html data-theme="dark" data-bs-theme="dark">.
+   Variables are redefined and a handful of hard-coded
+   backgrounds/text colors are overridden to ensure
+   readable contrast everywhere (no black-on-black).
+   ===================================================== */
+:root[data-theme="dark"] {
+    --primary-color: #4DA3FF;
+    --primary-hover: #69B1FF;
+    --primary-pressed: #84C0FF;
+    --secondary-color: #1A1A1A;
+    --accent-color: #E5E5E5;
+    --success-color: #34D399;
+    --danger-color: #EF4444;
+    --warning-color: #FBBF24;
+    --info-color: #60A5FA;
+    --text-color: #E5E5E5;
+    --light-text: #A0A0A0;
+    --border-color: #262626;
+    --surface: #161616;
+    --canvas: #141414;
+}
+
+:root[data-theme="dark"] body,
+:root[data-theme="dark"] html {
+    background-color: var(--canvas) !important;
+    color: var(--text-color) !important;
+    color-scheme: dark;
+}
+
+/* Generic surfaces */
+[data-theme="dark"] .app-main,
+[data-theme="dark"] .app-content,
+[data-theme="dark"] .container,
+[data-theme="dark"] .container-fluid { background-color: transparent; }
+
+[data-theme="dark"] .app-sidebar,
+[data-theme="dark"] .app-footer,
+[data-theme="dark"] .topbar-public,
+[data-theme="dark"] .navbar,
+[data-theme="dark"] .navbar-light {
+    background-color: var(--surface) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+[data-theme="dark"] .navbar-light .navbar-brand,
+[data-theme="dark"] .navbar-light .nav-link { color: var(--text-color) !important; }
+
+/* Cards */
+[data-theme="dark"] .card,
+[data-theme="dark"] .modal-content,
+[data-theme="dark"] .dropdown-menu,
+[data-theme="dark"] .list-group-item,
+[data-theme="dark"] .accordion-item,
+[data-theme="dark"] .accordion-button,
+[data-theme="dark"] .toast,
+[data-theme="dark"] .offcanvas {
+    background-color: var(--surface) !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+[data-theme="dark"] .card-header,
+[data-theme="dark"] .card-footer,
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .modal-footer {
+    background-color: var(--surface) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+[data-theme="dark"] .card-title,
+[data-theme="dark"] .modal-title,
+[data-theme="dark"] h1, [data-theme="dark"] h2, [data-theme="dark"] h3,
+[data-theme="dark"] h4, [data-theme="dark"] h5, [data-theme="dark"] h6 {
+    color: var(--text-color) !important;
+}
+
+/* Backgrounds that ship from Bootstrap or older custom CSS */
+[data-theme="dark"] .bg-white,
+[data-theme="dark"] .bg-light { background-color: var(--surface) !important; color: var(--text-color) !important; }
+[data-theme="dark"] .bg-body { background-color: var(--canvas) !important; }
+[data-theme="dark"] .text-muted,
+[data-theme="dark"] .text-secondary { color: var(--light-text) !important; }
+[data-theme="dark"] .text-dark,
+[data-theme="dark"] .text-black { color: var(--text-color) !important; }
+[data-theme="dark"] .text-body { color: var(--text-color) !important; }
+[data-theme="dark"] a { color: var(--primary-color); }
+[data-theme="dark"] a:hover { color: var(--primary-hover); }
+[data-theme="dark"] hr,
+[data-theme="dark"] .border,
+[data-theme="dark"] .border-top,
+[data-theme="dark"] .border-end,
+[data-theme="dark"] .border-bottom,
+[data-theme="dark"] .border-start { border-color: var(--border-color) !important; }
+
+/* Form controls */
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea,
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="email"],
+[data-theme="dark"] input[type="password"],
+[data-theme="dark"] input[type="number"],
+[data-theme="dark"] input[type="search"],
+[data-theme="dark"] input[type="url"],
+[data-theme="dark"] input[type="tel"],
+[data-theme="dark"] input[type="date"],
+[data-theme="dark"] input[type="datetime-local"] {
+    background-color: #121212 !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+[data-theme="dark"] .form-control::placeholder,
+[data-theme="dark"] textarea::placeholder,
+[data-theme="dark"] input::placeholder { color: #707070 !important; }
+[data-theme="dark"] .form-control:focus,
+[data-theme="dark"] .form-select:focus,
+[data-theme="dark"] select:focus {
+    background-color: #121212 !important;
+    color: var(--text-color) !important;
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 3px rgba(77,163,255,.22) !important;
+}
+[data-theme="dark"] .form-label,
+[data-theme="dark"] .form-check-label,
+[data-theme="dark"] .form-text { color: var(--text-color) !important; }
+[data-theme="dark"] .form-text { color: var(--light-text) !important; }
+[data-theme="dark"] .input-group-text {
+    background-color: #1F1F1F !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* Tables */
+[data-theme="dark"] .table {
+    --bs-table-bg: var(--surface);
+    --bs-table-color: var(--text-color);
+    --bs-table-border-color: var(--border-color);
+    --bs-table-striped-bg: #1C1C1C;
+    --bs-table-striped-color: var(--text-color);
+    --bs-table-hover-bg: #222222;
+    --bs-table-hover-color: var(--text-color);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+[data-theme="dark"] .table > :not(caption) > * > * { color: var(--text-color); border-color: var(--border-color); }
+[data-theme="dark"] .table thead th { color: var(--text-color); background-color: #181818; }
+
+/* Buttons */
+[data-theme="dark"] .btn-light,
+[data-theme="dark"] .btn-outline-secondary {
+    background-color: #1F1F1F; color: var(--text-color); border-color: var(--border-color);
+}
+[data-theme="dark"] .btn-light:hover,
+[data-theme="dark"] .btn-outline-secondary:hover {
+    background-color: #2A2A2A; color: var(--text-color); border-color: var(--border-color);
+}
+[data-theme="dark"] .btn-outline-primary { color: var(--primary-color); border-color: var(--primary-color); }
+[data-theme="dark"] .btn-outline-primary:hover { background-color: var(--primary-color); color: #0A0A0A; }
+[data-theme="dark"] .btn-outline-danger { color: var(--danger-color); border-color: var(--danger-color); }
+[data-theme="dark"] .btn-outline-danger:hover { background-color: var(--danger-color); color: #1A0A0A; }
+[data-theme="dark"] .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
+
+/* Badges & alerts */
+[data-theme="dark"] .badge.bg-light,
+[data-theme="dark"] .badge.text-bg-light { background-color: #1F1F1F !important; color: var(--text-color) !important; }
+[data-theme="dark"] .alert { border-color: var(--border-color); }
+[data-theme="dark"] .alert-info    { background:#1A1A1A; color:#BFE0FF; border-color:#262626; }
+[data-theme="dark"] .alert-success { background:#1A1A1A; color:#A7F3D0; border-color:#262626; }
+[data-theme="dark"] .alert-warning { background:#1A1A1A; color:#FCD34D; border-color:#262626; }
+[data-theme="dark"] .alert-danger  { background:#1A1A1A; color:#FECACA; border-color:#262626; }
+
+/* Dropdown items / nav pills */
+[data-theme="dark"] .dropdown-item { color: var(--text-color); }
+[data-theme="dark"] .dropdown-item:hover,
+[data-theme="dark"] .dropdown-item:focus { background-color: #1F1F1F; color: var(--text-color); }
+[data-theme="dark"] .dropdown-divider { border-color: var(--border-color); }
+[data-theme="dark"] .nav-tabs { border-color: var(--border-color); }
+[data-theme="dark"] .nav-tabs .nav-link { color: var(--light-text); }
+[data-theme="dark"] .nav-tabs .nav-link.active { background-color: var(--surface); color: var(--text-color); border-color: var(--border-color) var(--border-color) var(--surface); }
+
+/* Sidebar specifics */
+[data-theme="dark"] .sidebar-link { color: var(--text-color); }
+[data-theme="dark"] .sidebar-link:hover { background-color: #1F1F1F; color: var(--text-color); }
+[data-theme="dark"] .sidebar-link.active { background-color: #1F1F1F; color: var(--primary-color); }
+[data-theme="dark"] .sidebar-user:hover { background-color: #1F1F1F; }
+[data-theme="dark"] .sidebar-brand { background: transparent; }
+
+/* Custom UUI / Untitled UI tokens used around the app */
+[data-theme="dark"] .uui-filter-select,
+[data-theme="dark"] .uui-card,
+[data-theme="dark"] .uui-panel,
+[data-theme="dark"] .uui-tab {
+    background-color: var(--surface) !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* Add Question / Quiz views */
+[data-theme="dark"] .add-question-view,
+[data-theme="dark"] .quiz-view,
+[data-theme="dark"] .edit-question { background-color: transparent; }
+[data-theme="dark"] .add-question-view .card,
+[data-theme="dark"] .quiz-view .card,
+[data-theme="dark"] .edit-question .card {
+    background-color: var(--surface) !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+[data-theme="dark"] .add-question-view .option-item,
+[data-theme="dark"] .quiz-view .option-item {
+    background-color: var(--surface);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+/* Rich editor */
+[data-theme="dark"] .rich-text-editor,
+[data-theme="dark"] .rich-editor-content,
+[data-theme="dark"] .rich-editor-toolbar {
+    background-color: #121212 !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+[data-theme="dark"] .rich-editor-button { color: var(--text-color); }
+[data-theme="dark"] .rich-editor-button:hover { background-color: #1F1F1F; }
+
+/* Azure-style confirm modal & toasts */
+[data-theme="dark"] .az-confirm-content,
+[data-theme="dark"] .az-confirm-header,
+[data-theme="dark"] .az-confirm-body,
+[data-theme="dark"] .az-confirm-footer {
+    background-color: var(--surface) !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+[data-theme="dark"] .azure-toast {
+    background-color: var(--surface) !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* Page jumbotrons / hero sections that use bg-light */
+[data-theme="dark"] .jumbotron,
+[data-theme="dark"] .hero,
+[data-theme="dark"] .page-header { background-color: transparent !important; color: var(--text-color) !important; }
+
+/* Code blocks */
+[data-theme="dark"] pre,
+[data-theme="dark"] code,
+[data-theme="dark"] kbd {
+    background-color: #121212 !important;
+    color: #E5E5E5 !important;
+    border-color: var(--border-color);
+}
+
+/* Progress bars keep their colored fill, just darken the track */
+[data-theme="dark"] .progress { background-color: #1F1F1F; }
+
+/* Page text fallbacks so nothing renders black-on-dark */
+[data-theme="dark"] p, [data-theme="dark"] li, [data-theme="dark"] span, [data-theme="dark"] label,
+[data-theme="dark"] td, [data-theme="dark"] th, [data-theme="dark"] dd, [data-theme="dark"] dt,
+[data-theme="dark"] small { color: var(--text-color); }
+[data-theme="dark"] [style*="color: #000"],
+[data-theme="dark"] [style*="color:#000"],
+[data-theme="dark"] [style*="color: black"],
+[data-theme="dark"] [style*="color:black"] { color: var(--text-color) !important; }
+[data-theme="dark"] [style*="background-color: #fff"],
+[data-theme="dark"] [style*="background-color:#fff"],
+[data-theme="dark"] [style*="background: #fff"],
+[data-theme="dark"] [style*="background:#fff"],
+[data-theme="dark"] [style*="background-color: white"],
+[data-theme="dark"] [style*="background: white"] {
+    background-color: var(--surface) !important;
+}
+
+/* Theme toggle button in the sidebar */
+.sidebar-theme-toggle {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%;
+    padding: 8px 12px;
+    background: transparent;
+    border: 0;
+    color: var(--light-text);
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 13px;
+    text-align: left;
+}
+.sidebar-theme-toggle:hover { background-color: var(--secondary-color); color: var(--text-color); }
+.sidebar-theme-toggle i { font-size: 18px; }
+[data-theme="dark"] .sidebar-theme-toggle:hover { background-color: #1F1F1F; color: var(--text-color); }
+.sidebar-theme-toggle .theme-toggle-icon-dark { display: none; }
+[data-theme="dark"] .sidebar-theme-toggle .theme-toggle-icon-light { display: none; }
+[data-theme="dark"] .sidebar-theme-toggle .theme-toggle-icon-dark { display: inline-block; }
+
+/* Floating theme toggle for the bare lesson layout (no sidebar / no navbar) */
+.bare-theme-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 1050;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: rgba(127,127,127,0.12);
+    border: 1px solid rgba(127,127,127,0.25);
+    border-radius: 8px;
+    color: inherit;
+    cursor: pointer;
+}
+.bare-theme-toggle:hover { background: rgba(127,127,127,0.20); }
+.bare-theme-toggle .theme-toggle-icon-dark { display: none; }
+[data-theme="dark"] .bare-theme-toggle .theme-toggle-icon-light { display: none; }
+[data-theme="dark"] .bare-theme-toggle .theme-toggle-icon-dark { display: inline-block; }
+
+/* ===== UUI (Untitled UI) component dark-mode overrides ===== */
+[data-theme="dark"] .uui-table-card {
+    background: var(--surface) !important;
+    border-color: var(--border-color) !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+[data-theme="dark"] .uui-table-card__header,
+[data-theme="dark"] .uui-table-card__footer {
+    background: var(--surface) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+[data-theme="dark"] .uui-table-card__title { color: var(--text-color) !important; }
+[data-theme="dark"] .uui-table-card__count {
+    background: #1F1F1F !important;
+    color: var(--primary-color) !important;
+    border-color: var(--border-color) !important;
+}
+[data-theme="dark"] .uui-table { color: var(--text-color) !important; }
+[data-theme="dark"] .uui-table thead th {
+    background: #121212 !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+[data-theme="dark"] .uui-table tbody td {
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+    background: transparent !important;
+}
+[data-theme="dark"] .uui-table tbody tr:nth-child(odd)  { background: #121212 !important; }
+[data-theme="dark"] .uui-table tbody tr:nth-child(even) { background: var(--surface) !important; }
+[data-theme="dark"] .uui-table tbody tr:hover           { background: #1F1F1F !important; }
+
+[data-theme="dark"] .uui-user-cell__name { color: var(--text-color) !important; }
+[data-theme="dark"] .uui-user-cell__sub  { color: var(--light-text) !important; }
+[data-theme="dark"] .uui-avatar {
+    background: #1F1F1F !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* Search & filter selects */
+[data-theme="dark"] .uui-search,
+[data-theme="dark"] .uui-search input,
+[data-theme="dark"] .uui-filter-select {
+    background: #121212 !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+[data-theme="dark"] .uui-search input::placeholder { color: #707070 !important; }
+
+/* Force native <select> popup list to render in dark */
+[data-theme="dark"] .uui-filter-select,
+[data-theme="dark"] select,
+[data-theme="dark"] .form-select { color-scheme: dark; }
+[data-theme="dark"] .uui-filter-select option,
+[data-theme="dark"] select option,
+[data-theme="dark"] .form-select option {
+    background-color: #161616 !important;
+    color: var(--text-color) !important;
+}
+[data-theme="dark"] .uui-filter-select option:checked,
+[data-theme="dark"] select option:checked,
+[data-theme="dark"] .form-select option:checked {
+    background-color: #1F1F1F !important;
+    color: var(--text-color) !important;
+}
+
+/* Tabs */
+[data-theme="dark"] .uui-tabs { border-color: var(--border-color); }
+[data-theme="dark"] .uui-tab {
+    background: transparent !important;
+    color: var(--light-text) !important;
+    border-color: var(--border-color) !important;
+}
+[data-theme="dark"] .uui-tab:hover { background: #1F1F1F !important; color: var(--text-color) !important; }
+[data-theme="dark"] .uui-tab.is-active {
+    background: #1F1F1F !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+[data-theme="dark"] .uui-tab__count {
+    background: #262626 !important;
+    color: var(--text-color) !important;
+}
+
+/* Status badge dots — keep colored text, neutral dark background */
+[data-theme="dark"] .uui-badge-dot { background: #1F1F1F !important; }
+[data-theme="dark"] .uui-badge-dot--success { color: #6EE7B7 !important; border-color: #14532D !important; background: #0F2419 !important; }
+[data-theme="dark"] .uui-badge-dot--gray    { color: var(--light-text) !important; border-color: var(--border-color) !important; background: #1F1F1F !important; }
+[data-theme="dark"] .uui-badge-dot--info    { color: #93C5FD !important; border-color: #1E3A56 !important; background: #102032 !important; }
+[data-theme="dark"] .uui-badge-dot--warning { color: #FCD34D !important; border-color: #5B441A !important; background: #2C2210 !important; }
+[data-theme="dark"] .uui-badge-dot--danger  { color: #FCA5A5 !important; border-color: #5A2222 !important; background: #2A1414 !important; }
+
+/* Action icon buttons */
+[data-theme="dark"] .uui-icon-btn { color: var(--light-text) !important; }
+[data-theme="dark"] .uui-icon-btn:hover { background: #1F1F1F !important; color: var(--text-color) !important; }
+[data-theme="dark"] .uui-icon-btn--danger:hover { background: #2A1414 !important; color: #FCA5A5 !important; }
+
+/* Pagination */
+[data-theme="dark"] .uui-pagination a,
+[data-theme="dark"] .uui-pagination span { color: var(--light-text) !important; }
+[data-theme="dark"] .uui-pagination a:hover { background: #1F1F1F !important; color: var(--text-color) !important; }
+[data-theme="dark"] .uui-pagination .is-active {
+    background: #1F1F1F !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* Dashboard stat cards */
+[data-theme="dark"] .uui-stat {
+    background: var(--surface) !important;
+    border-color: var(--border-color) !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+[data-theme="dark"] .uui-stat:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.5); }
+[data-theme="dark"] .uui-stat__label { color: var(--light-text) !important; }
+[data-theme="dark"] .uui-stat__value { color: var(--text-color) !important; }
+[data-theme="dark"] .uui-stat__icon--blue   { background: transparent !important; color: #4DA3FF !important; }
+[data-theme="dark"] .uui-stat__icon--violet { background: transparent !important; color: #A893FF !important; }
+[data-theme="dark"] .uui-stat__icon--green  { background: transparent !important; color: #34D399 !important; }
+[data-theme="dark"] .uui-stat__icon--orange { background: transparent !important; color: #FB923C !important; }
+
+/* Legacy dashboard stat card variant */
+[data-theme="dark"] .dashboard-stats .stat-card {
+    background: var(--surface) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+[data-theme="dark"] .dashboard-stats .stat-card h3,
+[data-theme="dark"] .dashboard-stats .stat-card p { color: var(--text-color) !important; }
+
+/* Page header text */
+[data-theme="dark"] .page-header h1,
+[data-theme="dark"] .page-title { color: var(--text-color) !important; }
+[data-theme="dark"] .page-header .page-subtitle,
+[data-theme="dark"] .page-subtitle { color: var(--light-text) !important; }
+
+/* Course card image: drop the white letterbox + hairline border in dark mode */
+[data-theme="dark"] .course-card__img {
+    background: var(--surface) !important;
+    border-bottom: 0 !important;
+}
+[data-theme="dark"] .course-card {
+    background: var(--surface) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+[data-theme="dark"] .course-card .card-body,
+[data-theme="dark"] .course-card .card-footer { background: var(--surface) !important; color: var(--text-color) !important; border-color: var(--border-color) !important; }
+
+/* Enrolled students card + modal */
+[data-theme="dark"] .enrolled-card {
+    background: var(--surface) !important;
+    border-color: var(--border-color) !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,.4);
+}
+[data-theme="dark"] .enrolled-icon {
+    background: #2A2A2A !important;
+    color: #D5D5D5 !important;
+}
+[data-theme="dark"] .enrolled-title { color: var(--text-color) !important; }
+[data-theme="dark"] .enrolled-sub   { color: var(--light-text) !important; }
+[data-theme="dark"] .enrolled-avatar {
+    background: #2A2A2A !important;
+    color: #D5D5D5 !important;
+}
+[data-theme="dark"] .enrolled-avatar--img { background: var(--surface) !important; }
+[data-theme="dark"] .enrolled-list__name { color: var(--text-color) !important; }
+[data-theme="dark"] .enrolled-list__meta { color: var(--light-text) !important; }
+[data-theme="dark"] .enrolled-list__item { border-color: var(--border-color) !important; }
+[data-theme="dark"] .enrolled-list__link:hover { background: #1F1F1F !important; }
+[data-theme="dark"] .enrolled-modal .modal-header,
+[data-theme="dark"] .enrolled-modal .modal-footer { border-color: var(--border-color) !important; }
+
+/* Icon buttons (light variant) */
+[data-theme="dark"] .btn-icon-light {
+    background: #1F1F1F !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+[data-theme="dark"] .btn-icon-light:hover {
+    background: #262626 !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+[data-theme="dark"] .btn-icon-primary { background: #4B4B4B !important; color: #FFFFFF !important; border-color: #4B4B4B !important; }
+[data-theme="dark"] .btn-icon-primary:hover { background: #2A2A2A !important; color: #FFFFFF !important; border-color: #2A2A2A !important; }
+
+/* =====================================================
+   GLOBAL BUTTON REDESIGN
+   Modern, flat, consistent across light + dark mode.
+   ===================================================== */
+.btn,
+.btn-sm,
+.btn-lg {
+    --btn-radius: 5px;
+    --btn-font-weight: 300;
+    --btn-transition: background-color .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease, transform .05s ease;
+    border-radius: var(--btn-radius) !important;
+    font-weight: var(--btn-font-weight) !important;
+    letter-spacing: 0 !important;
+    transition: var(--btn-transition) !important;
+    box-shadow: none !important;
+    border-width: 1px !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    line-height: 1.25;
+}
+.btn { padding: 0.55rem 1.05rem !important; font-size: 0.9375rem !important; }
+.btn-sm { padding: 0.4rem 0.8rem !important; font-size: 0.8125rem !important; }
+.btn-lg { padding: 0.7rem 1.4rem !important; font-size: 1rem !important; }
+.btn i, .btn .bx { font-size: 1.05em; line-height: 1; }
+.btn:active { transform: translateY(1px); }
+.btn:focus,
+.btn:focus-visible { outline: none !important; box-shadow: none !important; }
+
+/* Primary — outlined (transparent bg, brand border + text; fills on hover) */
+.btn-primary {
+    background-color: transparent !important;
+    border-color: var(--primary-color) !important;
+    color: var(--primary-color) !important;
+}
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: #ffffff !important;
+}
+.btn-primary:active,
+.btn-primary.active {
+    background-color: var(--primary-pressed) !important;
+    border-color: var(--primary-pressed) !important;
+    color: #ffffff !important;
+}
+.btn-primary:disabled,
+.btn-primary.disabled { opacity: 0.55; }
+
+/* Outline primary — quiet, fills on hover */
+.btn-outline-primary {
+    background-color: transparent !important;
+    border-color: var(--primary-color) !important;
+    color: var(--primary-color) !important;
+}
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: #ffffff !important;
+}
+
+/* Secondary — neutral, used for "Cancel" / passive actions */
+.btn-secondary {
+    background-color: var(--secondary-color) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+.btn-secondary:hover,
+.btn-secondary:focus {
+    background-color: #E6E6E6 !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+
+.btn-outline-secondary {
+    background-color: transparent !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus {
+    background-color: var(--secondary-color) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+
+/* Danger */
+.btn-danger {
+    background-color: var(--danger-color) !important;
+    border-color: var(--danger-color) !important;
+    color: #ffffff !important;
+}
+.btn-danger:hover,
+.btn-danger:focus { filter: brightness(0.92); color: #ffffff !important; }
+.btn-outline-danger {
+    background-color: transparent !important;
+    border-color: var(--danger-color) !important;
+    color: var(--danger-color) !important;
+}
+.btn-outline-danger:hover,
+.btn-outline-danger:focus {
+    background-color: var(--danger-color) !important;
+    border-color: var(--danger-color) !important;
+    color: #ffffff !important;
+}
+
+/* Success */
+.btn-success {
+    background-color: var(--success-color) !important;
+    border-color: var(--success-color) !important;
+    color: #ffffff !important;
+}
+.btn-success:hover { filter: brightness(0.92); color: #ffffff !important; }
+.btn-outline-success {
+    background-color: transparent !important;
+    border-color: var(--success-color) !important;
+    color: var(--success-color) !important;
+}
+.btn-outline-success:hover {
+    background-color: var(--success-color) !important;
+    color: #ffffff !important;
+}
+
+/* Light / link */
+.btn-light {
+    background-color: var(--surface) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+.btn-light:hover { background-color: var(--secondary-color) !important; }
+.btn-link {
+    background: transparent !important;
+    border-color: transparent !important;
+    color: var(--primary-color) !important;
+    text-decoration: none;
+    padding: 0.35rem 0.5rem !important;
+}
+.btn-link:hover { color: var(--primary-hover) !important; text-decoration: underline; }
+
+/* ----- Dark-mode tweaks for the redesigned buttons ----- */
+[data-theme="dark"] .btn-primary { color: var(--primary-color) !important; background-color: transparent !important; border-color: var(--primary-color) !important; }
+[data-theme="dark"] .btn-primary:hover, [data-theme="dark"] .btn-primary:focus { background-color: var(--primary-color) !important; color: #0A0A0A !important; }
+[data-theme="dark"] .btn-outline-primary { color: var(--primary-color) !important; border-color: var(--primary-color) !important; }
+[data-theme="dark"] .btn-outline-primary:hover { background-color: var(--primary-color) !important; color: #0A0A0A !important; }
+[data-theme="dark"] .btn-secondary {
+    background-color: #1F1F1F !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+[data-theme="dark"] .btn-secondary:hover { background-color: #262626 !important; }
+[data-theme="dark"] .btn-outline-secondary {
+    background-color: transparent !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+[data-theme="dark"] .btn-outline-secondary:hover { background-color: #1F1F1F !important; }
+[data-theme="dark"] .btn-light {
+    background-color: #1F1F1F !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+[data-theme="dark"] .btn-light:hover { background-color: #262626 !important; }
+[data-theme="dark"] .btn:focus,
+[data-theme="dark"] .btn:focus-visible { box-shadow: none !important; }
+
+/* Danger zone panel */
+[data-theme="dark"] .danger-zone {
+    background: var(--surface) !important;
+    border-color: var(--border-color) !important;
+}
+[data-theme="dark"] .danger-zone__header { color: var(--text-color) !important; }
+[data-theme="dark"] .danger-zone__header i { color: #EF4444 !important; }
+[data-theme="dark"] .danger-zone__header svg { color: #EF4444; flex-shrink: 0; }
+[data-theme="dark"] .danger-zone__text   { color: var(--text-color) !important; }
+[data-theme="dark"] .danger-zone .btn-danger {
+    background-color: #DC2626 !important;
+    border-color: #DC2626 !important;
+    color: #ffffff !important;
+}
+[data-theme="dark"] .danger-zone .btn-danger:hover,
+[data-theme="dark"] .danger-zone .btn-danger:focus {
+    background-color: #B91C1C !important;
+    border-color: #B91C1C !important;
+    color: #ffffff !important;
+}
+
+
+/* =================================================================
+   Custom dark dropdown (replaces native <select> popup site-wide)
+   Paired with static/js/dark-select.js
+   ================================================================= */
+.ds-select { position: relative; display: inline-block; min-width: 160px; font: inherit; }
+.ds-select.ds-select--form, .ds-select.ds-select--uui { display: inline-block; width: auto; }
+.ds-select__native {
+    position: absolute !important;
+    width: 1px !important; height: 1px !important;
+    padding: 0 !important; margin: -1px !important;
+    overflow: hidden !important; clip: rect(0,0,0,0) !important;
+    white-space: nowrap !important; border: 0 !important;
+    opacity: 0 !important; pointer-events: none !important;
+}
+.ds-select__btn {
+    display: inline-flex; align-items: center; justify-content: space-between;
+    gap: 0.5rem; width: 100%;
+    padding: 0.5rem 0.85rem;
+    background-color: #ffffff;
+    color: var(--text-color, #1F2937);
+    border: 1px solid var(--border-color, #D0D5DD);
+    border-radius: 8px;
+    font: inherit; line-height: 1.25;
+    cursor: pointer;
+    transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+.ds-select__btn:hover { border-color: #98A2B3; }
+.ds-select__btn:focus,
+.ds-select.is-open .ds-select__btn {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0,120,212,.18);
+}
+.ds-select.is-disabled .ds-select__btn,
+.ds-select__btn:disabled { opacity: .55; cursor: not-allowed; }
+.ds-select__label {
+    flex: 1; min-width: 0;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    text-align: left;
+}
+.ds-select__caret {
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: transform .15s ease;
+    opacity: .75;
+}
+.ds-select.is-open .ds-select__caret { transform: rotate(180deg); }
+
+.ds-select__list {
+    position: absolute; z-index: 1080;
+    top: calc(100% + 4px); left: 0; right: 0;
+    margin: 0; padding: 4px;
+    list-style: none;
+    background-color: #ffffff;
+    border: 1px solid var(--border-color, #D0D5DD);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.12);
+    max-height: 260px; overflow-y: auto;
+    min-width: 100%;
+}
+.ds-select__opt {
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text-color, #1F2937);
+    user-select: none;
+    line-height: 1.3;
+}
+.ds-select__opt:hover { background-color: #F2F4F7; }
+.ds-select__opt.is-selected { background-color: #EAF3FF; color: var(--primary-color); }
+.ds-select__opt.is-disabled { opacity: .5; cursor: not-allowed; }
+
+/* ----- Dark theme ----- */
+[data-theme="dark"] .ds-select__btn {
+    background-color: #121212;
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+[data-theme="dark"] .ds-select__btn:hover { border-color: #3A3A3A; }
+[data-theme="dark"] .ds-select.is-open .ds-select__btn,
+[data-theme="dark"] .ds-select__btn:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(77,163,255,.22);
+}
+[data-theme="dark"] .ds-select__list {
+    background-color: #161616;
+    border-color: var(--border-color);
+    box-shadow: 0 12px 32px rgba(0,0,0,.55);
+}
+[data-theme="dark"] .ds-select__opt { color: var(--text-color); }
+[data-theme="dark"] .ds-select__opt:hover { background-color: #1F1F1F; }
+[data-theme="dark"] .ds-select__opt.is-selected {
+    background-color: #1F1F1F;
+    color: var(--primary-color);
+}
+
+/* uui filter-select sizing parity */
+.ds-select--uui { min-width: 140px; }
+.ds-select--uui .ds-select__btn { padding: 0.45rem 0.75rem; font-size: 0.9rem; }
+
+/* ----- Dark mode: Edit-profile / uui-edit-* surfaces ----- */
+[data-theme="dark"] .uui-edit-card {
+    background-color: var(--surface) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+[data-theme="dark"] .uui-edit-name,
+[data-theme="dark"] .uui-edit-section-title { color: var(--text-color) !important; }
+[data-theme="dark"] .uui-edit-section-sub,
+[data-theme="dark"] .uui-edit-meta { color: var(--light-text) !important; }
+[data-theme="dark"] .uui-edit-meta__sep { color: #3A3A3A !important; }
+[data-theme="dark"] .uui-edit-card .form-label { color: var(--text-color) !important; }
+[data-theme="dark"] .uui-edit-card .form-control,
+[data-theme="dark"] .uui-edit-card .form-select,
+[data-theme="dark"] .uui-edit-card textarea {
+    background-color: #121212 !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+[data-theme="dark"] .uui-edit-card .form-control::placeholder,
+[data-theme="dark"] .uui-edit-card textarea::placeholder { color: #707070 !important; }
+[data-theme="dark"] .uui-edit-card .form-control:focus,
+[data-theme="dark"] .uui-edit-card .form-select:focus,
+[data-theme="dark"] .uui-edit-card textarea:focus {
+    background-color: #121212 !important;
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 3px rgba(77,163,255,.22) !important;
+}
+[data-theme="dark"] .uui-edit-card__head { border-color: var(--border-color) !important; }
+[data-theme="dark"] .uui-edit-footer { border-color: var(--border-color) !important; }
+[data-theme="dark"] .uui-edit-avatar { border-color: var(--border-color) !important; }
+[data-theme="dark"] .uui-edit-avatar__overlay { background: rgba(0,0,0,.55) !important; color: #fff !important; }
+/* Tinted icon badges � flip to subtle dark variants */
+[data-theme="dark"] .uui-edit-card__icon--blue   { background: #102032 !important; color: #4DA3FF !important; }
+[data-theme="dark"] .uui-edit-card__icon--violet { background: #1E1A33 !important; color: #B69BFF !important; }
+[data-theme="dark"] .uui-edit-card__icon--green  { background: #0E2A1E !important; color: #34D399 !important; }
+
+/* uui-page wrapper white bg ? dark canvas in dark mode */
+[data-theme="dark"] .uui-page { background: var(--canvas) !important; }
+
+/* Quiz points label - no background, just colored text */
+.quiz-points {
+    background: transparent !important;
+    color: var(--primary-color);
+    font-weight: 500;
+    font-size: 0.875rem;
+    padding: 0;
+}
+[data-theme="dark"] .quiz-points { color: var(--primary-color); }
+
+/* Equalize course-card heights so footers align even when one card has the "Enrolled Students:" sub-row */
+.course-card { display: flex; flex-direction: column; height: 100%; }
+.course-card .card-body { flex: 1 1 auto; }
+.course-card .card-footer { min-height: 96px; display: flex; flex-direction: column; justify-content: flex-start; gap: 0.35rem; }
+
+/* Logo swap: show light variant by default, dark variant in dark mode */
+.brand-logo-dark { display: none; }
+[data-theme="dark"] .brand-logo-light { display: none; }
+[data-theme="dark"] .brand-logo-dark { display: inline-block; }
+
+/* Toggle the sidebar label text between Dark mode / Light mode */
+.theme-toggle-label-dark { display: none; }
+[data-theme="dark"] .theme-toggle-label-light { display: none; }
+[data-theme="dark"] .theme-toggle-label-dark { display: inline; }
+
+/* Remove the blue glow/box-shadow on focus across all form controls and buttons */
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus,
+select:focus,
+textarea:focus,
+input:focus,
+.btn:focus,
+.btn:focus-visible,
+.btn:active,
+.ds-select__btn:focus,
+.ds-select.is-open .ds-select__btn,
+.uui-edit-card .form-control:focus,
+.uui-edit-card .form-select:focus,
+.uui-edit-card textarea:focus { box-shadow: none !important; }
+
+[data-theme="dark"] .form-control:focus,
+[data-theme="dark"] .form-select:focus,
+[data-theme="dark"] .form-check-input:focus,
+[data-theme="dark"] select:focus,
+[data-theme="dark"] textarea:focus,
+[data-theme="dark"] input:focus,
+[data-theme="dark"] .btn:focus,
+[data-theme="dark"] .btn:focus-visible,
+[data-theme="dark"] .ds-select__btn:focus,
+[data-theme="dark"] .ds-select.is-open .ds-select__btn,
+[data-theme="dark"] .uui-edit-card .form-control:focus,
+[data-theme="dark"] .uui-edit-card .form-select:focus,
+[data-theme="dark"] .uui-edit-card textarea:focus { box-shadow: none !important; }
+
+/* =====================================================
+   Unify all primary/blue buttons to match the neutral
+   outlined "Back"-style button (dark bg, subtle border,
+   light text). Applies in both light and dark themes.
+   ===================================================== */
+.btn-primary,
+.btn-outline-primary,
+.btn-info,
+.btn-outline-info {
+    background-color: var(--secondary-color) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-info:hover,
+.btn-info:focus,
+.btn-outline-info:hover,
+.btn-outline-info:focus {
+    background-color: rgba(255,255,255,0.04) !important;
+    border-color: var(--text-color) !important;
+    color: var(--text-color) !important;
+}
+.btn-primary:active,
+.btn-primary.active,
+.btn-outline-primary:active,
+.btn-outline-primary.active,
+.btn-info:active,
+.btn-outline-info:active {
+    background-color: rgba(255,255,255,0.08) !important;
+    border-color: var(--text-color) !important;
+    color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .btn-primary,
+[data-theme="dark"] .btn-outline-primary,
+[data-theme="dark"] .btn-info,
+[data-theme="dark"] .btn-outline-info {
+    background-color: #121212 !important;
+    border-color: #2A2A2A !important;
+    color: #E5E5E5 !important;
+}
+[data-theme="dark"] .btn-primary:hover,
+[data-theme="dark"] .btn-primary:focus,
+[data-theme="dark"] .btn-outline-primary:hover,
+[data-theme="dark"] .btn-outline-primary:focus,
+[data-theme="dark"] .btn-info:hover,
+[data-theme="dark"] .btn-info:focus,
+[data-theme="dark"] .btn-outline-info:hover,
+[data-theme="dark"] .btn-outline-info:focus {
+    background-color: #1A1A1A !important;
+    border-color: #3A3A3A !important;
+    color: #FFFFFF !important;
+}
+[data-theme="dark"] .btn-primary:active,
+[data-theme="dark"] .btn-primary.active,
+[data-theme="dark"] .btn-outline-primary:active,
+[data-theme="dark"] .btn-outline-primary.active,
+[data-theme="dark"] .btn-info:active,
+[data-theme="dark"] .btn-outline-info:active {
+    background-color: #1F1F1F !important;
+    border-color: #4A4A4A !important;
+    color: #FFFFFF !important;
+}
+
+/* Dark mode: neutralize uui-page--white forced white shell */
+[data-theme="dark"] .uui-page--white,
+[data-theme="dark"] .uui-page--white .container,
+[data-theme="dark"] body:has(.uui-page--white),
+[data-theme="dark"] body:has(.uui-page--white) .app-main,
+[data-theme="dark"] body:has(.uui-page--white) .app-content {
+    background: var(--canvas) !important;
+}
+
+/* Lesson list � dark mode fixes */
+[data-theme="dark"] .lesson-list > li + li { border-top-color: var(--border-color) !important; }
+[data-theme="dark"] .lesson-list__item { color: var(--text-color) !important; background: transparent !important; }
+[data-theme="dark"] .lesson-list__item:hover { background: rgba(255,255,255,0.04) !important; color: var(--text-color) !important; }
+[data-theme="dark"] .lesson-list__title { color: var(--text-color) !important; }
+[data-theme="dark"] .lesson-list__meta  { color: var(--light-text) !important; }
+[data-theme="dark"] .lesson-list__chev  { color: var(--light-text) !important; }
+[data-theme="dark"] .lesson-list__item:hover .lesson-list__chev { color: var(--primary-color) !important; }
+
+/* Lesson type icon chips � tinted dark versions */
+[data-theme="dark"] .uui-lesson-type--blue   { background: rgba(77,163,255,0.12) !important; color: #4DA3FF !important; }
+[data-theme="dark"] .uui-lesson-type--violet { background: rgba(167,139,250,0.12) !important; color: #A78BFA !important; }
+[data-theme="dark"] .uui-lesson-type--green  { background: rgba(52,211,153,0.12) !important; color: #34D399 !important; }
+[data-theme="dark"] .uui-lesson-type--orange { background: rgba(251,146,60,0.12) !important; color: #FB923C !important; }
+
+/* =====================================================
+   Lesson view (course-shell) � Dark mode
+   ===================================================== */
+[data-theme="dark"] .course-shell { background: var(--canvas) !important; }
+[data-theme="dark"] .course-shell__sidebar { background: var(--surface) !important; border-right-color: var(--border-color) !important; }
+[data-theme="dark"] .course-shell__sidebar-head { background: var(--surface) !important; border-bottom-color: var(--border-color) !important; }
+[data-theme="dark"] .course-shell__back { color: var(--light-text) !important; }
+[data-theme="dark"] .course-shell__back:hover { color: var(--primary-color) !important; }
+[data-theme="dark"] .course-shell__course-title { color: var(--text-color) !important; }
+[data-theme="dark"] .course-shell__progress-meta { color: var(--light-text) !important; }
+[data-theme="dark"] .course-shell__progress-bar { background: #1F1F1F !important; }
+[data-theme="dark"] .course-shell__progress-bar > span { background: var(--primary-color) !important; }
+[data-theme="dark"] .course-shell__section-label { color: var(--light-text) !important; }
+[data-theme="dark"] .course-shell__lesson { color: var(--text-color) !important; }
+[data-theme="dark"] .course-shell__lesson:hover { background: rgba(255,255,255,0.04) !important; color: var(--text-color) !important; }
+[data-theme="dark"] .course-shell__lesson.is-current { background: #2A2A2A !important; color: var(--text-color) !important; }
+[data-theme="dark"] .course-shell__lesson.is-current .course-shell__lesson-icon,
+[data-theme="dark"] .course-shell__lesson.is-current .course-shell__lesson-title { color: var(--text-color) !important; }
+[data-theme="dark"] .course-shell__lesson-icon { color: var(--light-text) !important; }
+[data-theme="dark"] .course-shell__lesson-title { color: var(--text-color) !important; }
+[data-theme="dark"] .course-shell__lesson-check { color: var(--success-color) !important; }
+
+[data-theme="dark"] .course-shell__main { background: var(--canvas) !important; }
+[data-theme="dark"] .course-shell__topbar { background: var(--canvas) !important; border-bottom-color: var(--border-color) !important; }
+[data-theme="dark"] .course-shell__step { color: var(--light-text) !important; }
+[data-theme="dark"] .course-shell__completed-pill {
+    color: var(--success-color) !important;
+    background: rgba(52,211,153,0.12) !important;
+    border-color: rgba(52,211,153,0.35) !important;
+}
+[data-theme="dark"] .course-shell__type-chip {
+    color: var(--primary-color) !important;
+    background: rgba(77,163,255,0.12) !important;
+    border-color: rgba(77,163,255,0.35) !important;
+}
+[data-theme="dark"] .course-shell__title { color: var(--text-color) !important; }
+[data-theme="dark"] .course-shell__article .lesson-content { color: var(--text-color) !important; }
+[data-theme="dark"] .course-shell__article .lesson-content h2,
+[data-theme="dark"] .course-shell__article .lesson-content h3 { color: var(--text-color) !important; }
+[data-theme="dark"] .course-shell__article .lesson-content code {
+    background: transparent !important; color: inherit !important;
+}
+[data-theme="dark"] .course-shell__article .lesson-content pre {
+    background: transparent !important; color: inherit !important;
+}
+[data-theme="dark"] .course-shell__complete-form { border-top-color: var(--border-color) !important; }
+[data-theme="dark"] .course-shell__nav { background: var(--canvas) !important; border-top-color: var(--border-color) !important; }
+[data-theme="dark"] .course-shell__nav-btn {
+    background: var(--surface) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+[data-theme="dark"] .course-shell__nav-btn:hover {
+    background: #1A1A1A !important;
+    border-color: #3A3A3A !important;
+    color: #FFFFFF !important;
+}
+
+/* Course shell � sidebar footer & next nav button dark mode */
+[data-theme="dark"] .course-shell__sidebar-foot {
+    background: var(--surface) !important;
+    border-top-color: var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+[data-theme="dark"] .course-shell__sidebar-foot .sidebar-user,
+[data-theme="dark"] .course-shell__sidebar-foot .sidebar-link,
+[data-theme="dark"] .course-shell__sidebar-foot a {
+    color: var(--text-color) !important;
+}
+[data-theme="dark"] .course-shell__sidebar-foot .sidebar-link:hover,
+[data-theme="dark"] .course-shell__sidebar-foot a:hover {
+    background: rgba(255,255,255,0.04) !important;
+    color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .course-shell__nav-btn--next,
+[data-theme="dark"] .course-shell__nav-btn--prev {
+    background: var(--surface) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+[data-theme="dark"] .course-shell__nav-btn--next:hover,
+[data-theme="dark"] .course-shell__nav-btn--prev:hover {
+    background: #1A1A1A !important;
+    border-color: #3A3A3A !important;
+    color: #FFFFFF !important;
+}
+[data-theme="dark"] .course-shell__nav-btn i,
+[data-theme="dark"] .course-shell__nav-btn--next i,
+[data-theme="dark"] .course-shell__nav-btn--prev i { color: var(--light-text) !important; }
+[data-theme="dark"] .course-shell__nav-label,
+[data-theme="dark"] .course-shell__nav-btn--next .course-shell__nav-label,
+[data-theme="dark"] .course-shell__nav-btn--prev .course-shell__nav-label { color: var(--light-text) !important; }
+[data-theme="dark"] .course-shell__nav-title,
+[data-theme="dark"] .course-shell__nav-btn--next .course-shell__nav-title,
+[data-theme="dark"] .course-shell__nav-btn--prev .course-shell__nav-title { color: var(--text-color) !important; }
+
+/* Boost lesson body text contrast in dark mode */
+[data-theme="dark"] .course-shell__article,
+[data-theme="dark"] .course-shell__article .lesson-content,
+[data-theme="dark"] .course-shell__article .lesson-content p,
+[data-theme="dark"] .course-shell__article .lesson-content li,
+[data-theme="dark"] .course-shell__article .lesson-content span,
+[data-theme="dark"] .course-shell__article .lesson-content div,
+[data-theme="dark"] .course-shell__article .lesson-content em,
+[data-theme="dark"] .course-shell__article .lesson-content i,
+[data-theme="dark"] .course-shell__article .lesson-content a,
+[data-theme="dark"] .course-shell__article .lesson-content strong,
+[data-theme="dark"] .course-shell__article .lesson-content b {
+    color: #F5F5F5 !important;
+}
+[data-theme="dark"] .course-shell__article .lesson-content a { color: var(--primary-color) !important; }
+[data-theme="dark"] .course-shell__article .lesson-content hr { border-color: var(--border-color) !important; }
+
+/* Larger lesson body text — only for meta info paragraphs (label: value separated by hr) */
+.course-shell__article .lesson-content p:has(strong),
+.course-shell__article .lesson-content p:has(b) {
+    font-size: 1.25rem !important;
+    line-height: 1.7 !important;
+}
+
+/* Page background � explicit 94% black across the shell */
+[data-theme="dark"] html,
+[data-theme="dark"] body,
+[data-theme="dark"] .app-main,
+[data-theme="dark"] .app-content,
+[data-theme="dark"] .uui-page,
+[data-theme="dark"] .course-shell,
+[data-theme="dark"] .course-shell__main {
+    background-color: #141414 !important;
+}
+
+
+/* ===== Larger fonts for lesson content + quiz pages ===== */
+/* Use high specificity to override inline <style> rules embedded in lesson HTML in the DB. */
+html body .lesson-content,
+html body .lesson-content .lsn-p,
+html body .lesson-content p,
+html body .lesson-content li,
+html body .lesson-content .lsn-ul,
+html body .lesson-content .lsn-ol,
+html body .lesson-content ul,
+html body .lesson-content ol,
+html body .lesson-content .lsn-callout,
+html body .lesson-content .lsn-warn,
+html body .lesson-content blockquote { font-size: 1.25rem !important; line-height: 1.7 !important; }
+
+html body .lesson-content .lsn-h2,
+html body .lesson-content h2 { font-size: 2rem !important; line-height: 1.25 !important; }
+html body .lesson-content h1 { font-size: 2.5rem !important; line-height: 1.2 !important; }
+html body .lesson-content h3 { font-size: 1.625rem !important; line-height: 1.3 !important; }
+
+html body .lesson-content .lsn-table,
+html body .lesson-content table { font-size: 1.125rem !important; }
+
+html body .lesson-content pre,
+html body .lesson-content pre code,
+html body .lesson-content code,
+html body .lesson-content kbd,
+html body .lesson-content samp { font-size: 1.05rem !important; }
+
+/* Quiz pages (take_quiz, view_quiz, view_quiz_result) */
+html body form .question-text,
+html body .qr-q__text { font-size: 1.375rem !important; line-height: 1.55 !important; }
+html body form .option-item,
+html body form .form-check-label,
+html body .qr-opt,
+html body .qr-opt__text { font-size: 1.1875rem !important; line-height: 1.55 !important; }
+html body form .form-check-input { width: 1.25em !important; height: 1.25em !important; margin-top: 0.25em !important; }
+
+
+/* ===== Thinner font weight for lesson content + quiz pages ===== */
+html body .lesson-content,
+html body .lesson-content p,
+html body .lesson-content li,
+html body .lesson-content td,
+html body .lesson-content .lsn-p,
+html body .lesson-content .lsn-ul,
+html body .lesson-content .lsn-callout,
+html body .lesson-content .lsn-warn,
+html body .lesson-content blockquote,
+html body form .question-text,
+html body form .option-item,
+html body form .form-check-label,
+html body .qr-q__text,
+html body .qr-opt { font-weight: 300 !important; }
+
+/* Headings + emphasised text: keep distinguishable but lighter than default 700 */
+html body .lesson-content h1,
+html body .lesson-content h2,
+html body .lesson-content h3,
+html body .lesson-content .lsn-h2,
+html body .lesson-content th,
+html body .lesson-content strong,
+html body .lesson-content b,
+html body form .question-text strong,
+html body form .option-item strong,
+html body .qr-q__text strong,
+html body .qr-opt strong { font-weight: 500 !important; }
+
+/* Code samples stay regular */
+html body .lesson-content code,
+html body .lesson-content pre,
+html body .lesson-content pre code,
+html body .lesson-content kbd,
+html body .lesson-content samp { font-weight: 400 !important; }
+
+
+/* ===== Double quiz question font size ===== */
+html body form .question-text,
+html body .qr-q__text { font-size: 2.75rem !important; line-height: 1.25 !important; }
+
+
+/* ===== Balance quiz question sizes: prompt large, code moderate ===== */
+html body form .question-text,
+html body form .question-text p,
+html body .qr-q__text,
+html body .qr-q__text p { font-size: 1.75rem !important; line-height: 1.45 !important; }
+
+html body form .question-text pre,
+html body form .question-text pre code,
+html body form .question-text code,
+html body form .question-text kbd,
+html body form .question-text samp,
+html body .qr-q__text pre,
+html body .qr-q__text pre code,
+html body .qr-q__text code { font-size: 1.25rem !important; line-height: 1.5 !important; }
+
+
+/* ===== Quiz 'Question N' card title size ===== */
+html body form .card .card-title { font-size: 1.75rem !important; font-weight: 500 !important; margin-bottom: 1rem !important; }
+
+
+/* ===== Smaller checkboxes/radios with a thinner check mark ===== */
+html body form .form-check-input {
+    width: 1em !important;
+    height: 1em !important;
+    margin-top: 0.45em !important;
+    border-width: 1px !important;
+}
+/* Replace Bootstrap's thick checkmark with a thin-stroke SVG */
+html body form .form-check-input:checked[type="checkbox"] {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='none' stroke='%23fff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M5 10.5l3.5 3.5L15 7'/%3E%3C/svg%3E") !important;
+    background-size: 70% 70% !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+}
+html body form .form-check-input:checked[type="radio"] {
+    background-image: radial-gradient(circle, currentColor 30%, transparent 32%) !important;
+}
+
+
+/* Make the checkmark glyph fill the box (without enlarging the box) */
+html body form .form-check-input:checked[type="checkbox"] {
+    background-size: 110% 110% !important;
+}
+
+
+/* Slightly smaller question prompt */
+html body form .question-text,
+html body form .question-text p,
+html body .qr-q__text,
+html body .qr-q__text p { font-size: 1.4rem !important; }
+
+
+/* Bigger exam/quiz block on lesson page */
+html body .uui-edit-section-title { font-size: 2rem !important; font-weight: 500 !important; line-height: 1.25 !important; }
+html body .uui-muted { font-size: 1.25rem !important; line-height: 1.55 !important; }
+html body .uui-edit-meta { font-size: 1.15rem !important; }
+html body .uui-edit-meta i { font-size: 1.25rem !important; vertical-align: middle; }
+
+
+/* Wrap code blocks so they never need a horizontal scroll bar */
+html body .lesson-content pre,
+html body .lesson-content pre code,
+html body .rich-editor-content pre,
+html body .rich-editor-content pre code,
+html body form .question-text pre,
+html body form .question-text pre code,
+html body .qr-q__text pre,
+html body .qr-q__text pre code {
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+    overflow-x: visible !important;
+    max-width: 100% !important;
+}
+
+
+/* Final override: wrap ALL pre/code in lesson + quiz + result, no horizontal scroll.
+   No hanging indent — wrapped continuation lines simply break to the left edge. */
+html body .course-shell__article .lesson-content pre,
+html body .course-shell__article .lesson-content pre code,
+html body .lesson-content pre,
+html body .lesson-content pre code,
+html body form pre,
+html body form pre code,
+html body .qr-card pre,
+html body .qr-card pre code {
+    white-space: pre-wrap !important;
+    word-break: normal !important;
+    overflow-wrap: anywhere !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    text-indent: 0 !important;
+}
+
+
+/* Light mode: lesson body text fully black */
+html:not([data-theme="dark"]) body .course-shell__article,
+html:not([data-theme="dark"]) body .course-shell__article .course-shell__title,
+html:not([data-theme="dark"]) body .course-shell__article .lesson-content,
+html:not([data-theme="dark"]) body .course-shell__article .lesson-content p,
+html:not([data-theme="dark"]) body .course-shell__article .lesson-content li,
+html:not([data-theme="dark"]) body .course-shell__article .lesson-content td,
+html:not([data-theme="dark"]) body .course-shell__article .lesson-content th,
+html:not([data-theme="dark"]) body .course-shell__article .lesson-content h1,
+html:not([data-theme="dark"]) body .course-shell__article .lesson-content h2,
+html:not([data-theme="dark"]) body .course-shell__article .lesson-content h3,
+html:not([data-theme="dark"]) body .course-shell__article .lesson-content .lsn-h2,
+html:not([data-theme="dark"]) body .course-shell__article .lesson-content .lsn-p,
+html:not([data-theme="dark"]) body .course-shell__article .lesson-content .lsn-ul,
+html:not([data-theme="dark"]) body .course-shell__article .lesson-content .lsn-callout,
+html:not([data-theme="dark"]) body .course-shell__article .lesson-content .lsn-warn,
+html:not([data-theme="dark"]) body .course-shell__article .lesson-content blockquote,
+html:not([data-theme="dark"]) body .course-shell__article .lesson-content code,
+html:not([data-theme="dark"]) body .course-shell__article .lesson-content pre,
+html:not([data-theme="dark"]) body .course-shell__article .lesson-content pre code,
+html:not([data-theme="dark"]) body .course-shell__article .lesson-content strong,
+html:not([data-theme="dark"]) body .course-shell__article .lesson-content em { color: #000 !important; }
+
+
+/* Thinner sidebar lesson list */
+html body .course-shell__lesson,
+html body .course-shell__lesson-title,
+html body .course-shell__section-label,
+html body .course-shell__course-title { font-weight: 300 !important; }
+html body .course-shell__lesson.is-current,
+html body .course-shell__lesson.is-current .course-shell__lesson-title { font-weight: 400 !important; }
+
+
+/* Light mode: ALL text inside the course article is black */
+html:not([data-theme="dark"]) body .course-shell__article,
+html:not([data-theme="dark"]) body .course-shell__article * { color: #000 !important; }
+html:not([data-theme="dark"]) body .course-shell__article .text-muted,
+html:not([data-theme="dark"]) body .course-shell__article .text-muted * { color: #4B4B4B !important; }
+
+
+/* Light mode: sidebar text fully black (except muted helpers) */
+html:not([data-theme="dark"]) body .course-shell__sidebar,
+html:not([data-theme="dark"]) body .course-shell__sidebar * { color: #000 !important; }
+html:not([data-theme="dark"]) body .course-shell__sidebar .text-muted,
+html:not([data-theme="dark"]) body .course-shell__sidebar .text-muted *,
+html:not([data-theme="dark"]) body .course-shell__sidebar .course-shell__progress-meta,
+html:not([data-theme="dark"]) body .course-shell__sidebar .course-shell__section-label { color: #4B4B4B !important; }
+
+
+/* Bigger sidebar course title + Lessons label */
+html body .course-shell__course-title { font-size: 1.25rem !important; line-height: 1.35 !important; }
+html body .course-shell__section-label { font-size: 1rem !important; letter-spacing: .04em !important; }
+
+
+/* Bigger page breadcrumb */
+html body .uui-page__breadcrumb { font-size: 1.0625rem !important; gap: 0.6rem !important; }
+html body .uui-page__breadcrumb a,
+html body .uui-page__breadcrumb a:visited { color: #4B4B4B !important; font-weight: 500 !important; }
+html[data-theme="dark"] body .uui-page__breadcrumb a,
+html[data-theme="dark"] body .uui-page__breadcrumb a:visited { color: #D5D5D5 !important; }
+html body .uui-page__breadcrumb a:hover { color: #2A2A2A !important; text-decoration: underline !important; }
+html[data-theme="dark"] body .uui-page__breadcrumb a:hover { color: #FFFFFF !important; }
+
+
+/* No underline on breadcrumb links */
+html body .uui-page__breadcrumb a,
+html body .uui-page__breadcrumb a:hover,
+html body .uui-page__breadcrumb a:focus,
+html body .uui-page__breadcrumb a:visited { text-decoration: none !important; }
+
+/* === Light-mode Wear-blue sidebar (lesson view) === */
+html:not([data-theme="dark"]) body .course-shell__sidebar,
+html:not([data-theme="dark"]) body .course-shell__sidebar-head,
+html:not([data-theme="dark"]) body .course-shell__sidebar-foot {
+    background: #0F6FD1 !important;
+    border-right-color: #0A559F !important;
+    border-bottom-color: #0A559F !important;
+    border-top-color: #0A559F !important;
+}
+html:not([data-theme="dark"]) body .course-shell__sidebar,
+html:not([data-theme="dark"]) body .course-shell__sidebar * {
+    color: #FFFFFF !important;
+}
+html:not([data-theme="dark"]) body .course-shell__sidebar .text-muted,
+html:not([data-theme="dark"]) body .course-shell__sidebar .text-muted *,
+html:not([data-theme="dark"]) body .course-shell__sidebar .course-shell__progress-meta,
+html:not([data-theme="dark"]) body .course-shell__sidebar .course-shell__section-label {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+html:not([data-theme="dark"]) body .course-shell__sidebar a,
+html:not([data-theme="dark"]) body .course-shell__sidebar a:visited,
+html:not([data-theme="dark"]) body .course-shell__sidebar .sidebar-link,
+html:not([data-theme="dark"]) body .course-shell__sidebar .course-shell__lesson {
+    color: #FFFFFF !important;
+}
+html:not([data-theme="dark"]) body .course-shell__sidebar a:hover,
+html:not([data-theme="dark"]) body .course-shell__sidebar .sidebar-link:hover,
+html:not([data-theme="dark"]) body .course-shell__sidebar .course-shell__lesson:hover {
+    background: transparent !important;
+    color: #FFFFFF !important;
+}
+html:not([data-theme="dark"]) body .course-shell__sidebar .course-shell__lesson.is-active,
+html:not([data-theme="dark"]) body .course-shell__sidebar .course-shell__lesson--active {
+    background: transparent !important;
+    color: #FFFFFF !important;
+}
+/* Progress bar track + fill recolored for contrast on blue */
+html:not([data-theme="dark"]) body .course-shell__sidebar .progress {
+    background: rgba(255, 255, 255, 0.25) !important;
+}
+html:not([data-theme="dark"]) body .course-shell__sidebar .progress-bar {
+    background: #FFFFFF !important;
+    color: #0F6FD1 !important;
+}
+
+/* === Light-mode app sidebar (Wear-blue) === */
+html:not([data-theme="dark"]) body .app-sidebar {
+    background: #0F6FD1 !important;
+    border-right-color: #0A559F !important;
+}
+html:not([data-theme="dark"]) body .app-sidebar,
+html:not([data-theme="dark"]) body .app-sidebar * {
+    color: #FFFFFF !important;
+}
+html:not([data-theme="dark"]) body .app-sidebar .sidebar-brand,
+html:not([data-theme="dark"]) body .app-sidebar .sidebar-brand * {
+    color: #FFFFFF !important;
+}
+html:not([data-theme="dark"]) body .app-sidebar .sidebar-link,
+html:not([data-theme="dark"]) body .app-sidebar .sidebar-user,
+html:not([data-theme="dark"]) body .app-sidebar .sidebar-user-name,
+html:not([data-theme="dark"]) body .app-sidebar .sidebar-user-role,
+html:not([data-theme="dark"]) body .app-sidebar .sidebar-theme-toggle,
+html:not([data-theme="dark"]) body .app-sidebar .sidebar-signout {
+    color: #FFFFFF !important;
+}
+html:not([data-theme="dark"]) body .app-sidebar .sidebar-user-role {
+    color: rgba(255, 255, 255, 0.80) !important;
+}
+html:not([data-theme="dark"]) body .app-sidebar .sidebar-link:hover,
+html:not([data-theme="dark"]) body .app-sidebar .sidebar-user:hover,
+html:not([data-theme="dark"]) body .app-sidebar .sidebar-theme-toggle:hover,
+html:not([data-theme="dark"]) body .app-sidebar .sidebar-signout:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+}
+html:not([data-theme="dark"]) body .app-sidebar .sidebar-link.active,
+html:not([data-theme="dark"]) body .app-sidebar .sidebar-user.active {
+    background: rgba(255, 255, 255, 0.20) !important;
+    color: #FFFFFF !important;
+}
+/* Brand area + footer dividers */
+html:not([data-theme="dark"]) body .app-sidebar .sidebar-brand,
+html:not([data-theme="dark"]) body .app-sidebar .sidebar-footer {
+    border-color: rgba(255, 255, 255, 0.18) !important;
+}
+/* Icons inside links (SVG/font icons inherit currentColor) */
+html:not([data-theme="dark"]) body .app-sidebar svg,
+html:not([data-theme="dark"]) body .app-sidebar i {
+    color: #FFFFFF !important;
+    fill: currentColor !important;
+}
+/* Show the dark-variant brand logo on the blue background for contrast */
+html:not([data-theme="dark"]) body .app-sidebar .brand-logo-light { display: none !important; }
+html:not([data-theme="dark"]) body .app-sidebar .brand-logo-dark  { display: inline-block !important; }
+
+/* === Hide scrollbar on sidebars but keep scrolling === */
+.app-sidebar,
+.course-shell__sidebar {
+    scrollbar-width: none !important;       /* Firefox */
+    -ms-overflow-style: none !important;    /* IE/old Edge */
+}
+.app-sidebar::-webkit-scrollbar,
+.course-shell__sidebar::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+    display: none !important;               /* Chromium / Safari */
+}
+
+/* === Light-mode: force gray text & gray buttons to near-black (97-100%) === */
+html:not([data-theme="dark"]) body .text-muted,
+html:not([data-theme="dark"]) body .text-secondary,
+html:not([data-theme="dark"]) body .text-body-secondary,
+html:not([data-theme="dark"]) body .text-body-tertiary,
+html:not([data-theme="dark"]) body small.text-muted,
+html:not([data-theme="dark"]) body .form-text,
+html:not([data-theme="dark"]) body .help-text,
+html:not([data-theme="dark"]) body .muted,
+html:not([data-theme="dark"]) body .subtle,
+html:not([data-theme="dark"]) body .meta,
+html:not([data-theme="dark"]) body .text-gray,
+html:not([data-theme="dark"]) body .text-grey {
+    color: #0A0A0A !important;   /* ~96% black, very close to pure */
+}
+
+/* Gray Bootstrap buttons -> dark gray background, white text */
+html:not([data-theme="dark"]) body .btn-secondary,
+html:not([data-theme="dark"]) body .btn-light,
+html:not([data-theme="dark"]) body .btn-outline-secondary,
+html:not([data-theme="dark"]) body .btn-outline-light,
+html:not([data-theme="dark"]) body .btn-default {
+    background-color: #4D4D4D !important;
+    border-color: #4D4D4D !important;
+    color: #FFFFFF !important;
+}
+html:not([data-theme="dark"]) body .btn-secondary:hover,
+html:not([data-theme="dark"]) body .btn-light:hover,
+html:not([data-theme="dark"]) body .btn-outline-secondary:hover,
+html:not([data-theme="dark"]) body .btn-outline-light:hover,
+html:not([data-theme="dark"]) body .btn-default:hover,
+html:not([data-theme="dark"]) body .btn-secondary:focus,
+html:not([data-theme="dark"]) body .btn-light:focus,
+html:not([data-theme="dark"]) body .btn-outline-secondary:focus,
+html:not([data-theme="dark"]) body .btn-outline-light:focus {
+    background-color: #3A3A3A !important;
+    border-color: #3A3A3A !important;
+    color: #FFFFFF !important;
+}
+
+/* Exclude sidebar (already styled white-on-Oxford-blue) and lesson content (locked gray palette) */
+html:not([data-theme="dark"]) body .app-sidebar .text-muted,
+html:not([data-theme="dark"]) body .app-sidebar .text-secondary,
+html:not([data-theme="dark"]) body .course-shell__sidebar .text-muted,
+html:not([data-theme="dark"]) body .course-shell__sidebar .text-secondary,
+html:not([data-theme="dark"]) body .lesson-content .text-muted,
+html:not([data-theme="dark"]) body .lesson-content .text-secondary {
+    color: inherit !important;
+}
+html:not([data-theme="dark"]) body .app-sidebar .btn-secondary,
+html:not([data-theme="dark"]) body .app-sidebar .btn-light,
+html:not([data-theme="dark"]) body .course-shell__sidebar .btn-secondary,
+html:not([data-theme="dark"]) body .course-shell__sidebar .btn-light {
+    background-color: rgba(255,255,255,0.12) !important;
+    border-color: rgba(255,255,255,0.25) !important;
+    color: #FFFFFF !important;
+}
+
+/* === Sidebar uses Microsoft Segoe UI, lighter weight === */
+.app-sidebar,
+.app-sidebar * {
+    font-family: "Segoe UI", "Segoe UI Web (West European)", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif !important;
+    font-weight: 400 !important;
+    letter-spacing: 0.01em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.app-sidebar .sidebar-link,
+.app-sidebar .sidebar-user-name,
+.app-sidebar .sidebar-theme-toggle,
+.app-sidebar .sidebar-signout {
+    font-weight: 400 !important;
+}
+.app-sidebar .sidebar-link.active,
+.app-sidebar .sidebar-user.active {
+    font-weight: 500 !important;
+}
+.app-sidebar .sidebar-user-role {
+    font-weight: 300 !important;
+}
+
+/* === Hide scrollbar on course-shell outline (and any sidebar inner scroller) === */
+.course-shell__outline,
+.course-shell__sidebar,
+.course-shell__sidebar *,
+.app-sidebar,
+.app-sidebar * {
+    scrollbar-width: none !important;       /* Firefox */
+    -ms-overflow-style: none !important;    /* IE/old Edge */
+}
+.course-shell__outline::-webkit-scrollbar,
+.course-shell__sidebar::-webkit-scrollbar,
+.course-shell__sidebar *::-webkit-scrollbar,
+.app-sidebar::-webkit-scrollbar,
+.app-sidebar *::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+    display: none !important;
+    background: transparent !important;
+}
+
+/* === Light-mode sidebar: restore outline-style theme-toggle icons (match dark mode) === */
+html:not([data-theme="dark"]) body .app-sidebar .sidebar-theme-toggle svg,
+html:not([data-theme="dark"]) body .app-sidebar .theme-toggle-icon-light,
+html:not([data-theme="dark"]) body .app-sidebar .theme-toggle-icon-dark {
+    fill: none !important;
+    stroke: #FFFFFF !important;
+    color: #FFFFFF !important;
+}
+
+/* === Light-mode sidebar icons: match dark-mode thinner look === */
+html:not([data-theme="dark"]) body .app-sidebar .sidebar-link i,
+html:not([data-theme="dark"]) body .app-sidebar .sidebar-signout i,
+html:not([data-theme="dark"]) body .app-sidebar .sidebar-user-avatar i,
+html:not([data-theme="dark"]) body .app-sidebar .sidebar-theme-toggle svg {
+    font-size: 16px !important;
+    font-weight: 300 !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    text-rendering: geometricPrecision !important;
+    opacity: 0.92;
+}
+html:not([data-theme="dark"]) body .app-sidebar .sidebar-theme-toggle svg {
+    stroke-width: 1.5 !important;
+    width: 16px !important;
+    height: 16px !important;
+}
+
+/* === Sidebar: thin-line SVG icons (both themes) === */
+.app-sidebar .sidebar-link-icon {
+    width: 18px !important;
+    height: 18px !important;
+    fill: none !important;
+    stroke: currentColor !important;
+    stroke-width: 1.75 !important;
+    flex-shrink: 0;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+html:not([data-theme="dark"]) body .app-sidebar .sidebar-link-icon {
+    fill: none !important;
+    stroke: #FFFFFF !important;
+    color: #FFFFFF !important;
+    opacity: 0.95;
+}
+
+/* === Create New Course button: matches sidebar blue === */
+.btn-create-course,
+.btn-create-course:hover,
+.btn-create-course:focus,
+.btn-create-course:active,
+.btn-create-course:focus-visible {
+    background-color: #0F6FD1 !important;
+    background-image: none !important;
+    border-color: #0F6FD1 !important;
+    color: #FFFFFF !important;
+    box-shadow: none !important;
+    transition: none !important;
+    transform: none !important;
+}
+.btn-create-course i,
+.btn-create-course:hover i,
+.btn-create-course:focus i {
+    color: #FFFFFF !important;
+}
+
+/* === Create Course modal: sidebar-blue header & buttons === */
+#createCourseModal .modal-header {
+    background-color: #0F6FD1 !important;
+    border-bottom-color: #0A559F !important;
+    color: #FFFFFF !important;
+}
+#createCourseModal .modal-header .modal-title,
+#createCourseModal .modal-header .modal-title i,
+#createCourseModal .modal-header .modal-title .text-primary {
+    color: #FFFFFF !important;
+}
+#createCourseModal .modal-header .btn-close {
+    filter: invert(1) grayscale(1) brightness(2) !important;
+    opacity: 0.9 !important;
+}
+#createCourseModal .modal-header .btn-close:hover,
+#createCourseModal .modal-header .btn-close:focus {
+    opacity: 1 !important;
+    box-shadow: none !important;
+}
+
+/* Submit + Cancel buttons inside modal � Oxford blue, white text, no hover change */
+#createCourseModal .btn-primary,
+#createCourseModal .btn-primary:hover,
+#createCourseModal .btn-primary:focus,
+#createCourseModal .btn-primary:active,
+#createCourseModal .btn-outline-secondary,
+#createCourseModal .btn-outline-secondary:hover,
+#createCourseModal .btn-outline-secondary:focus,
+#createCourseModal .btn-outline-secondary:active {
+    background-color: #0F6FD1 !important;
+    background-image: none !important;
+    border-color: #0F6FD1 !important;
+    color: #FFFFFF !important;
+    box-shadow: none !important;
+    transition: none !important;
+    transform: none !important;
+}
+#createCourseModal .btn-primary i,
+#createCourseModal .btn-outline-secondary i {
+    color: #FFFFFF !important;
+}
+
+/* === Create Course modal: rounded corners so blue header sits snug === */
+#createCourseModal .modal-content {
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    border: none !important;
+}
+#createCourseModal .modal-header {
+    border-top-left-radius: 12px !important;
+    border-top-right-radius: 12px !important;
+}
+
+/* ==========================================================================
+   GLOBAL: 6px-rounded fields + Oxford-blue windows/buttons (app-wide)
+   ========================================================================== */
+
+/* --- Form fields: 6px rounded --- */
+.form-control,
+.form-select,
+input.form-control,
+textarea.form-control,
+select.form-select,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="url"],
+input[type="search"],
+input[type="tel"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+input[type="file"],
+textarea,
+select {
+    border-radius: 6px !important;
+}
+.input-group > .form-control:not(:last-child),
+.input-group > .form-select:not(:last-child) {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+.input-group > .form-control:not(:first-child),
+.input-group > .form-select:not(:first-child) {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+
+/* --- All modals: 12px rounded, Oxford-blue header, white text & close --- */
+.modal-content {
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    border: none !important;
+}
+.modal-header {
+    background-color: #0F6FD1 !important;
+    border-bottom-color: #0A559F !important;
+    color: #FFFFFF !important;
+    border-top-left-radius: 12px !important;
+    border-top-right-radius: 12px !important;
+}
+.modal-header .modal-title,
+.modal-header .modal-title i,
+.modal-header .modal-title .text-primary,
+.modal-header h1,
+.modal-header h2,
+.modal-header h3,
+.modal-header h4,
+.modal-header h5,
+.modal-header h6 {
+    color: #FFFFFF !important;
+}
+.modal-header .btn-close {
+    filter: invert(1) grayscale(1) brightness(2) !important;
+    opacity: 0.9 !important;
+}
+.modal-header .btn-close:hover,
+.modal-header .btn-close:focus {
+    opacity: 1 !important;
+    box-shadow: none !important;
+}
+.modal-footer {
+    border-top-color: rgba(0, 33, 71, 0.10) !important;
+}
+
+/* --- All buttons: 6px rounded; primary/secondary -> Oxford blue, no hover/animation --- */
+.btn {
+    border-radius: 6px !important;
+    transition: none !important;
+    transform: none !important;
+}
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary:focus-visible,
+.btn-secondary,
+.btn-secondary:hover,
+.btn-secondary:focus,
+.btn-secondary:active,
+.btn-outline-primary,
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active,
+.btn-outline-secondary,
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus,
+.btn-outline-secondary:active {
+    background-color: #002147 !important;
+    background-image: none !important;
+    border-color: #002147 !important;
+    color: #FFFFFF !important;
+    box-shadow: none !important;
+    transition: none !important;
+    transform: none !important;
+}
+.btn-primary i,
+.btn-secondary i,
+.btn-outline-primary i,
+.btn-outline-secondary i {
+    color: #FFFFFF !important;
+}
+
+/* Keep semantic-color buttons recognisable (danger/success/warning/info untouched) */
+
+/* --- Cards & panels: 8px rounded for consistency --- */
+.card,
+.alert,
+.list-group {
+    border-radius: 8px !important;
+}
+.card-header {
+    border-top-left-radius: 8px !important;
+    border-top-right-radius: 8px !important;
+}
+.card-footer {
+    border-bottom-left-radius: 8px !important;
+    border-bottom-right-radius: 8px !important;
+}
+
+/* --- Dropdown menus: 6px rounded --- */
+.dropdown-menu {
+    border-radius: 6px !important;
+}
+
+/* Sidebar buttons are excluded � handled by earlier sidebar-scoped rules */
+.app-sidebar .btn-primary,
+.app-sidebar .btn-secondary,
+.app-sidebar .btn-outline-primary,
+.app-sidebar .btn-outline-secondary,
+.course-shell__sidebar .btn-primary,
+.course-shell__sidebar .btn-secondary,
+.course-shell__sidebar .btn-outline-primary,
+.course-shell__sidebar .btn-outline-secondary {
+    background-color: rgba(255, 255, 255, 0.10) !important;
+    border-color: rgba(255, 255, 255, 0.25) !important;
+    color: #FFFFFF !important;
+}
+
+/* === Sidebar SVG icons: even thinner strokes === */
+.app-sidebar .sidebar-link-icon,
+.app-sidebar .sidebar-theme-toggle svg,
+.app-sidebar .sidebar-signout svg,
+.course-shell__sidebar .sidebar-link-icon,
+.course-shell__sidebar .sidebar-theme-toggle svg {
+    stroke-width: 1.1 !important;
+    fill: none !important;
+    vector-effect: non-scaling-stroke;
+    shape-rendering: geometricPrecision;
+}
+
+/* === Course-shell progress bar: white-on-translucent for Oxford-blue sidebar === */
+.course-shell__sidebar .course-shell__progress-bar {
+    background: rgba(255, 255, 255, 0.18) !important;
+    height: 6px !important;
+    border-radius: 9999px !important;
+    overflow: hidden !important;
+}
+.course-shell__sidebar .course-shell__progress-bar > span {
+    background: #FFFFFF !important;
+    border-radius: 9999px !important;
+    display: block !important;
+    height: 100% !important;
+    min-width: 2px !important;
+    transition: width 0.4s ease !important;
+}
+.course-shell__sidebar .course-shell__progress-meta {
+    color: rgba(255, 255, 255, 0.92) !important;
+    font-weight: 500 !important;
+}
+html:not([data-theme="dark"]) .course-shell__sidebar .course-shell__completed-pill,
+html:not([data-theme="dark"]) .course-shell__main .course-shell__completed-pill {
+    background: rgba(0, 33, 71, 0.10) !important;
+    color: #002147 !important;
+    border-radius: 9999px !important;
+    padding: 2px 10px !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+}
+[data-theme="dark"] .course-shell__sidebar .course-shell__completed-pill,
+[data-theme="dark"] .course-shell__main .course-shell__completed-pill {
+    background: rgba(52, 211, 153, 0.18) !important;
+    color: #6EE7B7 !important;
+    border: 1px solid rgba(52, 211, 153, 0.45) !important;
+    border-radius: 9999px !important;
+    padding: 2px 10px !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+}
+
+/* === Quiz result page (.qr-page): force gray text to near-black in light mode === */
+html:not([data-theme="dark"]) body .qr-page,
+html:not([data-theme="dark"]) body .qr-page .qr-subtitle,
+html:not([data-theme="dark"]) body .qr-page .qr-score__label,
+html:not([data-theme="dark"]) body .qr-page .qr-score__pct,
+html:not([data-theme="dark"]) body .qr-page .qr-q__pts,
+html:not([data-theme="dark"]) body .qr-page .qr-q__pts--zero,
+html:not([data-theme="dark"]) body .qr-page .qr-q__text,
+html:not([data-theme="dark"]) body .qr-page .qr-opt,
+html:not([data-theme="dark"]) body .qr-page .qr-opt__text,
+html:not([data-theme="dark"]) body .qr-page .qr-opt__mark,
+html:not([data-theme="dark"]) body .qr-page .qr-opt__note,
+html:not([data-theme="dark"]) body .qr-page .qr-feedback,
+html:not([data-theme="dark"]) body .qr-page .qr-feedback strong,
+html:not([data-theme="dark"]) body .qr-page .qr-feedback__label,
+html:not([data-theme="dark"]) body .qr-page .qr-btn,
+html:not([data-theme="dark"]) body .qr-page .qr-btn:hover,
+html:not([data-theme="dark"]) body .qr-page h1,
+html:not([data-theme="dark"]) body .qr-page h2,
+html:not([data-theme="dark"]) body .qr-page h3,
+html:not([data-theme="dark"]) body .qr-page p,
+html:not([data-theme="dark"]) body .qr-page span,
+html:not([data-theme="dark"]) body .qr-page li {
+    color: #0A0A0A !important;
+}
+html:not([data-theme="dark"]) body .qr-page .qr-opt--selected-wrong .qr-opt__text {
+    text-decoration-color: #0A0A0A !important;
+}
+
+/* === Start quiz / lesson-action buttons: ensure white text on Oxford-blue === */
+html:not([data-theme="dark"]) body .course-shell__complete-form .btn-primary,
+html:not([data-theme="dark"]) body .course-shell__complete-form a.btn-primary,
+html:not([data-theme="dark"]) body .course-shell__complete-form .btn-primary:hover,
+html:not([data-theme="dark"]) body .course-shell__complete-form .btn-primary:focus,
+html:not([data-theme="dark"]) body .course-shell__complete-form .btn-primary:active,
+html:not([data-theme="dark"]) body .course-shell__complete-form .btn-primary:visited {
+    color: #FFFFFF !important;
+    background-color: #0F6FD1 !important;
+    border-color: #0F6FD1 !important;
+}
+html:not([data-theme="dark"]) body .course-shell__complete-form .btn-primary:hover,
+html:not([data-theme="dark"]) body .course-shell__complete-form .btn-primary:focus,
+html:not([data-theme="dark"]) body .course-shell__complete-form .btn-primary:active {
+    background-color: #0A559F !important;
+    border-color: #0A559F !important;
+}
+html:not([data-theme="dark"]) body .course-shell__complete-form .btn-primary i,
+html:not([data-theme="dark"]) body .course-shell__complete-form .btn-primary * {
+    color: #FFFFFF !important;
+}
+
+/* === Quiz checkboxes/radios: 1.1px 98% black border in light mode === */
+html:not([data-theme="dark"]) body .form-check-input {
+    border-color: #050505 !important;
+    border-width: 1.1px !important;
+    background-color: #FFFFFF !important;
+}
+html:not([data-theme="dark"]) body .form-check-input:hover {
+    border-color: #050505 !important;
+}
+html:not([data-theme="dark"]) body .form-check-input:focus {
+    border-color: #050505 !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+html:not([data-theme="dark"]) body .form-check-input:checked {
+    background-color: #050505 !important;
+    border-color: #050505 !important;
+}
+
+/* === Light-mode primary buttons match the sidebar blue === */
+html:not([data-theme="dark"]) body .btn-primary,
+html:not([data-theme="dark"]) body .btn-primary:hover,
+html:not([data-theme="dark"]) body .btn-primary:focus,
+html:not([data-theme="dark"]) body .btn-primary:active,
+html:not([data-theme="dark"]) body .btn-primary.active,
+html:not([data-theme="dark"]) body .btn-primary:focus-visible,
+html:not([data-theme="dark"]) body .btn-create-course,
+html:not([data-theme="dark"]) body .btn-create-course:hover,
+html:not([data-theme="dark"]) body .btn-create-course:focus,
+html:not([data-theme="dark"]) body .btn-create-course:active,
+html:not([data-theme="dark"]) body .btn-create-course:focus-visible {
+    background-color: #0F6FD1 !important;
+    background-image: none !important;
+    border-color: #0F6FD1 !important;
+    color: #FFFFFF !important;
+    box-shadow: none !important;
+}
+html:not([data-theme="dark"]) body .btn-primary:hover,
+html:not([data-theme="dark"]) body .btn-create-course:hover {
+    background-color: #0A559F !important;
+    border-color: #0A559F !important;
+}
+html:not([data-theme="dark"]) body .btn-primary i,
+html:not([data-theme="dark"]) body .btn-create-course i { color: #FFFFFF !important; }
+
+/* === Light-mode: .btn-outline-primary matches sidebar blue (solid) === */
+html:not([data-theme="dark"]) body .btn-outline-primary,
+html:not([data-theme="dark"]) body .btn-outline-primary:focus,
+html:not([data-theme="dark"]) body .btn-outline-primary:active,
+html:not([data-theme="dark"]) body .btn-outline-primary.active,
+html:not([data-theme="dark"]) body .btn-outline-primary:focus-visible {
+    background-color: #0F6FD1 !important;
+    background-image: none !important;
+    border-color: #0F6FD1 !important;
+    color: #FFFFFF !important;
+    box-shadow: none !important;
+}
+html:not([data-theme="dark"]) body .btn-outline-primary:hover {
+    background-color: #0A559F !important;
+    border-color: #0A559F !important;
+    color: #FFFFFF !important;
+}
+html:not([data-theme="dark"]) body .btn-outline-primary i { color: #FFFFFF !important; }
+
+/* Hide floating bare theme toggle on lesson view (sidebar has its own) */
+.course-shell ~ .bare-theme-toggle, body:has(.course-shell) .bare-theme-toggle { display: none !important; }
+
+
+/* Course-shell sidebar: remove white hover/active fills, keep white text */
+html:not([data-theme="dark"]) body .course-shell__sidebar .course-shell__lesson.is-current,
+html:not([data-theme="dark"]) body .course-shell__sidebar .course-shell__lesson:hover,
+html:not([data-theme="dark"]) body .course-shell__sidebar .sidebar-link:hover,
+html:not([data-theme="dark"]) body .course-shell__sidebar .sidebar-user:hover,
+html:not([data-theme="dark"]) body .course-shell__sidebar .sidebar-signout:hover,
+html:not([data-theme="dark"]) body .course-shell__sidebar .sidebar-theme-toggle,
+html:not([data-theme="dark"]) body .course-shell__sidebar .sidebar-theme-toggle:hover,
+html:not([data-theme="dark"]) body .course-shell__sidebar .sidebar-theme-toggle:focus {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: #FFFFFF !important;
+}
+
+/* === Dark-mode fixes for student_progress.html === */
+[data-theme="dark"] .sp-header { border-color: #2A2A2A !important; background: var(--card-bg) !important; }
+[data-theme="dark"] .sp-name { color: var(--text-color) !important; }
+[data-theme="dark"] .sp-meta { color: var(--light-text) !important; }
+[data-theme="dark"] .sp-meta i { color: var(--light-text) !important; }
+[data-theme="dark"] .sp-bio { color: var(--light-text) !important; }
+[data-theme="dark"] .sp-stat { background: var(--card-bg) !important; border-color: #2A2A2A !important; }
+[data-theme="dark"] .sp-stat__label { color: var(--light-text) !important; }
+[data-theme="dark"] .sp-stat__value { color: var(--text-color) !important; }
+[data-theme="dark"] .sp-stat__total { color: var(--light-text) !important; }
+[data-theme="dark"] .sp-stat__sub { color: var(--light-text) !important; }
+[data-theme="dark"] .sp-stat__icon--blue   { background: rgba(0,120,212,0.15) !important; color: #4DA3FF !important; }
+[data-theme="dark"] .sp-stat__icon--green  { background: rgba(6,118,71,0.18) !important;  color: #34D399 !important; }
+[data-theme="dark"] .sp-stat__icon--purple { background: rgba(105,56,239,0.18) !important; color: #A893FF !important; }
+[data-theme="dark"] .sp-lesson-list__item { border-bottom-color: #2A2A2A !important; }
+[data-theme="dark"] .sp-lesson-list__item:hover { background: rgba(255,255,255,0.04) !important; }
+[data-theme="dark"] .sp-lesson-list__title { color: var(--text-color) !important; }
+[data-theme="dark"] .sp-lesson-list__meta { color: var(--light-text) !important; }
+[data-theme="dark"] .sp-lesson-type--blue   { background: rgba(0,120,212,0.15) !important; color: #4DA3FF !important; }
+[data-theme="dark"] .sp-lesson-type--purple { background: rgba(105,56,239,0.18) !important; color: #A893FF !important; }
+[data-theme="dark"] .sp-lesson-type--amber  { background: rgba(181,71,8,0.18) !important; color: #FBBF24 !important; }
+[data-theme="dark"] .sp-lesson-type--green  { background: rgba(6,118,71,0.18) !important; color: #34D399 !important; }
+[data-theme="dark"] .sp-lesson-type__check { border-color: var(--card-bg) !important; }
+[data-theme="dark"] .sp-lesson-list .badge.bg-light { background: #2A2A2A !important; color: var(--light-text) !important; }
+[data-theme="dark"] .sp-lesson-list .badge.bg-success-subtle { background: rgba(18,183,106,0.18) !important; color: #34D399 !important; }
+
+/* === Student progress page: bigger black text === */
+html:not([data-theme="dark"]) body .uui-page--white .sp-header,
+html:not([data-theme="dark"]) body .uui-page--white .sp-name,
+html:not([data-theme="dark"]) body .uui-page--white .sp-meta,
+html:not([data-theme="dark"]) body .uui-page--white .sp-meta span,
+html:not([data-theme="dark"]) body .uui-page--white .sp-bio,
+html:not([data-theme="dark"]) body .uui-page--white .sp-stat,
+html:not([data-theme="dark"]) body .uui-page--white .sp-stat__label,
+html:not([data-theme="dark"]) body .uui-page--white .sp-stat__value,
+html:not([data-theme="dark"]) body .uui-page--white .sp-stat__total,
+html:not([data-theme="dark"]) body .uui-page--white .sp-stat__sub,
+html:not([data-theme="dark"]) body .uui-page--white .sp-lesson-list,
+html:not([data-theme="dark"]) body .uui-page--white .sp-lesson-list__item,
+html:not([data-theme="dark"]) body .uui-page--white .sp-lesson-list__title,
+html:not([data-theme="dark"]) body .uui-page--white .sp-lesson-list__meta,
+html:not([data-theme="dark"]) body .uui-page--white .uui-table,
+html:not([data-theme="dark"]) body .uui-page--white .uui-table th,
+html:not([data-theme="dark"]) body .uui-page--white .uui-table td,
+html:not([data-theme="dark"]) body .uui-page--white .card h5,
+html:not([data-theme="dark"]) body .uui-page--white .uui-page__breadcrumb,
+html:not([data-theme="dark"]) body .uui-page--white .uui-page__breadcrumb a,
+html:not([data-theme="dark"]) body .uui-page--white .uui-muted {
+    color: #000 !important;
+}
+html:not([data-theme="dark"]) body .uui-page--white .sp-name { font-size: 2rem !important; font-weight: 700 !important; }
+html:not([data-theme="dark"]) body .uui-page--white .sp-meta { font-size: 1.05rem !important; }
+html:not([data-theme="dark"]) body .uui-page--white .sp-bio { font-size: 1.05rem !important; }
+html:not([data-theme="dark"]) body .uui-page--white .sp-stat__label { font-size: 1.05rem !important; font-weight: 600 !important; }
+html:not([data-theme="dark"]) body .uui-page--white .sp-stat__value { font-size: 2.25rem !important; font-weight: 700 !important; }
+html:not([data-theme="dark"]) body .uui-page--white .sp-stat__total { font-size: 1.25rem !important; font-weight: 500 !important; }
+html:not([data-theme="dark"]) body .uui-page--white .sp-stat__sub { font-size: 1rem !important; }
+html:not([data-theme="dark"]) body .uui-page--white .card h5 { font-size: 1.5rem !important; font-weight: 700 !important; }
+html:not([data-theme="dark"]) body .uui-page--white .sp-lesson-list__title { font-size: 1.15rem !important; font-weight: 600 !important; }
+html:not([data-theme="dark"]) body .uui-page--white .sp-lesson-list__meta { font-size: 1rem !important; }
+html:not([data-theme="dark"]) body .uui-page--white .uui-table th,
+html:not([data-theme="dark"]) body .uui-page--white .uui-table td { font-size: 1.05rem !important; }
+html:not([data-theme="dark"]) body .uui-page--white .uui-page__breadcrumb,
+html:not([data-theme="dark"]) body .uui-page--white .uui-page__breadcrumb a { font-size: 1rem !important; }
+html:not([data-theme="dark"]) body .uui-page--white .badge { font-size: 0.95rem !important; }
+
+/* === Student progress page: bigger font in dark mode === */
+html[data-theme="dark"] body .uui-page--white .sp-name { font-size: 2rem !important; font-weight: 700 !important; }
+html[data-theme="dark"] body .uui-page--white .sp-meta { font-size: 1.05rem !important; }
+html[data-theme="dark"] body .uui-page--white .sp-bio { font-size: 1.05rem !important; }
+html[data-theme="dark"] body .uui-page--white .sp-stat__label { font-size: 1.05rem !important; font-weight: 600 !important; }
+html[data-theme="dark"] body .uui-page--white .sp-stat__value { font-size: 2.25rem !important; font-weight: 700 !important; }
+html[data-theme="dark"] body .uui-page--white .sp-stat__total { font-size: 1.25rem !important; font-weight: 500 !important; }
+html[data-theme="dark"] body .uui-page--white .sp-stat__sub { font-size: 1rem !important; }
+html[data-theme="dark"] body .uui-page--white .card h5 { font-size: 1.5rem !important; font-weight: 700 !important; }
+html[data-theme="dark"] body .uui-page--white .sp-lesson-list__title { font-size: 1.15rem !important; font-weight: 600 !important; }
+html[data-theme="dark"] body .uui-page--white .sp-lesson-list__meta { font-size: 1rem !important; }
+html[data-theme="dark"] body .uui-page--white .uui-table th,
+html[data-theme="dark"] body .uui-page--white .uui-table td { font-size: 1.05rem !important; }
+html[data-theme="dark"] body .uui-page--white .uui-page__breadcrumb,
+html[data-theme="dark"] body .uui-page--white .uui-page__breadcrumb a { font-size: 1rem !important; }
+html[data-theme="dark"] body .uui-page--white .badge { font-size: 0.95rem !important; }
+
+/* === Student progress page: flat (no background) status pills === */
+body .uui-page--white .sp-lesson-list__item .badge.bg-success-subtle,
+body .uui-page--white .sp-lesson-list__item .badge.bg-light {
+    background-color: transparent !important;
+    background: transparent !important;
+    border: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+body .uui-page--white .sp-lesson-list__item .badge.bg-success-subtle { color: #1f9d6b !important; }
+body .uui-page--white .sp-lesson-list__item .badge.bg-light { color: #8a8a8a !important; }
+
+/* === Student progress page: remove green circle around check === */
+body .sp-lesson-type__check {
+    background: transparent !important;
+    border: 0 !important;
+    color: #12B76A !important;
+    width: auto !important;
+    height: auto !important;
+    border-radius: 0 !important;
+    right: -2px !important;
+    bottom: -2px !important;
+}
+[data-theme="dark"] body .sp-lesson-type__check {
+    background: transparent !important;
+    border: 0 !important;
+    color: #34D399 !important;
+}
+body .sp-lesson-type__check .icon { width: 14px !important; height: 14px !important; stroke-width: 3 !important; }
+
+/* === Enrolled Students modal: legible subtext on blue header === */
+.modal-header .enrolled-sub,
+.enrolled-modal .modal-header .enrolled-sub {
+    color: rgba(255, 255, 255, 0.88) !important;
+}
+.modal-header .enrolled-icon,
+.enrolled-modal .modal-header .enrolled-icon {
+    background: rgba(255, 255, 255, 0.18) !important;
+    color: #FFFFFF !important;
+}
+
+/* === Dark mode: white text on azure toast === */
+[data-theme="dark"] .azure-toast,
+[data-theme="dark"] .azure-toast__body {
+    background: #1F1F1F !important;
+    color: #FFFFFF !important;
+    border-color: #3A3A3A !important;
+}
+[data-theme="dark"] .azure-toast__close { color: #E5E5E5 !important; }
+[data-theme="dark"] .azure-toast__close:hover { background: #2A2A2A !important; color: #FFFFFF !important; }
+
+/* === Light mode: Retake button � Wear blue, white text === */
+html:not([data-theme="dark"]) body .qr-page .qr-btn.qr-btn--primary,
+html:not([data-theme="dark"]) body .qr-btn.qr-btn--primary {
+    background: #0F6FD1 !important;
+    border-color: #0F6FD1 !important;
+    color: #FFFFFF !important;
+}
+html:not([data-theme="dark"]) body .qr-page .qr-btn.qr-btn--primary:hover,
+html:not([data-theme="dark"]) body .qr-btn.qr-btn--primary:hover {
+    background: #0A559F !important;
+    border-color: #0A559F !important;
+    color: #FFFFFF !important;
+}
+html:not([data-theme="dark"]) body .qr-btn.qr-btn--primary .qr-btn__icon,
+html:not([data-theme="dark"]) body .qr-btn.qr-btn--primary .bx {
+    color: #FFFFFF !important;
+}
+
+/* === Quiz result review: black text + black checkboxes in light mode === */
+html:not([data-theme="dark"]) body .qr-page,
+html:not([data-theme="dark"]) body .qr-page h1.qr-title,
+html:not([data-theme="dark"]) body .qr-page .qr-subtitle,
+html:not([data-theme="dark"]) body .qr-page .qr-score__label,
+html:not([data-theme="dark"]) body .qr-page .qr-score__value,
+html:not([data-theme="dark"]) body .qr-page .qr-score__pct,
+html:not([data-theme="dark"]) body .qr-page .qr-q__num,
+html:not([data-theme="dark"]) body .qr-page .qr-q__pts,
+html:not([data-theme="dark"]) body .qr-page .qr-q__text,
+html:not([data-theme="dark"]) body .qr-page .qr-opt,
+html:not([data-theme="dark"]) body .qr-page .qr-opt__text,
+html:not([data-theme="dark"]) body .qr-page .qr-opt__tag,
+html:not([data-theme="dark"]) body .qr-page .qr-feedback,
+html:not([data-theme="dark"]) body .qr-page .qr-feedback strong,
+html:not([data-theme="dark"]) body .qr-page .qr-feedback__label {
+    color: #000 !important;
+}
+html:not([data-theme="dark"]) body .qr-page .qr-opt__mark {
+    border-color: #000 !important;
+    color: #000 !important;
+}
+html:not([data-theme="dark"]) body .qr-page .qr-opt--correct .qr-opt__mark {
+    background: #000 !important;
+    border-color: #000 !important;
+    color: #fff !important;
+}
+
+/* === Quiz result: force black text on questions, options, and feedback === */
+html:not([data-theme="dark"]) body .qr-page .qr-q__num,
+html:not([data-theme="dark"]) body .qr-page .qr-q__text,
+html:not([data-theme="dark"]) body .qr-page .qr-q__text *,
+html:not([data-theme="dark"]) body .qr-page .qr-opt,
+html:not([data-theme="dark"]) body .qr-page .qr-opt__mark,
+html:not([data-theme="dark"]) body .qr-page .qr-opt__text,
+html:not([data-theme="dark"]) body .qr-page .qr-opt__text *,
+html:not([data-theme="dark"]) body .qr-page .qr-opt__tag,
+html:not([data-theme="dark"]) body .qr-page .qr-feedback,
+html:not([data-theme="dark"]) body .qr-page .qr-feedback *,
+html:not([data-theme="dark"]) body .qr-page .qr-feedback__label {
+    color: #000 !important;
+}
+
+/* === Student progress: remove tinted background behind stat icons === */
+body .uui-page--white .sp-stat__icon,
+body .uui-page--white .sp-stat__icon--blue,
+body .uui-page--white .sp-stat__icon--green,
+body .uui-page--white .sp-stat__icon--purple {
+    background: transparent !important;
+}
+
+/* === Flat badge-dot pills: text-only, no background, no border === */
+.uui-badge-dot,
+.uui-badge-dot--success,
+.uui-badge-dot--gray,
+.uui-badge-dot--info,
+.uui-badge-dot--warning,
+.uui-badge-dot--danger {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+html[data-theme="dark"] .uui-badge-dot,
+html[data-theme="dark"] .uui-badge-dot--success,
+html[data-theme="dark"] .uui-badge-dot--gray,
+html[data-theme="dark"] .uui-badge-dot--info,
+html[data-theme="dark"] .uui-badge-dot--warning,
+html[data-theme="dark"] .uui-badge-dot--danger {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+/* === Users table: force black text on everything except the Active status pill === */
+html:not([data-theme="dark"]) body .uui-table thead th,
+html:not([data-theme="dark"]) body .uui-table tbody td,
+html:not([data-theme="dark"]) body .uui-table .uui-user-cell__name,
+html:not([data-theme="dark"]) body .uui-table .uui-user-cell__sub,
+html:not([data-theme="dark"]) body .uui-table .uui-role-pill,
+html:not([data-theme="dark"]) body .uui-table .uui-email,
+html:not([data-theme="dark"]) body .uui-table .uui-muted,
+html:not([data-theme="dark"]) body .uui-table .uui-nowrap {
+    color: #000 !important;
+}
+/* Keep the Active status pill in its original accent color */
+html:not([data-theme="dark"]) body .uui-table .uui-badge-dot,
+html:not([data-theme="dark"]) body .uui-table .uui-badge-dot--success,
+html:not([data-theme="dark"]) body .uui-table .uui-badge-dot--gray,
+html:not([data-theme="dark"]) body .uui-table .uui-badge-dot--info,
+html:not([data-theme="dark"]) body .uui-table .uui-badge-dot--warning,
+html:not([data-theme="dark"]) body .uui-table .uui-badge-dot--danger {
+    color: revert !important;
+}
+
+/* === Users page filter tabs (View all / Super users / Admins / Teachers / Students):
+       slightly bigger, black text in light mode === */
+html:not([data-theme="dark"]) body .uui-tab,
+html:not([data-theme="dark"]) body .uui-tab .uui-tab__count {
+    color: #000 !important;
+    font-size: 1.05rem !important;
+}
+html:not([data-theme="dark"]) body .uui-tab.is-active {
+    color: #000 !important;
+}
+/* Apply bigger size in dark mode too (color untouched there) */
+html[data-theme="dark"] body .uui-tab,
+html[data-theme="dark"] body .uui-tab .uui-tab__count {
+    font-size: 1.05rem !important;
+}
+
+/* === Users page: unify height of toolbar controls (search, selects, Add user) === */
+body .uui-page__actions .btn,
+body .uui-page__actions .btn-primary,
+body .uui-table-card__actions .uui-search,
+body .uui-table-card__actions .uui-filter-select,
+body .uui-table-card__actions .btn,
+body .uui-table-card__actions .btn-primary {
+    height: 40px !important;
+    min-height: 40px !important;
+    line-height: 1 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
+}
+
+/* === Users page toolbar: force ALL four controls to identical 40px height === */
+/* Search field */
+body .uui-table-card .uui-search,
+body .uui-search {
+    height: 40px !important;
+    min-height: 40px !important;
+    max-height: 40px !important;
+    box-sizing: border-box !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+body .uui-search input { height: 38px !important; }
+
+/* Filter dropdowns */
+body .uui-filter-select {
+    height: 40px !important;
+    min-height: 40px !important;
+    max-height: 40px !important;
+    box-sizing: border-box !important;
+    line-height: 38px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* Add user button (anywhere on the users page) */
+body .uui-page__actions a.btn,
+body .uui-page__actions button.btn,
+body .uui-page__actions .btn-primary,
+body .uui-table-card__actions a.btn,
+body .uui-table-card__actions button.btn,
+body .uui-table-card__actions .btn-primary {
+    height: 40px !important;
+    min-height: 40px !important;
+    max-height: 40px !important;
+    box-sizing: border-box !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    line-height: 1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* === ds-select custom dropdown button: match 40px toolbar height === */
+body .uui-table-card__actions .ds-select,
+body .uui-page__actions .ds-select {
+    height: 40px !important;
+    display: inline-flex !important;
+    align-items: stretch !important;
+}
+body .ds-select__btn {
+    height: 40px !important;
+    min-height: 40px !important;
+    max-height: 40px !important;
+    box-sizing: border-box !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    line-height: 1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+/* === Users table: larger, readable typography === */
+body .uui-table thead th {
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+    letter-spacing: 0.02em !important;
+}
+body .uui-table tbody td {
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+}
+body .uui-user-cell__name {
+    font-size: 14.5px !important;
+    line-height: 1.4 !important;
+}
+body .uui-user-cell__sub {
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+}
+body .uui-table .uui-badge-dot {
+    font-size: 12.5px !important;
+    line-height: 1.4 !important;
+}
+
+/* === Search bar: no focus glow === */
+body .uui-search,
+body .uui-search:focus-within,
+body .uui-search:hover {
+    box-shadow: none !important;
+}
+body .uui-search:focus-within {
+    border-color: #D0D5DD !important;
+}
+body .uui-search input,
+body .uui-search input:focus,
+body .uui-search input:focus-visible {
+    outline: 0 !important;
+    box-shadow: none !important;
+}
+
+/* === Users table action icons: edit black, delete red === */
+body .uui-icon-btn,
+body .uui-icon-btn i,
+body .uui-icon-btn svg {
+    color: #101828 !important;
+    stroke: #101828 !important;
+}
+body .uui-icon-btn--danger,
+body .uui-icon-btn--danger i,
+body .uui-icon-btn--danger svg {
+    color: #D92D20 !important;
+    stroke: #D92D20 !important;
+}
+
+/* === Dark mode: edit icon white === */
+html[data-theme="dark"] body .uui-icon-btn,
+html[data-theme="dark"] body .uui-icon-btn i,
+html[data-theme="dark"] body .uui-icon-btn svg {
+    color: #FFFFFF !important;
+    stroke: #FFFFFF !important;
+}
+html[data-theme="dark"] body .uui-icon-btn--danger,
+html[data-theme="dark"] body .uui-icon-btn--danger i,
+html[data-theme="dark"] body .uui-icon-btn--danger svg {
+    color: #F97066 !important;
+    stroke: #F97066 !important;
+}
+
+/* === Create user: larger card === */
+.uui-edit-card.uui-edit-card--lg {
+    padding: 2rem 2.25rem !important;
+}
+.uui-edit-card.uui-edit-card--lg .form-label {
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.5rem !important;
+}
+.uui-edit-card.uui-edit-card--lg .form-control,
+.uui-edit-card.uui-edit-card--lg .form-select {
+    font-size: 1rem !important;
+    padding: 0.7rem 0.9rem !important;
+    min-height: 48px !important;
+}
+.uui-edit-card.uui-edit-card--lg .form-text {
+    font-size: 0.9rem !important;
+}
+.uui-edit-card.uui-edit-card--lg .mb-3 {
+    margin-bottom: 1.25rem !important;
+}
+.uui-edit-card.uui-edit-card--lg .btn {
+    font-size: 0.95rem !important;
+    padding: 0.65rem 1.15rem !important;
+}
+
+/* Boost specificity for create-user large card typography */
+body .uui-edit-card.uui-edit-card--lg .form-label,
+html body .uui-edit-card.uui-edit-card--lg .form-label {
+    font-size: 1rem !important;
+}
+body .uui-edit-card.uui-edit-card--lg .form-control,
+body .uui-edit-card.uui-edit-card--lg .form-select,
+html body .uui-edit-card.uui-edit-card--lg .ds-select__btn {
+    font-size: 1.0625rem !important;
+}
+
+/* === Users toolbar: black text & icons === */
+body .uui-search,
+body .uui-search input,
+body .uui-search input::placeholder,
+body .uui-search svg,
+body .uui-search i {
+    color: #101828 !important;
+}
+body .uui-search input::placeholder { opacity: 1 !important; }
+body .uui-search svg { stroke: #101828 !important; }
+
+body .ds-select .ds-select__btn,
+body .ds-select .ds-select__btn > span,
+body .ds-select .ds-select__btn svg,
+body .ds-select .ds-select__btn i {
+    color: #101828 !important;
+    stroke: #101828 !important;
+}
+
+/* === Dark mode: toolbar text white (overrides earlier black rule) === */
+html[data-theme="dark"] body .uui-search,
+html[data-theme="dark"] body .uui-search input,
+html[data-theme="dark"] body .uui-search svg,
+html[data-theme="dark"] body .uui-search i {
+    color: #F2F4F7 !important;
+}
+html[data-theme="dark"] body .uui-search input::placeholder {
+    color: #98A2B3 !important;
+    opacity: 1 !important;
+}
+html[data-theme="dark"] body .uui-search svg { stroke: #F2F4F7 !important; }
+
+html[data-theme="dark"] body .ds-select .ds-select__btn,
+html[data-theme="dark"] body .ds-select .ds-select__btn > span,
+html[data-theme="dark"] body .ds-select .ds-select__btn svg,
+html[data-theme="dark"] body .ds-select .ds-select__btn i {
+    color: #F2F4F7 !important;
+    stroke: #F2F4F7 !important;
+}
+
+/* === All edit cards: larger inputs/labels === */
+body .uui-edit-card .form-label {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.5rem !important;
+}
+body .uui-edit-card .form-control,
+body .uui-edit-card .form-select,
+body .uui-edit-card .ds-select__btn {
+    font-size: 1.0625rem !important;
+    padding: 0.7rem 0.9rem !important;
+    min-height: 48px !important;
+}
+body .uui-edit-card textarea.form-control {
+    min-height: 120px !important;
+    line-height: 1.5 !important;
+}
+body .uui-edit-card .form-text {
+    font-size: 0.9rem !important;
+}
+
+/* === Dark mode: edit-card field background 93% black === */
+html[data-theme="dark"] body .uui-edit-card .form-control,
+html[data-theme="dark"] body .uui-edit-card .form-select,
+html[data-theme="dark"] body .uui-edit-card textarea.form-control,
+html[data-theme="dark"] body .uui-edit-card .ds-select__btn {
+    background-color: #121212 !important;
+    background-image: none !important;
+}

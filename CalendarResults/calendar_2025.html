@@ -1,0 +1,3176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Calendar 2025-2026</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f8f9fa;
+        }
+        .nav-links {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 1000;
+            display: flex;
+            gap: 6px;
+            background: transparent;
+        }
+        .nav-links a {
+            background: transparent;
+            padding: 3px 8px;
+            text-decoration: none;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 400;
+            letter-spacing: 0.4px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        .nav-links a:hover {
+            background: transparent;
+            color: rgba(255,255,255,0.85);
+            transform: translateY(-1px);
+            border: none;
+        }
+        .nav-links a i {
+            margin-right: 3px;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            color: white;
+            padding: 4rem 0;
+            margin-bottom: 0rem;
+            border-radius: 0;
+            box-shadow: none;
+        }
+        .header .container {
+            padding-left: 2rem;
+        }
+        .card {
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+            border: none;
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+            background: white;
+        }
+        .month-header {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px 15px 0 0;
+            border-bottom: none;
+        }
+        .month-header h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .container {
+            max-width: 100%;
+            padding: 10px;
+            margin: 0;
+        }
+        .month-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .month-card {
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .events-section {
+            margin-top: 2rem;
+            padding: 1rem;
+            border-top: 2px solid #eee;
+        }
+        .events-title {
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: left;
+            margin-bottom: 1.5rem;
+            color: #333;
+            padding-left: 1rem;
+        }
+        .events-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        .event-card {
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            flex: 1;
+            position: relative;
+        }
+        .event-card h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+        .event-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 15px;
+            width: 100%;
+        }
+        .calendar-day {
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            height: auto;
+            background: white;
+            border-radius: 8px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .calendar-day:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+            border-color: #4a90e2;
+        }
+        .calendar-day.empty {
+            background: #f8f9fa;
+            border: 1px dashed #dee2e6;
+            opacity: 0.7;
+        }
+        .calendar-day.empty:hover {
+            opacity: 1;
+            border: 1px solid #4a90e2;
+            background: #fff;
+        }
+        .calendar-day.empty .day-number {
+            color: #000;
+        }
+        .calendar-day.empty:hover .day-number {
+            color: #000;
+        }
+        .weekday-header {
+            font-weight: 600;
+            text-align: center;
+            padding: 8px;
+            color: #000;
+            font-size: 0.9rem;
+            background: #bbdefb;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .weekday-header.weekend {
+            color: #000;
+            background: #eeeeee;
+        }
+        .day-number {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #000;
+        }
+        .day-content {
+            font-size: 1rem;
+            color: #000;
+            line-height: 1.4;
+            margin-top: 8px;
+            word-wrap: break-word;
+            height: auto;
+        }
+        .day-content.editing {
+            display: none;
+        }
+        .content-editor {
+            display: none;
+            width: 100%;
+            min-height: 100px;
+            margin-top: 8px;
+            padding: 8px;
+            border: 1px solid #4a90e2;
+            border-radius: 4px;
+            font-size: 1rem;
+            line-height: 1.4;
+            resize: vertical;
+            background: #fff;
+        }
+        .content-editor.active {
+            display: block;
+        }
+        .edit-controls {
+            display: none;
+            margin-top: 8px;
+            gap: 5px;
+        }
+        .edit-controls.active {
+            display: flex;
+        }
+        .save-button, .cancel-edit-button {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .save-button {
+            background: #28a745;
+            color: white;
+        }
+        .cancel-edit-button {
+            background: #dc3545;
+            color: white;
+        }
+        .month-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #000;
+            text-align: center;
+            font-weight: bold;
+        }
+        .calendar-day.highlighted {
+            background: #fff3cd;
+            border-color: #ffeeba;
+            box-shadow: 0 0 15px rgba(255, 193, 7, 0.2);
+        }
+        .calendar-day.highlighted-yellow {
+            background: #fff3cd;
+            border-color: #ffeeba;
+            box-shadow: 0 0 15px rgba(255, 193, 7, 0.2);
+        }
+        .calendar-day.highlighted-green {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            box-shadow: 0 0 15px rgba(40, 167, 69, 0.2);
+        }
+        .calendar-day.highlighted-blue {
+            background: #cce5ff;
+            border-color: #b8daff;
+            box-shadow: 0 0 15px rgba(0, 123, 255, 0.2);
+        }
+        .calendar-day.highlighted-orange {
+            background: #ffe5d0;
+            border-color: #ffd5b8;
+            box-shadow: 0 0 15px rgba(253, 126, 20, 0.2);
+        }
+        .calendar-day.highlighted .day-number {
+            color: #856404;
+            font-weight: bold;
+        }
+        .button-group {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            display: flex;
+            gap: 5px;
+            z-index: 2;
+        }
+        .edit-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            color: #ffd700;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .edit-button:hover {
+            background: rgba(0,0,0,0.05);
+            transform: translateY(-1px);
+            color: #ffbd00;
+        }
+        .edit-button i {
+            font-size: 0.8rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .edit-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
+            z-index: 1001;
+            width: 90%;
+            max-width: 600px;
+            display: none;
+            font-size: 16px;
+        }
+        .edit-popup.active {
+            display: block;
+        }
+        .edit-popup textarea {
+            font-size: 16px;
+            line-height: 1.5;
+            padding: 10px;
+            width: 100%;
+            min-height: 150px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        .popup-header {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a237e;
+        }
+        .highlight-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 8px 0;
+            padding: 8px;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            background: #f8f9fa;
+        }
+        .highlight-option {
+            width: 22px;
+            height: 22px;
+            border-radius: 3px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .highlight-option:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .highlight-option.selected {
+            border-color: #333;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .highlight-option.none {
+            background: white;
+            border: 2px solid #ddd;
+        }
+        /* Pastel Colors */
+        .highlight-option.yellow { background: #fff3cd; }
+        .highlight-option.green { background: #d4edda; }
+        .highlight-option.blue { background: #cce5ff; }
+        .highlight-option.orange { background: #ffe5d0; }
+        .highlight-option.pink { background: #ffd4e5; }
+        .highlight-option.purple { background: #e7d9ff; }
+        .highlight-option.mint { background: #d4f8e8; }
+        .highlight-option.coral { background: #ffd4cc; }
+        .highlight-option.lilac { background: #e8d4f8; }
+        .highlight-option.peach { background: #ffdab9; }
+        .highlight-option.sky { background: #d4f1f9; }
+        .highlight-option.lime { background: #e8ffd4; }
+        /* Vibrant Colors */
+        .highlight-option.rose { background: #ffb6c1; }
+        .highlight-option.aqua { background: #00ffff80; }
+        .highlight-option.gold { background: #ffd70080; }
+        .highlight-option.lavender { background: #e6e6fa; }
+        .highlight-option.teal { background: #80ffd480; }
+        .highlight-option.salmon { background: #ffa07a80; }
+        .highlight-label {
+            width: 100%;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 4px;
+            font-size: 0.9rem;
+        }
+        #editor-container {
+            height: 200px;
+            margin: 10px 0;
+        }
+        .ql-toolbar {
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+        .ql-container {
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            background: white;
+        }
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .popup-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+        .close-popup {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        .popup-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .popup-button {
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .save-button {
+            background: #28a745;
+            color: white;
+        }
+        .cancel-button {
+            background: #dc3545;
+            color: white;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .overlay.active {
+            display: block;
+        }
+        .calendar-header {
+            text-align: center;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .calendar-header h1 {
+            margin: 0;
+            padding: 10px 0;
+            color: #333;
+            font-size: 2rem;
+        }
+        .calendar-header p {
+            margin: 0;
+            padding: 10px 0;
+            color: #666;
+        }
+        @media (min-height: 800px) {
+            .calendar-day {
+                height: auto;
+            }
+        }
+        @media (min-height: 1000px) {
+            .calendar-day {
+                height: auto;
+            }
+        }
+        .event-edit-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .event-edit-button:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        #eventEditOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        #eventEditForm {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+            width: 90%;
+            max-width: 600px;
+        }
+
+        #eventEditForm.active,
+        #eventEditOverlay.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-links">
+        <a href="index.html"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="python_report.html"><i class="fab fa-python"></i> Python</a>
+        <a href="java_report.html"><i class="fab fa-java"></i> Java</a>
+        <a href="powerbi_report.html"><i class="fas fa-chart-bar"></i> Power BI</a>
+        <a href="azure_report.html"><i class="fas fa-cloud"></i> Azure</a>
+        <a href="ai_report.html"><i class="fas fa-brain"></i> AI</a>
+        <a href="curriculum_2025.html"><i class="fas fa-book"></i> Curriculum</a>
+        <a href="calendar_2025.html" class="active"><i class="fas fa-calendar"></i> Calendar</a>
+    </div>
+
+    <div class="header">
+        <div class="container">
+            <h1 class="display-4">Academic Calendar 2025</h1>
+            <p class="lead">Software Development, AI & Data Analytics Program</p>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="edit-popup" id="editPopup">
+        <div class="popup-header">
+            <div class="popup-title">Edit Content</div>
+            <button class="close-popup" onclick="closeEditPopup()">&times;</button>
+        </div>
+        <div class="highlight-options">
+            <div class="highlight-label">Cell Highlight:</div>
+            <div class="highlight-option none" onclick="selectHighlight(this, 'none')" title="No highlight"></div>
+            <!-- Pastel Colors -->
+            <div class="highlight-option yellow" onclick="selectHighlight(this, 'yellow')" title="Yellow"></div>
+            <div class="highlight-option green" onclick="selectHighlight(this, 'green')" title="Green"></div>
+            <div class="highlight-option blue" onclick="selectHighlight(this, 'blue')" title="Blue"></div>
+            <div class="highlight-option orange" onclick="selectHighlight(this, 'orange')" title="Orange"></div>
+            <div class="highlight-option pink" onclick="selectHighlight(this, 'pink')" title="Pink"></div>
+            <div class="highlight-option purple" onclick="selectHighlight(this, 'purple')" title="Purple"></div>
+            <div class="highlight-option mint" onclick="selectHighlight(this, 'mint')" title="Mint"></div>
+            <div class="highlight-option coral" onclick="selectHighlight(this, 'coral')" title="Coral"></div>
+            <div class="highlight-option lilac" onclick="selectHighlight(this, 'lilac')" title="Lilac"></div>
+            <div class="highlight-option peach" onclick="selectHighlight(this, 'peach')" title="Peach"></div>
+            <div class="highlight-option sky" onclick="selectHighlight(this, 'sky')" title="Sky"></div>
+            <div class="highlight-option lime" onclick="selectHighlight(this, 'lime')" title="Lime"></div>
+            <!-- Vibrant Colors -->
+            <div class="highlight-option rose" onclick="selectHighlight(this, 'rose')" title="Rose"></div>
+            <div class="highlight-option aqua" onclick="selectHighlight(this, 'aqua')" title="Aqua"></div>
+            <div class="highlight-option gold" onclick="selectHighlight(this, 'gold')" title="Gold"></div>
+            <div class="highlight-option lavender" onclick="selectHighlight(this, 'lavender')" title="Lavender"></div>
+            <div class="highlight-option teal" onclick="selectHighlight(this, 'teal')" title="Teal"></div>
+            <div class="highlight-option salmon" onclick="selectHighlight(this, 'salmon')" title="Salmon"></div>
+        </div>
+        <div id="editor-container"></div>
+        <div class="popup-footer">
+            <button class="popup-button save-button" onclick="saveEdit()">Save</button>
+            <button class="popup-button cancel-button" onclick="closeEditPopup()">Cancel</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- April 2025 -->
+        <div class="card month-card">
+            <div class="month-header">
+                <h2><i class="fas fa-calendar-alt"></i> April 2025</h2>
+            </div>
+            <div class="card-body">
+                <div class="calendar-grid">
+                    <div class="weekday-header">Mon</div>
+                    <div class="weekday-header">Tue</div>
+                    <div class="weekday-header">Wed</div>
+                    <div class="weekday-header">Thu</div>
+                    <div class="weekday-header">Fri</div>
+
+                    <!-- Week 1 (March 31 - April 4) -->
+                    <div class="calendar-day empty" data-day="31" data-month="March">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(31, 'March', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">31</div>
+                        <div class="day-content"></div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="1" data-month="April">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(1, 'April', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">1</div>
+                        <div class="day-content">Program Orientation - Welcome Session</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="2" data-month="April">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(2, 'April', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">2</div>
+                        <div class="day-content">Introduction to Development Tools</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="3" data-month="April">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(3, 'April', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">3</div>
+                        <div class="day-content">Git & Version Control Workshop</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="4" data-month="April">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(4, 'April', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">4</div>
+                        <div class="day-content">Team Building Activities</div>
+                    </div>
+
+                    <!-- Week 2 (April 7-11) -->
+                    <div class="calendar-day has-event" data-day="7" data-month="April">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(7, 'April', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">7</div>
+                        <div class="day-content">Python Basics - Variables & Data Types</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="8" data-month="April">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(8, 'April', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">8</div>
+                        <div class="day-content">Control Flow & Loops</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="9" data-month="April">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(9, 'April', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">9</div>
+                        <div class="day-content">Functions & Modules</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="10" data-month="April">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(10, 'April', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">10</div>
+                        <div class="day-content">Error Handling & Debugging</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="11" data-month="April">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(11, 'April', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">11</div>
+                        <div class="day-content">Python Practice Problems</div>
+                    </div>
+
+                    <!-- Week 3 (April 14-18) -->
+                    <div class="calendar-day has-event" data-day="14" data-month="April">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(14, 'April', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">14</div>
+                        <div class="day-content">Object-Oriented Programming I</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="15" data-month="April">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(15, 'April', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">15</div>
+                        <div class="day-content">Object-Oriented Programming II</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="16" data-month="April">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(16, 'April', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">16</div>
+                        <div class="day-content">Python Data Structures</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="17" data-month="April">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(17, 'April', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">17</div>
+                        <div class="day-content">File Handling & I/O</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="18" data-month="April">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(18, 'April', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">18</div>
+                        <div class="day-content">Python Mini Project</div>
+                    </div>
+
+                    <!-- Week 4 (April 21-25) -->
+                    <div class="calendar-day has-event" data-day="21" data-month="April">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(21, 'April', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">21</div>
+                        <div class="day-content">Python Libraries Overview</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="22" data-month="April">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(22, 'April', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">22</div>
+                        <div class="day-content">NumPy & Pandas Basics</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="23" data-month="April">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(23, 'April', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">23</div>
+                        <div class="day-content">Data Manipulation with Pandas</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="24" data-month="April">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(24, 'April', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">24</div>
+                        <div class="day-content">Data Visualization with Matplotlib</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="25" data-month="April">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(25, 'April', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">25</div>
+                        <div class="day-content">Python Libraries Project</div>
+                    </div>
+
+                    <!-- Week 5 (April 28-30, May 1-2) -->
+                    <div class="calendar-day has-event" data-day="28" data-month="April">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(28, 'April', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">28</div>
+                        <div class="day-content">Advanced Python - Decorators</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="29" data-month="April">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(29, 'April', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">29</div>
+                        <div class="day-content">Mock Assessment</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="30" data-month="April">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(30, 'April', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">30</div>
+                        <div class="day-content">Final Assessment</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="1" data-month="May">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(1, 'May', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">1</div>
+                        <div class="day-content">Workers Day - Holiday</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="2" data-month="May">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(2, 'May', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">2</div>
+                        <div class="day-content">Advanced Python - Generators</div>
+                    </div>
+                </div>
+            </div>
+            <div class="events-section">
+                <div class="events-title">EVENTS</div>
+                <div class="events-container">
+                    <div class="event-card" data-event-id="1" data-month="April">
+                        <button class="event-edit-button" onclick="editEvent(1, 'April')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Important Announcements</h3>
+                        <div class="event-content">To get started right away, just click any placeholder text (such as this) and start typing to replace it with your own.</div>
+                    </div>
+                    <div class="event-card" data-event-id="2" data-month="April">
+                        <button class="event-edit-button" onclick="editEvent(2, 'April')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Upcoming Activities</h3>
+                        <div class="event-content">Want to insert a picture from your files or add a shape, text box, or table? You got it! On the Insert tab of the ribbon, just tap the option you need.</div>
+                    </div>
+                    <div class="event-card" data-event-id="3" data-month="April">
+                        <button class="event-edit-button" onclick="editEvent(3, 'April')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Resources</h3>
+                        <div class="event-content">View and edit this document in Word on your computer, tablet, or phone.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- May 2025 -->
+        <div class="card month-card">
+            <div class="month-header">
+                <h2><i class="fas fa-calendar-alt"></i> May 2025</h2>
+            </div>
+            <div class="card-body">
+                <div class="calendar-grid">
+                    <div class="weekday-header">Mon</div>
+                    <div class="weekday-header">Tue</div>
+                    <div class="weekday-header">Wed</div>
+                    <div class="weekday-header">Thu</div>
+                    <div class="weekday-header">Fri</div>
+
+                    <!-- Week 1 (May 5-9) -->
+                    <div class="calendar-day has-event" data-day="5" data-month="May">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(5, 'May', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">5</div>
+                        <div class="day-content">Advanced Python - Decorators</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="6" data-month="May">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(6, 'May', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">6</div>
+                        <div class="day-content">Advanced Python - Generators</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="7" data-month="May">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(7, 'May', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">7</div>
+                        <div class="day-content">Context Managers</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="8" data-month="May">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(8, 'May', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">8</div>
+                        <div class="day-content">Advanced Python Practice</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="9" data-month="May">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(9, 'May', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">9</div>
+                        <div class="day-content">Course Review & Next Steps</div>
+                    </div>
+
+                    <!-- Week 3 -->
+                    <div class="calendar-day has-event" data-day="12" data-month="May">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(12, 'May', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">12</div>
+                        <div class="day-content">Java Advanced Topics</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="13" data-month="May">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(13, 'May', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">13</div>
+                        <div class="day-content">Spring Framework</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="14" data-month="May">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(14, 'May', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">14</div>
+                        <div class="day-content">Spring Boot</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="15" data-month="May">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(15, 'May', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">15</div>
+                        <div class="day-content">Microservices</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="16" data-month="May">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(16, 'May', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">16</div>
+                        <div class="day-content">Java Project Work</div>
+                    </div>
+
+                    <!-- Week 4 -->
+                    <div class="calendar-day has-event" data-day="19" data-month="May">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(19, 'May', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">19</div>
+                        <div class="day-content">Power BI Introduction</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="20" data-month="May">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(20, 'May', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">20</div>
+                        <div class="day-content">Data Modeling</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="21" data-month="May">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(21, 'May', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">21</div>
+                        <div class="day-content">DAX Formulas</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="22" data-month="May">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(22, 'May', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">22</div>
+                        <div class="day-content">Visualizations</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="23" data-month="May">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(23, 'May', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">23</div>
+                        <div class="day-content">Power BI Service</div>
+                    </div>
+
+                    <!-- Week 5 -->
+                    <div class="calendar-day has-event" data-day="26" data-month="May">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(26, 'May', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">26</div>
+                        <div class="day-content">Power BI Projects</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="27" data-month="May">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(27, 'May', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">27</div>
+                        <div class="day-content">Azure Fundamentals</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="28" data-month="May">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(28, 'May', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">28</div>
+                        <div class="day-content">Cloud Services</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="29" data-month="May">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(29, 'May', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">29</div>
+                        <div class="day-content">Azure Storage</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="30" data-month="May">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(30, 'May', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">30</div>
+                        <div class="day-content">Azure Security</div>
+                    </div>
+                </div>
+            </div>
+            <div class="events-section">
+                <div class="events-title">EVENTS</div>
+                <div class="events-container">
+                    <div class="event-card" data-event-id="1" data-month="May">
+                        <button class="event-edit-button" onclick="editEvent(1, 'May')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Important Announcements</h3>
+                        <div class="event-content">To get started right away, just click any placeholder text (such as this) and start typing to replace it with your own.</div>
+                    </div>
+                    <div class="event-card" data-event-id="2" data-month="May">
+                        <button class="event-edit-button" onclick="editEvent(2, 'May')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Upcoming Activities</h3>
+                        <div class="event-content">Want to insert a picture from your files or add a shape, text box, or table? You got it! On the Insert tab of the ribbon, just tap the option you need.</div>
+                    </div>
+                    <div class="event-card" data-event-id="3" data-month="May">
+                        <button class="event-edit-button" onclick="editEvent(3, 'May')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Resources</h3>
+                        <div class="event-content">View and edit this document in Word on your computer, tablet, or phone.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- June 2025 -->
+        <div class="card month-card">
+            <div class="month-header">
+                <h2><i class="fas fa-calendar-alt"></i> June 2025</h2>
+            </div>
+            <div class="card-body">
+                <div class="calendar-grid">
+                    <div class="weekday-header">Mon</div>
+                    <div class="weekday-header">Tue</div>
+                    <div class="weekday-header">Wed</div>
+                    <div class="weekday-header">Thu</div>
+                    <div class="weekday-header">Fri</div>
+
+                    <!-- Week 1 -->
+                    <div class="calendar-day has-event" data-day="2" data-month="June">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(2, 'June', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">2</div>
+                        <div class="day-content">Azure App Services</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="3" data-month="June">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(3, 'June', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">3</div>
+                        <div class="day-content">Azure Functions</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="4" data-month="June">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(4, 'June', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">4</div>
+                        <div class="day-content">Azure DevOps</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="5" data-month="June">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(5, 'June', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">5</div>
+                        <div class="day-content">Azure Monitoring</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="6" data-month="June">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(6, 'June', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">6</div>
+                        <div class="day-content">Azure Project Work</div>
+                    </div>
+
+                    <!-- Week 2 -->
+                    <div class="calendar-day has-event" data-day="9" data-month="June">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(9, 'June', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">9</div>
+                        <div class="day-content">AI Fundamentals</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="10" data-month="June">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(10, 'June', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">10</div>
+                        <div class="day-content">Machine Learning Basics</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="11" data-month="June">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(11, 'June', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">11</div>
+                        <div class="day-content">Deep Learning</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="12" data-month="June">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(12, 'June', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">12</div>
+                        <div class="day-content">Neural Networks</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="13" data-month="June">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(13, 'June', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">13</div>
+                        <div class="day-content">AI Project Planning</div>
+                    </div>
+
+                    <!-- Week 3 -->
+                    <div class="calendar-day has-event" data-day="16" data-month="June">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(16, 'June', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">16</div>
+                        <div class="day-content">Youth Day - Holiday</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="17" data-month="June">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(17, 'June', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">17</div>
+                        <div class="day-content">AI Model Development</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="18" data-month="June">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(18, 'June', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">18</div>
+                        <div class="day-content">Model Training</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="19" data-month="June">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(19, 'June', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">19</div>
+                        <div class="day-content">Model Evaluation</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="20" data-month="June">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(20, 'June', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">20</div>
+                        <div class="day-content">AI Project Implementation</div>
+                    </div>
+
+                    <!-- Week 4 -->
+                    <div class="calendar-day has-event" data-day="23" data-month="June">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(23, 'June', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">23</div>
+                        <div class="day-content">Final Project Work</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="24" data-month="June">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(24, 'June', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">24</div>
+                        <div class="day-content">Project Presentations</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="25" data-month="June">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(25, 'June', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">25</div>
+                        <div class="day-content">Course Wrap-up</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="26" data-month="June">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(26, 'June', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">26</div>
+                        <div class="day-content">Graduation Preparation</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="27" data-month="June">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(27, 'June', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">27</div>
+                        <div class="day-content">Graduation Ceremony</div>
+                    </div>
+
+                    <!-- Week 5 -->
+                    <div class="calendar-day has-event" data-day="30" data-month="June">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(30, 'June', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">30</div>
+                        <div class="day-content">Career Services Workshop</div>
+                    </div>
+                </div>
+            </div>
+            <div class="events-section">
+                <div class="events-title">EVENTS</div>
+                <div class="events-container">
+                    <div class="event-card" data-event-id="1" data-month="June">
+                        <button class="event-edit-button" onclick="editEvent(1, 'June')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Important Announcements</h3>
+                        <div class="event-content">To get started right away, just click any placeholder text (such as this) and start typing to replace it with your own.</div>
+                    </div>
+                    <div class="event-card" data-event-id="2" data-month="June">
+                        <button class="event-edit-button" onclick="editEvent(2, 'June')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Upcoming Activities</h3>
+                        <div class="event-content">Want to insert a picture from your files or add a shape, text box, or table? You got it! On the Insert tab of the ribbon, just tap the option you need.</div>
+                    </div>
+                    <div class="event-card" data-event-id="3" data-month="June">
+                        <button class="event-edit-button" onclick="editEvent(3, 'June')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Resources</h3>
+                        <div class="event-content">View and edit this document in Word on your computer, tablet, or phone.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- July 2025 -->
+        <div class="card month-card">
+            <div class="month-header">
+                <h2><i class="fas fa-calendar-alt"></i> July 2025</h2>
+            </div>
+            <div class="card-body">
+                <div class="calendar-grid">
+                    <div class="weekday-header">Mon</div>
+                    <div class="weekday-header">Tue</div>
+                    <div class="weekday-header">Wed</div>
+                    <div class="weekday-header">Thu</div>
+                    <div class="weekday-header">Fri</div>
+
+                    <!-- Week 1 -->
+                    <div class="empty"></div>
+                    <div class="empty"></div>
+                    <div class="empty"></div>
+                    <div class="empty"></div>
+                    <div class="calendar-day has-event" data-day="1" data-month="July">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(1, 'July', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">1</div>
+                        <div class="day-content">Job Search Strategy</div>
+                    </div>
+
+                    <!-- Week 2 -->
+                    <div class="calendar-day has-event" data-day="7" data-month="July">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(7, 'July', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">7</div>
+                        <div class="day-content">Technical Interview Prep</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="8" data-month="July">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(8, 'July', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">8</div>
+                        <div class="day-content">Mock Interviews</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="9" data-month="July">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(9, 'July', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">9</div>
+                        <div class="day-content">Portfolio Review</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="10" data-month="July">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(10, 'July', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">10</div>
+                        <div class="day-content">Networking Skills</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="11" data-month="July">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(11, 'July', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">11</div>
+                        <div class="day-content">Industry Meet-up</div>
+                    </div>
+
+                    <!-- Week 3 -->
+                    <div class="calendar-day has-event" data-day="14" data-month="July">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(14, 'July', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">14</div>
+                        <div class="day-content">Job Fair Preparation</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="15" data-month="July">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(15, 'July', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">15</div>
+                        <div class="day-content">Tech Career Fair</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="16" data-month="July">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(16, 'July', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">16</div>
+                        <div class="day-content">Follow-up Workshop</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="17" data-month="July">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(17, 'July', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">17</div>
+                        <div class="day-content">Salary Negotiation</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="18" data-month="July">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(18, 'July', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">18</div>
+                        <div class="day-content">Career Path Planning</div>
+                    </div>
+
+                    <!-- Week 4 -->
+                    <div class="calendar-day has-event" data-day="21" data-month="July">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(21, 'July', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">21</div>
+                        <div class="day-content">Alumni Success Stories</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="22" data-month="July">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(22, 'July', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">22</div>
+                        <div class="day-content">Industry Panel</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="23" data-month="July">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(23, 'July', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">23</div>
+                        <div class="day-content">Mentorship Program</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="24" data-month="July">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(24, 'July', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">24</div>
+                        <div class="day-content">Professional Growth</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="25" data-month="July">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(25, 'July', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">25</div>
+                        <div class="day-content">Alumni Network Event</div>
+                    </div>
+
+                    <!-- Week 5 -->
+                    <div class="calendar-day has-event" data-day="28" data-month="July">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(28, 'July', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">28</div>
+                        <div class="day-content">Future Tech Trends</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="29" data-month="July">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(29, 'July', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">29</div>
+                        <div class="day-content">Continuous Learning</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="30" data-month="July">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(30, 'July', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">30</div>
+                        <div class="day-content">Career Resources</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="31" data-month="July">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(31, 'July', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">31</div>
+                        <div class="day-content">Program Conclusion</div>
+                    </div>
+                </div>
+            </div>
+            <div class="events-section">
+                <div class="events-title">EVENTS</div>
+                <div class="events-container">
+                    <div class="event-card" data-event-id="1" data-month="July">
+                        <button class="event-edit-button" onclick="editEvent(1, 'July')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Important Announcements</h3>
+                        <div class="event-content">To get started right away, just click any placeholder text (such as this) and start typing to replace it with your own.</div>
+                    </div>
+                    <div class="event-card" data-event-id="2" data-month="July">
+                        <button class="event-edit-button" onclick="editEvent(2, 'July')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Upcoming Activities</h3>
+                        <div class="event-content">Want to insert a picture from your files or add a shape, text box, or table? You got it! On the Insert tab of the ribbon, just tap the option you need.</div>
+                    </div>
+                    <div class="event-card" data-event-id="3" data-month="July">
+                        <button class="event-edit-button" onclick="editEvent(3, 'July')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Resources</h3>
+                        <div class="event-content">View and edit this document in Word on your computer, tablet, or phone.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- August 2025 -->
+        <div class="card month-card">
+            <div class="month-header">
+                <h2><i class="fas fa-calendar-alt"></i> August 2025</h2>
+            </div>
+            <div class="card-body">
+                <div class="calendar-grid">
+                    <div class="weekday-header">Mon</div>
+                    <div class="weekday-header">Tue</div>
+                    <div class="weekday-header">Wed</div>
+                    <div class="weekday-header">Thu</div>
+                    <div class="weekday-header">Fri</div>
+
+                    <!-- Week 1 -->
+                    <div class="empty"></div>
+                    <div class="empty"></div>
+                    <div class="empty"></div>
+                    <div class="empty"></div>
+                    <div class="calendar-day has-event" data-day="1" data-month="August">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(1, 'August', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">1</div>
+                        <div class="day-content">Final Project Kickoff</div>
+                    </div>
+
+                    <!-- Week 2 -->
+                    <div class="calendar-day has-event" data-day="4" data-month="August">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(4, 'August', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">4</div>
+                        <div class="day-content">UI/UX Review</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="5" data-month="August">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(5, 'August', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">5</div>
+                        <div class="day-content">Backend Testing</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="6" data-month="August">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(6, 'August', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">6</div>
+                        <div class="day-content">API Integration</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="7" data-month="August">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(7, 'August', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">7</div>
+                        <div class="day-content">Performance Testing</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="8" data-month="August">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(8, 'August', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">8</div>
+                        <div class="day-content">Code Review</div>
+                    </div>
+
+                    <!-- Week 3 -->
+                    <div class="calendar-day has-event" data-day="11" data-month="August">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(11, 'August', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">11</div>
+                        <div class="day-content">Security Audit</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="12" data-month="August">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(12, 'August', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">12</div>
+                        <div class="day-content">Documentation</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="13" data-month="August">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(13, 'August', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">13</div>
+                        <div class="day-content">User Testing</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="14" data-month="August">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(14, 'August', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">14</div>
+                        <div class="day-content">Bug Fixes</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="15" data-month="August">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(15, 'August', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">15</div>
+                        <div class="day-content">Progress Review</div>
+                    </div>
+
+                    <!-- Week 4 -->
+                    <div class="calendar-day has-event" data-day="18" data-month="August">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(18, 'August', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">18</div>
+                        <div class="day-content">Feature Freeze</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="19" data-month="August">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(19, 'August', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">19</div>
+                        <div class="day-content">QA Testing</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="20" data-month="August">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(20, 'August', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">20</div>
+                        <div class="day-content">Deployment Prep</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="21" data-month="August">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(21, 'August', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">21</div>
+                        <div class="day-content">Final Testing</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="22" data-month="August">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(22, 'August', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">22</div>
+                        <div class="day-content">Project Demo</div>
+                    </div>
+
+                    <!-- Week 5 -->
+                    <div class="calendar-day has-event" data-day="25" data-month="August">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(25, 'August', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">25</div>
+                        <div class="day-content">Presentation Prep</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="26" data-month="August">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(26, 'August', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">26</div>
+                        <div class="day-content">Final Reviews</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="27" data-month="August">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(27, 'August', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">27</div>
+                        <div class="day-content">Portfolio Updates</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="28" data-month="August">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(28, 'August', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">28</div>
+                        <div class="day-content">Project Handoff</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="29" data-month="August">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(29, 'August', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">29</div>
+                        <div class="day-content">Graduation Prep</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Events Section -->
+            <div class="events-section">
+                <div class="events-title">EVENTS</div>
+                <div class="events-container">
+                    <div class="event-card" data-event-id="1" data-month="August">
+                        <button class="event-edit-button" onclick="editEvent(1, 'August')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Final Week Activities</h3>
+                        <div class="event-content">Final project presentations, demo day, and graduation ceremony mark the completion of the program.</div>
+                    </div>
+                    <div class="event-card" data-event-id="2" data-month="August">
+                        <button class="event-edit-button" onclick="editEvent(2, 'August')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Career Development</h3>
+                        <div class="event-content">Mock interviews, portfolio reviews, and career workshops to prepare for job market entry.</div>
+                    </div>
+                    <div class="event-card" data-event-id="3" data-month="August">
+                        <button class="event-edit-button" onclick="editEvent(3, 'August')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Industry Connections</h3>
+                        <div class="event-content">Industry panel discussions and networking opportunities with potential employers.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- September 2025 -->
+        <div class="card month-card">
+            <div class="month-header">
+                <h2><i class="fas fa-calendar-alt"></i> September 2025</h2>
+            </div>
+            <div class="card-body">
+                <div class="calendar-grid">
+                    <div class="weekday-header">Mon</div>
+                    <div class="weekday-header">Tue</div>
+                    <div class="weekday-header">Wed</div>
+                    <div class="weekday-header">Thu</div>
+                    <div class="weekday-header">Fri</div>
+
+                    <!-- Week 1 -->
+                    <div class="calendar-day has-event" data-day="1" data-month="September">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(1, 'September', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">1</div>
+                        <div class="day-content">Term Start</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="2" data-month="September">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(2, 'September', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">2</div>
+                        <div class="day-content">Course Intro</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="3" data-month="September">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(3, 'September', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">3</div>
+                        <div class="day-content">Team Formation</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="4" data-month="September">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(4, 'September', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">4</div>
+                        <div class="day-content">Project Kickoff</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="5" data-month="September">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(5, 'September', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">5</div>
+                        <div class="day-content">Sprint Planning</div>
+                    </div>
+
+                    <!-- Week 2 -->
+                    <div class="calendar-day has-event" data-day="8" data-month="September">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(8, 'September', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">8</div>
+                        <div class="day-content">UI Workshop</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="9" data-month="September">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(9, 'September', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">9</div>
+                        <div class="day-content">API Design</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="10" data-month="September">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(10, 'September', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">10</div>
+                        <div class="day-content">Database Setup</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="11" data-month="September">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(11, 'September', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">11</div>
+                        <div class="day-content">Security Review</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="12" data-month="September">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(12, 'September', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">12</div>
+                        <div class="day-content">Sprint Review</div>
+                    </div>
+
+                    <!-- Week 3 -->
+                    <div class="calendar-day has-event" data-day="15" data-month="September">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(15, 'September', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">15</div>
+                        <div class="day-content">Frontend Dev</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="16" data-month="September">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(16, 'September', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">16</div>
+                        <div class="day-content">Backend Dev</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="17" data-month="September">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(17, 'September', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">17</div>
+                        <div class="day-content">Testing Setup</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="18" data-month="September">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(18, 'September', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">18</div>
+                        <div class="day-content">Code Review</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="19" data-month="September">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(19, 'September', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">19</div>
+                        <div class="day-content">Sprint Demo</div>
+                    </div>
+
+                    <!-- Week 4 -->
+                    <div class="calendar-day has-event" data-day="22" data-month="September">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(22, 'September', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">22</div>
+                        <div class="day-content">Integration</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="23" data-month="September">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(23, 'September', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">23</div>
+                        <div class="day-content">Performance</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="24" data-month="September">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(24, 'September', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">24</div>
+                        <div class="day-content">Bug Fixes</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="25" data-month="September">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(25, 'September', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">25</div>
+                        <div class="day-content">Documentation</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="26" data-month="September">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(26, 'September', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">26</div>
+                        <div class="day-content">Monthly Review</div>
+                    </div>
+
+                    <!-- Week 5 -->
+                    <div class="calendar-day has-event" data-day="29" data-month="September">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(29, 'September', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">29</div>
+                        <div class="day-content">Progress Report</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="30" data-month="September">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(30, 'September', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">30</div>
+                        <div class="day-content">Planning Next Sprint</div>
+                    </div>
+                </div>
+            </div>
+            <div class="events-section">
+                <div class="events-title">EVENTS</div>
+                <div class="events-container">
+                    <div class="event-card" data-event-id="1" data-month="September">
+                        <button class="event-edit-button" onclick="editEvent(1, 'September')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>New Term Start</h3>
+                        <div class="event-content">Welcome activities, orientation sessions, and team formation for new students.</div>
+                    </div>
+                    <div class="event-card" data-event-id="2" data-month="September">
+                        <button class="event-edit-button" onclick="editEvent(2, 'September')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Project Initiation</h3>
+                        <div class="event-content">Project kickoff meetings and initial sprint planning sessions.</div>
+                    </div>
+                    <div class="event-card" data-event-id="3" data-month="September">
+                        <button class="event-edit-button" onclick="editEvent(3, 'September')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Course Overview</h3>
+                        <div class="event-content">Introduction to course materials, learning objectives, and assessment criteria.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- October 2025 -->
+        <div class="card month-card">
+            <div class="month-header">
+                <h2><i class="fas fa-calendar-alt"></i> October 2025</h2>
+            </div>
+            <div class="card-body">
+                <div class="calendar-grid">
+                    <div class="weekday-header">Mon</div>
+                    <div class="weekday-header">Tue</div>
+                    <div class="weekday-header">Wed</div>
+                    <div class="weekday-header">Thu</div>
+                    <div class="weekday-header">Fri</div>
+
+                    <!-- Week 1 -->
+                    <div class="empty"></div>
+                    <div class="empty"></div>
+                    <div class="calendar-day has-event" data-day="1" data-month="October">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(1, 'October', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">1</div>
+                        <div class="day-content">Cloud Intro</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="2" data-month="October">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(2, 'October', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">2</div>
+                        <div class="day-content">AWS Basics</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="3" data-month="October">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(3, 'October', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">3</div>
+                        <div class="day-content">Sprint Planning</div>
+                    </div>
+
+                    <!-- Week 2 -->
+                    <div class="calendar-day has-event" data-day="6" data-month="October">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(6, 'October', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">6</div>
+                        <div class="day-content">Docker</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="7" data-month="October">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(7, 'October', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">7</div>
+                        <div class="day-content">Kubernetes</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="8" data-month="October">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(8, 'October', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">8</div>
+                        <div class="day-content">CI/CD Setup</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="9" data-month="October">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(9, 'October', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">9</div>
+                        <div class="day-content">Monitoring</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="10" data-month="October">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(10, 'October', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">10</div>
+                        <div class="day-content">Sprint Review</div>
+                    </div>
+
+                    <!-- Week 3 -->
+                    <div class="calendar-day" data-day="13" data-month="October">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(13, 'October', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">13</div>
+                        <div class="day-content">API Design</div>
+                    </div>
+                    <div class="calendar-day" data-day="14" data-month="October">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(14, 'October', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">14</div>
+                        <div class="day-content">GraphQL</div>
+                    </div>
+                    <div class="calendar-day" data-day="15" data-month="October">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(15, 'October', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">15</div>
+                        <div class="day-content">Microservices</div>
+                    </div>
+                    <div class="calendar-day" data-day="16" data-month="October">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(16, 'October', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">16</div>
+                        <div class="day-content">Security Testing</div>
+                    </div>
+                    <div class="calendar-day" data-day="17" data-month="October">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(17, 'October', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">17</div>
+                        <div class="day-content">Demo Day</div>
+                    </div>
+                    <div class="calendar-day" data-day="20" data-month="October">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(20, 'October', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">20</div>
+                        <div class="day-content">Data Analysis</div>
+                    </div>
+                    <div class="calendar-day" data-day="21" data-month="October">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(21, 'October', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">21</div>
+                        <div class="day-content">ML Workshop</div>
+                    </div>
+                    <div class="calendar-day" data-day="22" data-month="October">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(22, 'October', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">22</div>
+                        <div class="day-content">AI Basics</div>
+                    </div>
+                    <div class="calendar-day" data-day="23" data-month="October">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(23, 'October', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">23</div>
+                        <div class="day-content">Model Training</div>
+                    </div>
+                    <div class="calendar-day" data-day="24" data-month="October">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(24, 'October', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">24</div>
+                        <div class="day-content">Sprint Review</div>
+                    </div>
+                    <div class="calendar-day" data-day="27" data-month="October">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(27, 'October', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">27</div>
+                        <div class="day-content">AI Ethics</div>
+                    </div>
+                    <div class="calendar-day" data-day="28" data-month="October">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(28, 'October', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">28</div>
+                        <div class="day-content">Best Practices</div>
+                    </div>
+                    <div class="calendar-day" data-day="29" data-month="October">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(29, 'October', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">29</div>
+                        <div class="day-content">Testing</div>
+                    </div>
+                    <div class="calendar-day" data-day="30" data-month="October">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(30, 'October', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">30</div>
+                        <div class="day-content">Documentation</div>
+                    </div>
+                    <div class="calendar-day" data-day="31" data-month="October">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(31, 'October', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">31</div>
+                        <div class="day-content">Monthly Review</div>
+                    </div>
+                </div>
+            </div>
+            <div class="events-section">
+                <div class="events-title">EVENTS</div>
+                <div class="events-container">
+                    <div class="event-card" data-event-id="1" data-month="October">
+                        <button class="event-edit-button" onclick="editEvent(1, 'October')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Mid-Term Review</h3>
+                        <div class="event-content">Progress assessments, project evaluations, and performance reviews for all courses.</div>
+                    </div>
+                    <div class="event-card" data-event-id="2" data-month="October">
+                        <button class="event-edit-button" onclick="editEvent(2, 'October')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Technical Workshops</h3>
+                        <div class="event-content">Specialized workshops focusing on advanced programming concepts and industry tools.</div>
+                    </div>
+                    <div class="event-card" data-event-id="3" data-month="October">
+                        <button class="event-edit-button" onclick="editEvent(3, 'October')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Project Milestones</h3>
+                        <div class="event-content">Key project deadlines, presentations, and feedback sessions throughout the month.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- November 2025 -->
+        <div class="card month-card">
+            <div class="month-header">
+                <h2><i class="fas fa-calendar-alt"></i> November 2025</h2>
+            </div>
+            <div class="card-body">
+                <div class="calendar-grid">
+                    <div class="weekday-header">Mon</div>
+                    <div class="weekday-header">Tue</div>
+                    <div class="weekday-header">Wed</div>
+                    <div class="weekday-header">Thu</div>
+                    <div class="weekday-header">Fri</div>
+
+                    <!-- Week 1 -->
+                    <div class="calendar-day has-event" data-day="3" data-month="November">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(3, 'November', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">3</div>
+                        <div class="day-content">Project Planning</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="4" data-month="November">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(4, 'November', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">4</div>
+                        <div class="day-content">System Design</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="5" data-month="November">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(5, 'November', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">5</div>
+                        <div class="day-content">Architecture</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="6" data-month="November">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(6, 'November', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">6</div>
+                        <div class="day-content">Database Design</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="7" data-month="November">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(7, 'November', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">7</div>
+                        <div class="day-content">Sprint Planning</div>
+                    </div>
+
+                    <!-- Week 2 -->
+                    <div class="calendar-day has-event" data-day="10" data-month="November">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(10, 'November', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">10</div>
+                        <div class="day-content">Backend Dev</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="11" data-month="November">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(11, 'November', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">11</div>
+                        <div class="day-content">Frontend Dev</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="12" data-month="November">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(12, 'November', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">12</div>
+                        <div class="day-content">API Integration</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="13" data-month="November">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(13, 'November', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">13</div>
+                        <div class="day-content">Testing</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="14" data-month="November">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(14, 'November', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">14</div>
+                        <div class="day-content">Sprint Review</div>
+                    </div>
+
+                    <!-- Week 3 -->
+                    <div class="calendar-day" data-day="17" data-month="November">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(17, 'November', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">17</div>
+                        <div class="day-content">Cloud Deploy</div>
+                    </div>
+                    <div class="calendar-day" data-day="18" data-month="November">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(18, 'November', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">18</div>
+                        <div class="day-content">DevOps</div>
+                    </div>
+                    <div class="calendar-day" data-day="19" data-month="November">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(19, 'November', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">19</div>
+                        <div class="day-content">Monitoring</div>
+                    </div>
+                    <div class="calendar-day" data-day="20" data-month="November">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(20, 'November', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">20</div>
+                        <div class="day-content">Security</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="24" data-month="November">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(24, 'November', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">24</div>
+                        <div class="day-content">Performance</div>
+                    </div>
+                    <div class="calendar-day" data-day="25" data-month="November">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(25, 'November', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">25</div>
+                        <div class="day-content">Optimization</div>
+                    </div>
+                    <div class="calendar-day" data-day="26" data-month="November">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(26, 'November', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">26</div>
+                        <div class="day-content">Load Testing</div>
+                    </div>
+                    <div class="calendar-day" data-day="27" data-month="November">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(27, 'November', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">27</div>
+                        <div class="day-content">Documentation</div>
+                    </div>
+                    <div class="calendar-day" data-day="28" data-month="November">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(28, 'November', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">28</div>
+                        <div class="day-content">Sprint Review</div>
+                    </div>
+                </div>
+            </div>
+            <div class="events-section">
+                <div class="events-title">EVENTS</div>
+                <div class="events-container">
+                    <div class="event-card" data-event-id="1" data-month="November">
+                        <button class="event-edit-button" onclick="editEvent(1, 'November')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Sprint Activities</h3>
+                        <div class="event-content">Agile development activities including planning, reviews, and retrospectives.</div>
+                    </div>
+                    <div class="event-card" data-event-id="2" data-month="November">
+                        <button class="event-edit-button" onclick="editEvent(2, 'November')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Project Showcase</h3>
+                        <div class="event-content">Weekly project demonstrations and technical presentations from student teams.</div>
+                    </div>
+                    <div class="event-card" data-event-id="3" data-month="November">
+                        <button class="event-edit-button" onclick="editEvent(3, 'November')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Tech Sessions</h3>
+                        <div class="event-content">Industry expert talks and hands-on workshops on emerging technologies.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- December 2025 -->
+        <div class="card month-card">
+            <div class="month-header">
+                <h2><i class="fas fa-calendar-alt"></i> December 2025</h2>
+            </div>
+            <div class="card-body">
+                <div class="calendar-grid">
+                    <div class="weekday-header">Mon</div>
+                    <div class="weekday-header">Tue</div>
+                    <div class="weekday-header">Wed</div>
+                    <div class="weekday-header">Thu</div>
+                    <div class="weekday-header">Fri</div>
+
+                    <!-- Week 1 -->
+                    <div class="calendar-day has-event" data-day="1" data-month="December">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(1, 'December', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">1</div>
+                        <div class="day-content">Final Project</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="2" data-month="December">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(2, 'December', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">2</div>
+                        <div class="day-content">Code Review</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="3" data-month="December">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(3, 'December', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">3</div>
+                        <div class="day-content">Testing</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="4" data-month="December">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(4, 'December', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">4</div>
+                        <div class="day-content">Bug Fixes</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="5" data-month="December">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(5, 'December', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">5</div>
+                        <div class="day-content">Sprint Review</div>
+                    </div>
+
+                    <!-- Week 2 -->
+                    <div class="calendar-day has-event" data-day="8" data-month="December">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(8, 'December', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">8</div>
+                        <div class="day-content">UI Polish</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="9" data-month="December">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(9, 'December', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">9</div>
+                        <div class="day-content">Performance</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="10" data-month="December">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(10, 'December', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">10</div>
+                        <div class="day-content">Security Check</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="11" data-month="December">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(11, 'December', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">11</div>
+                        <div class="day-content">Documentation</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="12" data-month="December">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(12, 'December', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">12</div>
+                        <div class="day-content">Sprint Review</div>
+                    </div>
+
+                    <!-- Week 3 -->
+                    <div class="calendar-day" data-day="15" data-month="December">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(15, 'December', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">15</div>
+                        <div class="day-content">Final Demo</div>
+                    </div>
+                    <div class="calendar-day" data-day="16" data-month="December">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(16, 'December', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">16</div>
+                        <div class="day-content">Presentation</div>
+                    </div>
+                    <div class="calendar-day" data-day="17" data-month="December">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(17, 'December', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">17</div>
+                        <div class="day-content">Portfolio</div>
+                    </div>
+                    <div class="calendar-day" data-day="18" data-month="December">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(18, 'December', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">18</div>
+                        <div class="day-content">Career Prep</div>
+                    </div>
+                    <div class="calendar-day" data-day="19" data-month="December">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(19, 'December', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">19</div>
+                        <div class="day-content">Graduation</div>
+                    </div>
+
+                    <!-- Week 4 -->
+                    <div class="calendar-day" data-day="22" data-month="December">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(22, 'December', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">22</div>
+                        <div class="day-content">Holiday Break</div>
+                    </div>
+                    <div class="calendar-day" data-day="23" data-month="December">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(23, 'December', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">23</div>
+                        <div class="day-content">Holiday Break</div>
+                    </div>
+                    <div class="calendar-day" data-day="24" data-month="December">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(24, 'December', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">24</div>
+                        <div class="day-content">Holiday Break</div>
+                    </div>
+                    <div class="calendar-day" data-day="25" data-month="December">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(25, 'December', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">25</div>
+                        <div class="day-content">Holiday Break</div>
+                    </div>
+                    <div class="calendar-day" data-day="26" data-month="December">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(26, 'December', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">26</div>
+                        <div class="day-content">Holiday Break</div>
+                    </div>
+
+                    <!-- Week 5 -->
+                    <div class="calendar-day" data-day="29" data-month="December">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(29, 'December', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">29</div>
+                        <div class="day-content">Holiday Break</div>
+                    </div>
+                    <div class="calendar-day" data-day="30" data-month="December">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(30, 'December', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">30</div>
+                        <div class="day-content">Holiday Break</div>
+                    </div>
+                    <div class="calendar-day" data-day="31" data-month="December">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(31, 'December', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">31</div>
+                        <div class="day-content">Holiday Break</div>
+                    </div>
+                </div>
+            </div>
+            <div class="events-section">
+                <div class="events-title">EVENTS</div>
+                <div class="events-container">
+                    <div class="event-card" data-event-id="1" data-month="December">
+                        <button class="event-edit-button" onclick="editEvent(1, 'December')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Final Project Week</h3>
+                        <div class="event-content">Final sprint activities including code freeze, testing, and documentation completion.</div>
+                    </div>
+                    <div class="event-card" data-event-id="2" data-month="December">
+                        <button class="event-edit-button" onclick="editEvent(2, 'December')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Graduation Events</h3>
+                        <div class="event-content">Final presentations, demo day, career fair, and graduation ceremony.</div>
+                    </div>
+                    <div class="event-card" data-event-id="3" data-month="December">
+                        <button class="event-edit-button" onclick="editEvent(3, 'December')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Holiday Break</h3>
+                        <div class="event-content">Winter break schedule and upcoming term information for 2026.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- January 2026 -->
+        <div class="card month-card">
+            <div class="month-header">
+                <h2><i class="fas fa-calendar-alt"></i> January 2026</h2>
+            </div>
+            <div class="card-body">
+                <div class="calendar-grid">
+                    <div class="weekday-header">Mon</div>
+                    <div class="weekday-header">Tue</div>
+                    <div class="weekday-header">Wed</div>
+                    <div class="weekday-header">Thu</div>
+                    <div class="weekday-header">Fri</div>
+
+                    <!-- Week 1 -->
+                    <div class="empty"></div>
+                    <div class="empty"></div>
+                    <div class="empty"></div>
+                    <div class="calendar-day has-event" data-day="1" data-month="January">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(1, 'January', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">1</div>
+                        <div class="day-content">New Year Break</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="2" data-month="January">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(2, 'January', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">2</div>
+                        <div class="day-content">New Year Break</div>
+                    </div>
+
+                    <!-- Week 2 -->
+                    <div class="calendar-day has-event" data-day="5" data-month="January">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(5, 'January', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">5</div>
+                        <div class="day-content">Term Start</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="6" data-month="January">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(6, 'January', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">6</div>
+                        <div class="day-content">Course Intro</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="7" data-month="January">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(7, 'January', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">7</div>
+                        <div class="day-content">Team Formation</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="8" data-month="January">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(8, 'January', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">8</div>
+                        <div class="day-content">Project Kickoff</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="9" data-month="January">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(9, 'January', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">9</div>
+                        <div class="day-content">Sprint Planning</div>
+                    </div>
+
+                    <!-- Weeks 3-5 -->
+                    <div class="calendar-day has-event" data-day="12" data-month="January"><div class="button-group"><button class="edit-button" onclick="editDay(12, 'January', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">12</div><div class="day-content">Sprint 1 Review</div></div>
+                    <div class="calendar-day has-event" data-day="13" data-month="January"><div class="button-group"><button class="edit-button" onclick="editDay(13, 'January', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">13</div><div class="day-content">Tech Workshop</div></div>
+                    <div class="calendar-day has-event" data-day="14" data-month="January"><div class="button-group"><button class="edit-button" onclick="editDay(14, 'January', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">14</div><div class="day-content">Code Review</div></div>
+                    <div class="calendar-day has-event" data-day="15" data-month="January"><div class="button-group"><button class="edit-button" onclick="editDay(15, 'January', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">15</div><div class="day-content">Guest Speaker</div></div>
+                    <div class="calendar-day has-event" data-day="16" data-month="January"><div class="button-group"><button class="edit-button" onclick="editDay(16, 'January', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">16</div><div class="day-content">Sprint 1 Demo</div></div>
+                    <div class="calendar-day has-event" data-day="19" data-month="January"><div class="button-group"><button class="edit-button" onclick="editDay(19, 'January', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">19</div><div class="day-content">Sprint 2 Start</div></div>
+                    <div class="calendar-day has-event" data-day="20" data-month="January"><div class="button-group"><button class="edit-button" onclick="editDay(20, 'January', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">20</div><div class="day-content">API Workshop</div></div>
+                    <div class="calendar-day has-event" data-day="21" data-month="January"><div class="button-group"><button class="edit-button" onclick="editDay(21, 'January', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">21</div><div class="day-content">Pair Programming</div></div>
+                    <div class="calendar-day has-event" data-day="22" data-month="January"><div class="button-group"><button class="edit-button" onclick="editDay(22, 'January', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">22</div><div class="day-content">Testing Session</div></div>
+                    <div class="calendar-day has-event" data-day="23" data-month="January"><div class="button-group"><button class="edit-button" onclick="editDay(23, 'January', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">23</div><div class="day-content">Code Review</div></div>
+                    <div class="calendar-day has-event" data-day="26" data-month="January"><div class="button-group"><button class="edit-button" onclick="editDay(26, 'January', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">26</div><div class="day-content">Sprint 2 Review</div></div>
+                    <div class="calendar-day has-event" data-day="27" data-month="January"><div class="button-group"><button class="edit-button" onclick="editDay(27, 'January', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">27</div><div class="day-content">Tech Showcase</div></div>
+                    <div class="calendar-day has-event" data-day="28" data-month="January"><div class="button-group"><button class="edit-button" onclick="editDay(28, 'January', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">28</div><div class="day-content">Project Work</div></div>
+                    <div class="calendar-day has-event" data-day="29" data-month="January"><div class="button-group"><button class="edit-button" onclick="editDay(29, 'January', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">29</div><div class="day-content">Sprint Planning</div></div>
+                    <div class="calendar-day has-event" data-day="30" data-month="January"><div class="button-group"><button class="edit-button" onclick="editDay(30, 'January', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">30</div><div class="day-content">Sprint 2 Demo</div></div>
+                </div>
+            </div>
+            <div class="events-section">
+                <div class="events-title">EVENTS</div>
+                <div class="events-container">
+                    <div class="event-card" data-event-id="1" data-month="January">
+                        <button class="event-edit-button" onclick="editEvent(1, 'January')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>New Term Start</h3>
+                        <div class="event-content">Welcome activities, orientation sessions, and team formation for new students.</div>
+                    </div>
+                    <div class="event-card" data-event-id="2" data-month="January">
+                        <button class="event-edit-button" onclick="editEvent(2, 'January')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Project Initiation</h3>
+                        <div class="event-content">Project kickoff meetings and initial sprint planning sessions.</div>
+                    </div>
+                    <div class="event-card" data-event-id="3" data-month="January">
+                        <button class="event-edit-button" onclick="editEvent(3, 'January')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Course Overview</h3>
+                        <div class="event-content">Introduction to course materials, learning objectives, and assessment criteria.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- February 2026 -->
+        <div class="card month-card">
+            <div class="month-header">
+                <h2><i class="fas fa-calendar-alt"></i> February 2026</h2>
+            </div>
+            <div class="card-body">
+                <div class="calendar-grid">
+                    <div class="weekday-header">Mon</div>
+                    <div class="weekday-header">Tue</div>
+                    <div class="weekday-header">Wed</div>
+                    <div class="weekday-header">Thu</div>
+                    <div class="weekday-header">Fri</div>
+
+                    <!-- Week 1 -->
+                    <div class="calendar-day has-event" data-day="2" data-month="February">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(2, 'February', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">2</div>
+                        <div class="day-content">Sprint Review</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="3" data-month="February">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(3, 'February', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">3</div>
+                        <div class="day-content">Tech Workshop</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="4" data-month="February">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(4, 'February', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">4</div>
+                        <div class="day-content">Code Review</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="5" data-month="February">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(5, 'February', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">5</div>
+                        <div class="day-content">Guest Speaker</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="6" data-month="February">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(6, 'February', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">6</div>
+                        <div class="day-content">Progress Demo</div>
+                    </div>
+
+                    <!-- Week 2 -->
+                    <div class="calendar-day has-event" data-day="9" data-month="February">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(9, 'February', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">9</div>
+                        <div class="day-content">Sprint 3 Start</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="10" data-month="February">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(10, 'February', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">10</div>
+                        <div class="day-content">Database Workshop</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="11" data-month="February">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(11, 'February', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">11</div>
+                        <div class="day-content">Code Review</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="12" data-month="February">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(12, 'February', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">12</div>
+                        <div class="day-content">Tech Talk</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="13" data-month="February">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(13, 'February', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">13</div>
+                        <div class="day-content">Project Work</div>
+                    </div>
+
+                    <!-- Week 3 -->
+                    <div class="calendar-day has-event" data-day="16" data-month="February">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(16, 'February', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">16</div>
+                        <div class="day-content">Sprint 3 Review</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="17" data-month="February">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(17, 'February', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">17</div>
+                        <div class="day-content">Security Workshop</div>
+                    </div>
+                    <div class="calendar-day" data-day="18" data-month="February">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(18, 'February', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">18</div>
+                        <div class="day-content">Testing Session</div>
+                    </div>
+                    <div class="calendar-day" data-day="19" data-month="February">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(19, 'February', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">19</div>
+                        <div class="day-content">Guest Speaker</div>
+                    </div>
+                    <div class="calendar-day" data-day="20" data-month="February">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(20, 'February', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">20</div>
+                        <div class="day-content">Sprint 3 Demo</div>
+                    </div>
+
+                    <!-- Week 4 -->
+                    <div class="calendar-day" data-day="23" data-month="February">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(23, 'February', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">23</div>
+                        <div class="day-content">Project Review</div>
+                    </div>
+                    <div class="calendar-day" data-day="24" data-month="February">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(24, 'February', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">24</div>
+                        <div class="day-content">Code Review</div>
+                    </div>
+                    <div class="calendar-day" data-day="25" data-month="February">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(25, 'February', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">25</div>
+                        <div class="day-content">Tech Talk</div>
+                    </div>
+                    <div class="calendar-day" data-day="26" data-month="February">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(26, 'February', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">26</div>
+                        <div class="day-content">Project Work</div>
+                    </div>
+                    <div class="calendar-day" data-day="27" data-month="February">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(27, 'February', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">27</div>
+                        <div class="day-content">Sprint 3 Review</div>
+                    </div>
+                </div>
+            </div>
+            <div class="events-section">
+                <div class="events-title">EVENTS</div>
+                <div class="events-container">
+                    <div class="event-card" data-event-id="1" data-month="February">
+                        <button class="event-edit-button" onclick="editEvent(1, 'February')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Project Review Week</h3>
+                        <div class="event-content">Sprint reviews, technical workshops, and code review sessions.</div>
+                    </div>
+                    <div class="event-card" data-event-id="2" data-month="February">
+                        <button class="event-edit-button" onclick="editEvent(2, 'February')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Industry Insights</h3>
+                        <div class="event-content">Guest speakers and industry professionals share experiences and insights.</div>
+                    </div>
+                    <div class="event-card" data-event-id="3" data-month="February">
+                        <button class="event-edit-button" onclick="editEvent(3, 'February')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Progress Showcase</h3>
+                        <div class="event-content">Student teams demonstrate their project progress and receive feedback.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- March 2026 -->
+        <div class="card month-card">
+            <div class="month-header">
+                <h2><i class="fas fa-calendar-alt"></i> March 2026</h2>
+            </div>
+            <div class="card-body">
+                <div class="calendar-grid">
+                    <div class="weekday-header">Mon</div>
+                    <div class="weekday-header">Tue</div>
+                    <div class="weekday-header">Wed</div>
+                    <div class="weekday-header">Thu</div>
+                    <div class="weekday-header">Fri</div>
+
+                    <!-- Week 1 -->
+                    <div class="calendar-day has-event" data-day="2" data-month="March">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(2, 'March', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">2</div>
+                        <div class="day-content">Mid-Term Review</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="3" data-month="March">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(3, 'March', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">3</div>
+                        <div class="day-content">Project Assessment</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="4" data-month="March">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(4, 'March', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">4</div>
+                        <div class="day-content">Team Meetings</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="5" data-month="March">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(5, 'March', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">5</div>
+                        <div class="day-content">Tech Showcase</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="6" data-month="March">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(6, 'March', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">6</div>
+                        <div class="day-content">Sprint Planning</div>
+                    </div>
+
+                    <!-- Remaining Days -->
+                    <div class="calendar-day has-event" data-day="9" data-month="March">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(9, 'March', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">9</div>
+                        <div class="day-content">Sprint 4 Review</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="10" data-month="March">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(10, 'March', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">10</div>
+                        <div class="day-content">UI/UX Workshop</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="11" data-month="March">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(11, 'March', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">11</div>
+                        <div class="day-content">Code Review</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="12" data-month="March">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(12, 'March', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">12</div>
+                        <div class="day-content">Guest Speaker</div>
+                    </div>
+                    <div class="calendar-day has-event" data-day="13" data-month="March">
+                        <div class="button-group">
+                            <button class="edit-button" onclick="editDay(13, 'March', event)" title="Edit"><i class="fas fa-star"></i></button>
+                        </div>
+                        <div class="day-number">13</div>
+                        <div class="day-content">Sprint 4 Demo</div>
+                    </div>
+                    <div class="calendar-day" data-day="16" data-month="March"><div class="button-group"><button class="edit-button" onclick="editDay(16, 'March', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">16</div></div>
+                    <div class="calendar-day" data-day="17" data-month="March"><div class="button-group"><button class="edit-button" onclick="editDay(17, 'March', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">17</div></div>
+                    <div class="calendar-day" data-day="18" data-month="March"><div class="button-group"><button class="edit-button" onclick="editDay(18, 'March', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">18</div></div>
+                    <div class="calendar-day" data-day="19" data-month="March"><div class="button-group"><button class="edit-button" onclick="editDay(19, 'March', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">19</div></div>
+                    <div class="calendar-day" data-day="20" data-month="March"><div class="button-group"><button class="edit-button" onclick="editDay(20, 'March', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">20</div></div>
+                    <div class="calendar-day" data-day="23" data-month="March"><div class="button-group"><button class="edit-button" onclick="editDay(23, 'March', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">23</div></div>
+                    <div class="calendar-day" data-day="24" data-month="March"><div class="button-group"><button class="edit-button" onclick="editDay(24, 'March', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">24</div></div>
+                    <div class="calendar-day" data-day="25" data-month="March"><div class="button-group"><button class="edit-button" onclick="editDay(25, 'March', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">25</div></div>
+                    <div class="calendar-day" data-day="26" data-month="March"><div class="button-group"><button class="edit-button" onclick="editDay(26, 'March', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">26</div></div>
+                    <div class="calendar-day" data-day="27" data-month="March"><div class="button-group"><button class="edit-button" onclick="editDay(27, 'March', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">27</div></div>
+                    <div class="calendar-day" data-day="30" data-month="March"><div class="button-group"><button class="edit-button" onclick="editDay(30, 'March', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">30</div></div>
+                    <div class="calendar-day" data-day="31" data-month="March"><div class="button-group"><button class="edit-button" onclick="editDay(31, 'March', event)" title="Edit"><i class="fas fa-star"></i></button></div><div class="day-number">31</div></div>
+                    <div class="empty"></div>
+                    <div class="empty"></div>
+                    <div class="empty"></div>
+                </div>
+            </div>
+            <div class="events-section">
+                <div class="events-title">EVENTS</div>
+                <div class="events-container">
+                    <div class="event-card" data-event-id="1" data-month="March">
+                        <button class="event-edit-button" onclick="editEvent(1, 'March')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Mid-Term Evaluations</h3>
+                        <div class="event-content">Project assessments, team evaluations, and progress reviews.</div>
+                    </div>
+                    <div class="event-card" data-event-id="2" data-month="March">
+                        <button class="event-edit-button" onclick="editEvent(2, 'March')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Technology Showcase</h3>
+                        <div class="event-content">Teams demonstrate their technical implementations and innovations.</div>
+                    </div>
+                    <div class="event-card" data-event-id="3" data-month="March">
+                        <button class="event-edit-button" onclick="editEvent(3, 'March')" title="Edit Event">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <h3>Sprint Activities</h3>
+                        <div class="event-content">Planning sessions and team coordination for the next development phase.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer class="bg-light py-3 mt-5">
+        <div class="container text-center">
+            <p class="text-muted mb-0">Academic Calendar • Software Development, AI & Data Analytics Program • 2025-2026</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script>
+        let quill;
+        let eventQuill;
+        let currentEditDay;
+        let currentEditMonth;
+        let currentEventId;
+        let currentEventMonth;
+        let currentHighlight = 'none';
+        
+        // Initialize storage
+        let calendarData = JSON.parse(localStorage.getItem('calendarData')) || {};
+        let highlightedStates = JSON.parse(localStorage.getItem('highlightedStates')) || {};
+        let eventsData = JSON.parse(localStorage.getItem('eventsData')) || {};
+
+        // Load saved data when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Quill editor for calendar
+            quill = new Quill('#editor-container', {
+                theme: 'snow',
+                placeholder: 'Enter event details...',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline'],
+                        [{ 'color': [] }],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        ['clean']
+                    ]
+                }
+            });
+
+            // Initialize Quill editor for events
+            eventQuill = new Quill('#eventEditor', {
+                theme: 'snow',
+                placeholder: 'Enter event content...',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline'],
+                        [{ 'color': [] }],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        ['clean']
+                    ]
+                }
+            });
+
+            // Load saved calendar data
+            Object.keys(calendarData).forEach(key => {
+                const [month, day] = key.split('-');
+                const dayElement = document.querySelector(`[data-day="${day}"][data-month="${month}"]`);
+                if (dayElement) {
+                    const contentDiv = dayElement.querySelector('.day-content');
+                    if (contentDiv && calendarData[key]) {
+                        contentDiv.innerHTML = calendarData[key];
+                        dayElement.classList.add('has-event');
+                    }
+                }
+            });
+
+            Object.keys(highlightedStates).forEach(key => {
+                const [month, day] = key.split('-');
+                const dayElement = document.querySelector(`[data-day="${day}"][data-month="${month}"]`);
+                if (dayElement && highlightedStates[key]) {
+                    dayElement.style.backgroundColor = highlightedStates[key];
+                }
+            });
+
+            // Load saved events data
+            Object.keys(eventsData).forEach(key => {
+                const [month, id] = key.split('-');
+                const eventElement = document.querySelector(`[data-event-id="${id}"][data-month="${month}"]`);
+                if (eventElement) {
+                    const titleElement = eventElement.querySelector('h3');
+                    const contentElement = eventElement.querySelector('.event-content');
+                    const eventData = eventsData[key];
+                    
+                    if (titleElement && contentElement && eventData) {
+                        titleElement.textContent = eventData.title;
+                        contentElement.innerHTML = eventData.content;
+                    }
+                }
+            });
+        });
+
+        function selectHighlight(element, color) {
+            // Remove selected class from all options
+            document.querySelectorAll('.highlight-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked option
+            element.classList.add('selected');
+            currentHighlight = color;
+        }
+
+        function editDay(day, month, event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            currentEditDay = day;
+            currentEditMonth = month;
+            
+            const dayElement = document.querySelector(`[data-day="${day}"][data-month="${month}"]`);
+            const contentDiv = dayElement.querySelector('.day-content');
+            const content = contentDiv.innerHTML || '';
+            
+            // Get current highlight
+            const currentColor = dayElement.style.backgroundColor || '';
+            currentHighlight = 'none';
+            
+            // Select the current highlight option
+            document.querySelectorAll('.highlight-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            if (currentColor === 'rgb(255, 243, 205)') { // yellow
+                document.querySelector('.highlight-option.yellow').classList.add('selected');
+                currentHighlight = 'yellow';
+            } else if (currentColor === 'rgb(212, 237, 218)') { // green
+                document.querySelector('.highlight-option.green').classList.add('selected');
+                currentHighlight = 'green';
+            } else if (currentColor === 'rgb(204, 229, 255)') { // blue
+                document.querySelector('.highlight-option.blue').classList.add('selected');
+                currentHighlight = 'blue';
+            } else if (currentColor === 'rgb(255, 229, 208)') { // orange
+                document.querySelector('.highlight-option.orange').classList.add('selected');
+                currentHighlight = 'orange';
+            } else if (currentColor === 'rgb(255, 212, 229)') { // pink
+                document.querySelector('.highlight-option.pink').classList.add('selected');
+                currentHighlight = 'pink';
+            } else if (currentColor === 'rgb(231, 217, 255)') { // purple
+                document.querySelector('.highlight-option.purple').classList.add('selected');
+                currentHighlight = 'purple';
+            } else if (currentColor === 'rgb(212, 248, 232)') { // mint
+                document.querySelector('.highlight-option.mint').classList.add('selected');
+                currentHighlight = 'mint';
+            } else if (currentColor === 'rgb(255, 212, 204)') { // coral
+                document.querySelector('.highlight-option.coral').classList.add('selected');
+                currentHighlight = 'coral';
+            } else if (currentColor === 'rgb(232, 212, 248)') { // lilac
+                document.querySelector('.highlight-option.lilac').classList.add('selected');
+                currentHighlight = 'lilac';
+            } else if (currentColor === 'rgb(255, 218, 185)') { // peach
+                document.querySelector('.highlight-option.peach').classList.add('selected');
+                currentHighlight = 'peach';
+            } else if (currentColor === 'rgb(212, 241, 249)') { // sky
+                document.querySelector('.highlight-option.sky').classList.add('selected');
+                currentHighlight = 'sky';
+            } else if (currentColor === 'rgb(232, 255, 212)') { // lime
+                document.querySelector('.highlight-option.lime').classList.add('selected');
+                currentHighlight = 'lime';
+            } else if (currentColor === 'rgb(255, 182, 193)') { // rose
+                document.querySelector('.highlight-option.rose').classList.add('selected');
+                currentHighlight = 'rose';
+            } else if (currentColor === 'rgb(0, 255, 255, 0.5)') { // aqua
+                document.querySelector('.highlight-option.aqua').classList.add('selected');
+                currentHighlight = 'aqua';
+            } else if (currentColor === 'rgb(255, 215, 0, 0.5)') { // gold
+                document.querySelector('.highlight-option.gold').classList.add('selected');
+                currentHighlight = 'gold';
+            } else if (currentColor === 'rgb(230, 230, 250)') { // lavender
+                document.querySelector('.highlight-option.lavender').classList.add('selected');
+                currentHighlight = 'lavender';
+            } else if (currentColor === 'rgb(128, 255, 240, 0.5)') { // teal
+                document.querySelector('.highlight-option.teal').classList.add('selected');
+                currentHighlight = 'teal';
+            } else if (currentColor === 'rgb(255, 160, 122, 0.5)') { // salmon
+                document.querySelector('.highlight-option.salmon').classList.add('selected');
+                currentHighlight = 'salmon';
+            } else {
+                document.querySelector('.highlight-option.none').classList.add('selected');
+            }
+            
+            // Set content in Quill editor
+            if (quill) {
+                quill.root.innerHTML = content;
+                document.getElementById('overlay').classList.add('active');
+                document.getElementById('editPopup').classList.add('active');
+            }
+        }
+
+        function closeEditPopup() {
+            document.getElementById('overlay').classList.remove('active');
+            document.getElementById('editPopup').classList.remove('active');
+        }
+
+        function saveEdit() {
+            const content = quill.root.innerHTML;
+            const dayElement = document.querySelector(`[data-day="${currentEditDay}"][data-month="${currentEditMonth}"]`);
+            const contentDiv = dayElement.querySelector('.day-content');
+            
+            // Update content
+            contentDiv.innerHTML = content;
+            
+            // Update highlight
+            if (currentHighlight === 'none') {
+                dayElement.style.backgroundColor = '';
+                delete highlightedStates[`${currentEditMonth}-${currentEditDay}`];
+            } else {
+                const colors = {
+                    // Pastel Colors
+                    yellow: '#fff3cd',
+                    green: '#d4edda',
+                    blue: '#cce5ff',
+                    orange: '#ffe5d0',
+                    pink: '#ffd4e5',
+                    purple: '#e7d9ff',
+                    mint: '#d4f8e8',
+                    coral: '#ffd4cc',
+                    lilac: '#e8d4f8',
+                    peach: '#ffdab9',
+                    sky: '#d4f1f9',
+                    lime: '#e8ffd4',
+                    // Vibrant Colors
+                    rose: '#ffb6c1',
+                    aqua: '#00ffff80',
+                    gold: '#ffd70080',
+                    lavender: '#e6e6fa',
+                    teal: '#80ffd480',
+                    salmon: '#ffa07a80'
+                };
+                dayElement.style.backgroundColor = colors[currentHighlight];
+                highlightedStates[`${currentEditMonth}-${currentEditDay}`] = colors[currentHighlight];
+            }
+            
+            // Save to storage
+            calendarData[`${currentEditMonth}-${currentEditDay}`] = content;
+            localStorage.setItem('calendarData', JSON.stringify(calendarData));
+            localStorage.setItem('highlightedStates', JSON.stringify(highlightedStates));
+            
+            // Update has-event class
+            if (content.trim()) {
+                dayElement.classList.add('has-event');
+            } else {
+                dayElement.classList.remove('has-event');
+            }
+            
+            closeEditPopup();
+        }
+
+        function editEvent(eventId, month) {
+            currentEventId = eventId;
+            currentEventMonth = month;
+            
+            const eventElement = document.querySelector(`[data-event-id="${eventId}"][data-month="${month}"]`);
+            const titleElement = eventElement.querySelector('h3');
+            const contentElement = eventElement.querySelector('.event-content');
+            
+            document.getElementById('eventTitle').value = titleElement.textContent;
+            eventQuill.root.innerHTML = contentElement.innerHTML;
+            
+            document.getElementById('editEventId').value = eventId;
+            document.getElementById('editEventMonth').value = month;
+            
+            document.getElementById('eventEditOverlay').classList.add('active');
+            document.getElementById('eventEditForm').classList.add('active');
+        }
+
+        function closeEventEdit() {
+            document.getElementById('eventEditOverlay').classList.remove('active');
+            document.getElementById('eventEditForm').classList.remove('active');
+        }
+
+        function saveEventEdit() {
+            const eventId = document.getElementById('editEventId').value;
+            const month = document.getElementById('editEventMonth').value;
+            const title = document.getElementById('eventTitle').value;
+            const content = eventQuill.root.innerHTML;
+            
+            const eventElement = document.querySelector(`[data-event-id="${eventId}"][data-month="${month}"]`);
+            const titleElement = eventElement.querySelector('h3');
+            const contentElement = eventElement.querySelector('.event-content');
+            
+            titleElement.textContent = title;
+            contentElement.innerHTML = content;
+            
+            // Save to storage
+            eventsData[`${month}-${eventId}`] = {
+                title: title,
+                content: content
+            };
+            localStorage.setItem('eventsData', JSON.stringify(eventsData));
+            
+            closeEventEdit();
+        }
+    </script>
+
+    <!-- Event Edit Form -->
+    <div id="eventEditOverlay"></div>
+    <div id="eventEditForm">
+        <h2>Edit Event</h2>
+        <div class="mb-3">
+            <label for="eventTitle" class="form-label">Event Title</label>
+            <input type="text" class="form-control" id="eventTitle">
+        </div>
+        <div class="mb-3">
+            <label for="eventContent" class="form-label">Event Content</label>
+            <div id="eventEditor"></div>
+        </div>
+        <input type="hidden" id="editEventId">
+        <input type="hidden" id="editEventMonth">
+        <div class="text-end mt-3">
+            <button class="btn btn-secondary me-2" onclick="closeEventEdit()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveEventEdit()">Save</button>
+        </div>
+    </div>
+</body>
+</html>

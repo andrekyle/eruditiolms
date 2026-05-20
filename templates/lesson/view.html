@@ -1,103 +1,235 @@
 {% extends "base.html" %}
 {% block title %}{{ lesson.title }}{% endblock %}
 {% block content %}
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>
-            {% set type_icon = {'lesson': 'bx-book', 'video': 'bx-play', 'task': 'bx-edit', 'exam': 'bx-task'} %}
-            <i class="bx {{ type_icon.get(lesson.content_type, 'bx-book') }} text-primary"></i>
-            {{ lesson.title }}
-        </h1>
-        <div class="d-flex" style="gap:.5rem;">
-            {% if completed %}<span class="badge bg-success align-self-center"><i class="bx bx-check"></i> Completed</span>{% endif %}
-            <a href="{{ url_for('list_lessons', course_id=course.id) }}" class="btn btn-outline-primary">
-                <i class="bx bx-arrow-back"></i> All Lessons
-            </a>
-        </div>
+{% set type_icon = {'lesson':'bx-book-open','video':'bx-play-circle','task':'bx-edit-alt','exam':'bx-task'} %}
+{% set type_label = {'lesson':'Reading','video':'Video','task':'Task','exam':'Exam'} %}
+{% set type_class = {'lesson':'uui-lesson-type--blue','video':'uui-lesson-type--violet','task':'uui-lesson-type--orange','exam':'uui-lesson-type--green'} %}
+{% set _t = (course.title or '')|lower %}
+{% set ns = namespace(brand='microsoft') %}
+{% if '1z0' in _t or 'oracle' in _t or 'java' in _t %}{% set ns.brand = 'oracle' %}
+{% elif 'power bi' in _t or 'pl-' in _t %}{% set ns.brand = 'powerbi' %}
+{% elif 'az-' in _t or 'azure' in _t %}{% set ns.brand = 'azure' %}
+{% elif 'sql' in _t %}{% set ns.brand = 'sql' %}
+{% elif 'pcap' in _t or 'python' in _t %}{% set ns.brand = 'python' %}
+{% elif 'aws' in _t %}{% set ns.brand = 'aws' %}
+{% elif 'gcp' in _t or 'google cloud' in _t %}{% set ns.brand = 'gcp' %}
+{% endif %}
+
+{% set brand_meta = {
+    'oracle':   {'channel': 'Oracle University',        'sponsor': 'Oracle',                  'cert': 'OCA &ndash; Oracle Certified Associate, Java SE 8 Programmer I (Exam 1Z0-808)'},
+    'python':   {'channel': 'Edube Interactive',        'sponsor': 'Python Institute',        'cert': 'PCAP &ndash; Certified Associate Python Programmer (Exam PCAP-31-02 &amp; PCAP-31-03)'},
+    'azure':    {'channel': 'Microsoft Learn',          'sponsor': 'Microsoft',               'cert': 'AZ-900 &ndash; Microsoft Azure Fundamentals'},
+    'powerbi':  {'channel': 'Microsoft Learn',          'sponsor': 'Microsoft',               'cert': 'PL-300 &ndash; Microsoft Power BI Data Analyst'},
+    'sql':      {'channel': 'Microsoft Learn',          'sponsor': 'Microsoft',               'cert': 'Microsoft SQL Server Database Fundamentals'},
+    'aws':      {'channel': 'AWS Skill Builder',        'sponsor': 'Amazon Web Services',     'cert': 'AWS Certified Cloud Practitioner'},
+    'gcp':      {'channel': 'Google Cloud Skills Boost','sponsor': 'Google Cloud',            'cert': 'Google Cloud Certified &ndash; Associate Cloud Engineer'},
+    'microsoft':{'channel': 'Microsoft Learn',          'sponsor': 'Microsoft',               'cert': 'Microsoft Certified Professional'}
+} %}
+{% set _meta = brand_meta[ns.brand] %}
+
+<div class="course-shell">
+
+  <!-- Left course outline sidebar -->
+  <aside class="course-shell__sidebar" aria-label="Course outline">
+    <div class="course-shell__sidebar-head">
+      <a href="{{ url_for('view_course', course_id=course.id) }}" class="course-shell__back">
+        <i class="bx bx-arrow-back"></i> Back to course
+      </a>
+      <div class="course-shell__course-title">{{ course.title }}</div>
+      <div class="course-shell__progress-meta">
+        {{ completed_count }} of {{ total_lessons }} complete
+      </div>
+      <div class="course-shell__progress-bar" aria-hidden="true">
+        <span style="width: {{ (100 * completed_count / total_lessons)|round(0, 'floor') if total_lessons else 0 }}%;"></span>
+      </div>
     </div>
 
-    <div class="card">
-        <div class="card-body">
-
-        {# ---------- LESSON (read) ---------- #}
-        {% if lesson.content_type == 'lesson' %}
-            <div class="lesson-content">{{ lesson.content|safe }}</div>
-            {% if not current_user.is_teacher and not completed %}
-            <form action="{{ url_for('complete_lesson', lesson_id=lesson.id) }}" method="POST" class="mt-4">
-                <button type="submit" class="btn btn-primary">
-                    <i class="bx bx-check"></i> Mark as Complete
-                </button>
-            </form>
+    <nav class="course-shell__outline" aria-label="Lessons">
+      <div class="course-shell__section-label">Lessons</div>
+      <ul class="course-shell__list">
+        {% for l in all_lessons %}
+        {% set is_done = l.id in completed_ids %}
+        {% set is_current = l.id == lesson.id %}
+        <li>
+          <a href="{{ url_for('view_lesson', lesson_id=l.id) }}"
+             class="course-shell__lesson{% if is_current %} is-current{% endif %}{% if is_done %} is-done{% endif %}"
+             {% if is_current %}aria-current="page"{% endif %}>
+            <i class="bx {{ type_icon.get(l.content_type, 'bx-book-open') }} course-shell__lesson-icon" aria-hidden="true"></i>
+            <span class="course-shell__lesson-title">{{ l.title }}</span>
+            {% if is_done %}
+            <i class="bx bx-check course-shell__lesson-check" aria-hidden="true"></i>
             {% endif %}
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </nav>
 
-        {# ---------- VIDEO ---------- #}
-        {% elif lesson.content_type == 'video' %}
-            {% if lesson.video_url %}
-            <div class="ratio ratio-16x9 mb-3">
-                <iframe src="{{ lesson.video_url }}" title="{{ lesson.title }}"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen></iframe>
-            </div>
-            {% else %}
-            <div class="alert alert-warning">No video URL configured.</div>
-            {% endif %}
-            {% if lesson.content %}<div class="mt-3">{{ lesson.content|safe }}</div>{% endif %}
-            {% if not current_user.is_teacher and not completed %}
-            <form action="{{ url_for('complete_lesson', lesson_id=lesson.id) }}" method="POST" class="mt-4">
-                <button type="submit" class="btn btn-primary">
-                    <i class="bx bx-check"></i> I've watched this video
-                </button>
-            </form>
-            {% endif %}
+    <div class="course-shell__sidebar-foot">
+      <a class="sidebar-user" href="{{ url_for('profile') }}" title="View profile">
+        <div class="sidebar-user-avatar">
+          {% if current_user.avatar_url %}
+            <img src="{{ current_user.avatar_url }}" alt="Avatar">
+          {% else %}
+            <i class="bx bx-user-circle"></i>
+          {% endif %}
+        </div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name">
+            {% if current_user.first_name or current_user.last_name %}{{ current_user.first_name }} {{ current_user.last_name }}{% else %}{{ current_user.username }}{% endif %}
+          </div>
+          <div class="sidebar-user-role">
+            {% if current_user.is_superadmin %}Administrator
+            {% elif current_user.is_teacher %}Teacher
+            {% else %}Student{% endif %}
+          </div>
+        </div>
+      </a>
+      <button type="button" class="sidebar-theme-toggle" id="lessonSidebarThemeToggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+        <svg class="theme-toggle-icon-light" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <svg class="theme-toggle-icon-dark" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
+        <span class="theme-toggle-label">
+          <span class="theme-toggle-label-light">Dark mode</span>
+          <span class="theme-toggle-label-dark">Light mode</span>
+        </span>
+      </button>
+      <a class="sidebar-link sidebar-signout" href="{{ url_for('logout') }}">
+        <i class="bx bx-log-out"></i><span>Sign out</span>
+      </a>
+    </div>
+  </aside>
 
-        {# ---------- TASK ---------- #}
-        {% elif lesson.content_type == 'task' %}
-            <h5>Instructions</h5>
-            <div class="mb-4">{{ (lesson.task_instructions or lesson.content)|safe }}</div>
+  <!-- Main lesson content -->
+  <main class="course-shell__main">
+    <div class="course-shell__topbar">
+      <div class="course-shell__topbar-left">
+        <span class="course-shell__step">Lesson {{ lesson_index }} of {{ total_lessons }}</span>
+        {% if completed %}
+        <span class="course-shell__completed-pill"><i class="bx bx-check"></i> Completed</span>
+        {% endif %}
+      </div>
+    </div>
 
-            {% if submission %}
-            <div class="alert alert-info">
-                <strong>Your last submission</strong>
-                <small class="text-muted d-block">Submitted {{ submission.submitted_at.strftime('%Y-%m-%d %H:%M') }}</small>
-                <pre class="mt-2 mb-0" style="white-space: pre-wrap;">{{ submission.submission_text }}</pre>
-                {% if submission.grade is not none %}
-                    <div class="mt-2"><strong>Grade:</strong> {{ submission.grade }}</div>
-                {% endif %}
-                {% if submission.feedback %}
-                    <div class="mt-2"><strong>Feedback:</strong> {{ submission.feedback }}</div>
-                {% endif %}
-            </div>
-            {% endif %}
+    <article class="course-shell__article">
+      <h1 class="course-shell__title">{{ lesson.title }}</h1>
 
-            {% if not current_user.is_teacher %}
-            <form action="{{ url_for('submit_task', lesson_id=lesson.id) }}" method="POST">
-                <div class="mb-3">
-                    <label for="submission_text" class="form-label">Your submission</label>
-                    <textarea id="submission_text" name="submission_text" rows="8"
-                              class="form-control" required
-                              placeholder="Paste your work here..."></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">
-                    <i class="bx bx-save"></i> Submit Task
-                </button>
-            </form>
-            {% endif %}
-
-        {# ---------- EXAM ---------- #}
-        {% elif lesson.content_type == 'exam' %}
-            {% if lesson.exam_quiz %}
-            <h5>{{ lesson.exam_quiz.title }}</h5>
-            <p class="text-muted">{{ lesson.exam_quiz.description or 'Take the exam to complete this lesson.' }}</p>
-            <p><strong>Questions:</strong> {{ lesson.exam_quiz.questions|length }}</p>
-            <a href="{{ url_for('take_lesson_exam', lesson_id=lesson.id) }}" class="btn btn-primary">
-                <i class="bx bx-play"></i> Start Exam
-            </a>
-            {% else %}
-            <div class="alert alert-warning">No exam attached to this lesson.</div>
-            {% endif %}
+      {# ---------- LESSON (read) ---------- #}
+      {% if lesson.content_type == 'lesson' %}
+        <div class="lesson-content">{{ lesson.content|safe }}</div>
+        {% if not completed %}
+        <form action="{{ url_for('complete_lesson', lesson_id=lesson.id) }}" method="POST" class="course-shell__complete-form">
+          <button type="submit" class="btn btn-primary">
+            <i class="bx bx-check me-1"></i>Mark as complete
+          </button>
+        </form>
         {% endif %}
 
+      {# ---------- VIDEO ---------- #}
+      {% elif lesson.content_type == 'video' %}
+        {% if lesson.video_url %}
+        <div class="ratio ratio-16x9 mb-3 course-shell__video">
+          <iframe src="{{ lesson.video_url }}" title="{{ lesson.title }}"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen></iframe>
         </div>
-    </div>
+        {% else %}
+        <div class="alert alert-warning">No video URL configured.</div>
+        {% endif %}
+        {% if lesson.content %}<div class="lesson-content mt-3">{{ lesson.content|safe }}</div>{% endif %}
+        {% if not completed %}
+        <form action="{{ url_for('complete_lesson', lesson_id=lesson.id) }}" method="POST" class="course-shell__complete-form">
+          <button type="submit" class="btn btn-primary">
+            <i class="bx bx-check me-1"></i>I've watched this video
+          </button>
+        </form>
+        {% endif %}
+
+      {# ---------- TASK ---------- #}
+      {% elif lesson.content_type == 'task' %}
+        <h3 class="uui-edit-section-title">Instructions</h3>
+        <div class="lesson-content mb-4">{{ (lesson.task_instructions or lesson.content)|safe }}</div>
+
+        {% if submission %}
+        <div class="uui-submission mb-4">
+          <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
+            <div>
+              <strong class="d-block">Your last submission</strong>
+              <small class="uui-muted">Submitted {{ submission.submitted_at.strftime('%b %d, %Y %H:%M') }}</small>
+            </div>
+            {% if submission.grade is not none %}
+            <span class="uui-badge-dot uui-badge-dot--info">Grade: {{ submission.grade }}</span>
+            {% endif %}
+          </div>
+          <pre class="mb-0" style="white-space: pre-wrap; background:#F9FAFB; padding:12px; border-radius:8px; border:1px solid #EAECF0; font-family:inherit; font-size:.9375rem;">{{ submission.submission_text }}</pre>
+          {% if submission.feedback %}
+          <div class="mt-3"><strong>Feedback:</strong> {{ submission.feedback }}</div>
+          {% endif %}
+        </div>
+        {% endif %}
+
+        {% if not current_user.is_teacher %}
+        <form action="{{ url_for('submit_task', lesson_id=lesson.id) }}" method="POST">
+          <div class="mb-3">
+            <label for="submission_text" class="form-label">Your submission</label>
+            <textarea id="submission_text" name="submission_text" rows="8"
+                      class="form-control" required
+                      placeholder="Paste your work here…"></textarea>
+          </div>
+          <div class="course-shell__complete-form">
+            <button type="submit" class="btn btn-primary">
+              <i class="bx bx-save me-1"></i>Submit task
+            </button>
+          </div>
+        </form>
+        {% endif %}
+
+      {# ---------- EXAM ---------- #}
+      {% elif lesson.content_type == 'exam' %}
+        {% if lesson.exam_quiz %}
+        <p class="uui-muted mb-3">{{ lesson.exam_quiz.description or 'Take the exam to complete this lesson.' }}</p>
+        <div class="uui-edit-meta mb-4">
+          <span><i class="bx bx-list-check"></i> {{ lesson.exam_quiz.questions|length }} question{{ '' if lesson.exam_quiz.questions|length == 1 else 's' }}</span>
+        </div>
+        <div class="course-shell__complete-form">
+          <a href="{{ url_for('take_lesson_exam', lesson_id=lesson.id) }}" class="btn btn-primary">
+            <i class="bx bx-play me-1"></i>Start quiz
+          </a>
+        </div>
+        {% else %}
+        <div class="alert alert-warning">No exam attached to this lesson.</div>
+        {% endif %}
+      {% endif %}
+    </article>
+
+    <!-- Prev / Next navigation -->
+    <nav class="course-shell__nav" aria-label="Lesson navigation">
+      {% if prev_lesson %}
+      <a href="{{ url_for('view_lesson', lesson_id=prev_lesson.id) }}" class="course-shell__nav-btn course-shell__nav-btn--prev">
+        <i class="bx bx-chevron-left"></i>
+        <span class="course-shell__nav-text">
+          <span class="course-shell__nav-label">Previous</span>
+          <span class="course-shell__nav-title">{{ prev_lesson.title }}</span>
+        </span>
+      </a>
+      {% else %}<span></span>{% endif %}
+      {% if next_lesson %}
+      <a href="{{ url_for('view_lesson', lesson_id=next_lesson.id) }}" class="course-shell__nav-btn course-shell__nav-btn--next">
+        <span class="course-shell__nav-text">
+          <span class="course-shell__nav-label">Continue</span>
+          <span class="course-shell__nav-title">{{ next_lesson.title }}</span>
+        </span>
+        <i class="bx bx-chevron-right"></i>
+      </a>
+      {% else %}
+      <a href="{{ url_for('view_course', course_id=course.id) }}" class="course-shell__nav-btn course-shell__nav-btn--next">
+        <span class="course-shell__nav-text">
+          <span class="course-shell__nav-label">Finish</span>
+          <span class="course-shell__nav-title">Back to course</span>
+        </span>
+        <i class="bx bx-check"></i>
+      </a>
+      {% endif %}
+    </nav>
+  </main>
 </div>
 {% endblock %}
