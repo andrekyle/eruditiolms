@@ -600,8 +600,10 @@ def profile():
         if request.form.get('remove_avatar') == '1':
             user.avatar_url = None
 
-        # Password change (optional)
-        if new_password or confirm_password or current_password:
+        # Password change (optional) — only triggered when the user actually
+        # enters a new password. Browser autofill of the current password field
+        # should not force a password change.
+        if new_password or confirm_password:
             if not user.check_password(current_password):
                 flash('Current password is incorrect.', 'danger')
                 return render_template('profile.html', user=user)
