@@ -213,7 +213,8 @@ class Quiz(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
-    questions = db.relationship('Question', backref='quiz', lazy=True)
+    questions = db.relationship('Question', backref='quiz', lazy=True, cascade='all, delete-orphan')
+    quiz_responses = db.relationship('QuizResponse', backref='quiz', lazy=True, cascade='all, delete-orphan')
 
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -227,7 +228,7 @@ class Question(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     options = db.relationship('QuestionOption', backref='question', lazy=True, cascade='all, delete-orphan')
-    student_responses = db.relationship('QuestionResponse', backref='question', lazy=True)
+    student_responses = db.relationship('QuestionResponse', backref='question', lazy=True, cascade='all, delete-orphan')
 
 class QuestionOption(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -262,7 +263,7 @@ class QuizResponse(db.Model):
     points = db.Column(db.Float)
     total_points = db.Column(db.Float)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    question_responses = db.relationship('QuestionResponse', backref='quiz_response', lazy=True)
+    question_responses = db.relationship('QuestionResponse', backref='quiz_response', lazy=True, cascade='all, delete-orphan')
 
 class StudentProgress(db.Model):
     id = db.Column(db.Integer, primary_key=True)
