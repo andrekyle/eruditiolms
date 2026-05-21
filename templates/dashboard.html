@@ -58,6 +58,16 @@
             {% set st = course_stats[course.id] %}
             <div class="col-md-4">
                 <div class="card course-card h-100 position-relative">
+                    {% if current_user.is_superadmin or course.teacher_id == current_user.id %}
+                    <form method="POST" action="{{ url_for('delete_course', course_id=course.id) }}"
+                          class="position-absolute"
+                          style="top:8px; right:8px; z-index:5;"
+                          onsubmit="return confirm('Delete course &quot;{{ course.title|e }}&quot;? This removes all lessons, quizzes and enrollments. This cannot be undone.');">
+                        <button type="submit" class="btn btn-sm btn-danger" title="Delete course" aria-label="Delete course">
+                            <i class="bx bx-trash"></i>
+                        </button>
+                    </form>
+                    {% endif %}
                     {% if course.image_url %}
                     <img src="{{ course.image_url }}" class="course-card__img" alt="{{ course.title }}" crossorigin="anonymous">
                     {% else %}
