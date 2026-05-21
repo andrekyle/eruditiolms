@@ -716,10 +716,26 @@ def index():
             'quiz_results': quiz_results,
         }
 
+    # Distinct students across all teacher courses (don't double-count multi-enrollments,
+    # and exclude teachers/admins who are auto-enrolled into every course).
+    if current_user.is_teacher:
+        candidate_ids = {e.student_id for c in courses for e in c.enrollments}
+        if candidate_ids:
+            student_rows = User.query.filter(
+                User.id.in_(candidate_ids),  # type: ignore[attr-defined]
+                User.role == 'student',  # type: ignore[attr-defined]
+            ).all()
+            active_student_count = len(student_rows)
+        else:
+            active_student_count = 0
+    else:
+        active_student_count = 0
+
     return render_template('dashboard.html',
                          courses=courses,
                          enrolled_courses=enrolled_courses,
-                         course_stats=course_stats)
+                         course_stats=course_stats,
+                         active_student_count=active_student_count)
 
 REPORT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'CalendarResults')
 

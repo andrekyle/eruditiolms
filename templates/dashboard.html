@@ -35,7 +35,7 @@
             <div class="uui-stat__icon uui-stat__icon--violet"><i class="bx bx-user-voice"></i></div>
             <div>
                 <p class="uui-stat__label">Active Students</p>
-                <p class="uui-stat__value">{{ courses|map(attribute='enrollments')|map('length')|sum }}</p>
+                <p class="uui-stat__value">{{ active_student_count }}</p>
             </div>
         </div>
         <div class="uui-stat">
