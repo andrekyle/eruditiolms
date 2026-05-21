@@ -648,7 +648,11 @@ def profile():
 def index():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
-    if current_user.is_teacher:
+    if current_user.is_superadmin:
+        # Superadmin sees every course in the system.
+        courses = Course.query.all()
+        enrolled_courses = []
+    elif current_user.is_teacher:
         # Teachers see every course they're enrolled in (auto-enrolled into all by default).
         # Falls back to owned courses if (somehow) not enrolled anywhere.
         courses = [e.course for e in current_user.enrollments]
@@ -718,7 +722,7 @@ def index():
 
     # Distinct students across all teacher courses (don't double-count multi-enrollments,
     # and exclude teachers/admins who are auto-enrolled into every course).
-    if current_user.is_teacher:
+    if current_user.is_teacher or current_user.is_superadmin:
         candidate_ids = {e.student_id for c in courses for e in c.enrollments}
         if candidate_ids:
             student_rows = User.query.filter(
@@ -1325,8 +1329,9 @@ def view_student_progress(course_id, student_id):
 def edit_course(course_id):
     course = Course.query.get_or_404(course_id)
     
-    # Check if the user is the teacher of this course
-    if not current_user.is_teacher or current_user.id != course.teacher_id:
+    # The course's teacher can edit; superadmin can edit any course.
+    is_owner = current_user.is_teacher and current_user.id == course.teacher_id
+    if not (is_owner or current_user.is_superadmin):
         flash('You do not have permission to edit this course.', 'danger')
         return redirect(url_for('index'))
     
@@ -1371,10 +1376,10 @@ def edit_course(course_id):
 def delete_course(course_id):
     course = Course.query.get_or_404(course_id)
 
-    # Only the teacher who created the course may delete it.
+    # The course's creator can delete it; superadmin can delete any course.
     is_owner = current_user.is_teacher and current_user.id == course.teacher_id
-    if not is_owner:
-        flash('Only the teacher who created this course can delete it.', 'danger')
+    if not (is_owner or current_user.is_superadmin):
+        flash('Only the teacher who created this course (or a superadmin) can delete it.', 'danger')
         return redirect(url_for('index'))
 
     title = course.title
