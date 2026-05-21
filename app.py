@@ -60,7 +60,8 @@ app.config['SECRET_KEY'] = _load_or_create_secret_key()
 # For the SQLite fallback we use an ABSOLUTE path under the instance folder so
 # the same lms.db is used no matter what cwd the app is launched from.
 _default_sqlite_path = os.path.join(app.instance_path, 'lms.db').replace('\\', '/')
-_db_url = os.environ.get('DATABASE_URL', f'sqlite:///{_default_sqlite_path}')
+# `or` (not `.get(default)`) so that DATABASE_URL="" is treated as unset.
+_db_url = os.environ.get('DATABASE_URL') or f'sqlite:///{_default_sqlite_path}'
 # SQLAlchemy 1.4+ requires postgresql:// scheme (not postgres://)
 if _db_url.startswith('postgres://'):
     _db_url = _db_url.replace('postgres://', 'postgresql://', 1)
