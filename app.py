@@ -1371,10 +1371,10 @@ def edit_course(course_id):
 def delete_course(course_id):
     course = Course.query.get_or_404(course_id)
 
-    # Only the owning teacher OR a super user / admin may delete a course.
+    # Only the teacher who created the course may delete it.
     is_owner = current_user.is_teacher and current_user.id == course.teacher_id
-    if not (is_owner or current_user.is_superadmin):
-        flash('You do not have permission to delete this course.', 'danger')
+    if not is_owner:
+        flash('Only the teacher who created this course can delete it.', 'danger')
         return redirect(url_for('index'))
 
     title = course.title
