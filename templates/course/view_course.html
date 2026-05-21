@@ -227,7 +227,7 @@
 {% endif %}
 
 <!-- Edit Course Modal -->
-{% if current_user.is_teacher and current_user.id == course.teacher_id %}
+{% if (current_user.is_teacher and current_user.id == course.teacher_id) or current_user.is_superadmin %}
 <div class="modal fade" id="editCourseModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -295,6 +295,7 @@
                     </div>
                 </form>
 
+                {% if current_user.is_teacher and current_user.id == course.teacher_id %}
                 <div class="danger-zone mt-4">
                     <div class="danger-zone__header">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -319,6 +320,7 @@
                         </button>
                     </form>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>
