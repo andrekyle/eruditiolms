@@ -6294,3 +6294,27 @@ html[data-theme="dark"] body .uui-edit-card .ds-select__btn {
     background-color: #121212 !important;
     background-image: none !important;
 }
+
+
+/* ===== Larger quiz question + option font (user request) ===== */
+html body form .question-text,
+html body form .question-text p,
+html body form .question-text li,
+html body .qr-q__text,
+html body .qr-q__text p,
+html body .qr-q__text li { font-size: 2.125rem !important; line-height: 1.4 !important; }
+
+html body form .option-item,
+html body form .option-item p,
+html body form .form-check-label,
+html body form .form-check-label p,
+html body .qr-opt,
+html body .qr-opt__text,
+html body .qr-opt p { font-size: 1.5rem !important; line-height: 1.5 !important; }
+
+html body form .question-text pre,
+html body form .question-text pre code,
+html body form .question-text code,
+html body .qr-q__text pre,
+html body .qr-q__text pre code,
+html body .qr-q__text code { font-size: 1.45rem !important; line-height: 1.5 !important; }
