@@ -22,6 +22,7 @@ from app import app, db, Course, Lesson, Quiz, Question, QuestionOption  # noqa:
 import about as about_mod  # noqa: E402
 import _spec as spec_mod  # noqa: E402
 import final_exam as final_mod  # noqa: E402
+import _audit_additions as add_mod  # noqa: E402
 
 OLD_COURSE_TITLE_LIKE = '%PL-300%'
 NEW_COURSE_TITLE = 'PL-300: Microsoft Power BI Data Analyst'
@@ -51,9 +52,9 @@ def normalize_question(q, label, i):
     raise AssertionError(f'{label} q{i}: unrecognised tuple shape, types={[type(x).__name__ for x in q] if isinstance(q, tuple) else type(q).__name__}')
 
 
-def validate_questions(qs, expected_count, label):
+def validate_questions(qs, min_count, label):
     assert isinstance(qs, list), f'{label}: not a list'
-    assert len(qs) == expected_count, f'{label}: expected {expected_count} questions, got {len(qs)}'
+    assert len(qs) >= min_count, f'{label}: expected at least {min_count} questions, got {len(qs)}'
     normalised = []
     for i, q in enumerate(qs):
         qtype, qhtml, opts, fb = normalize_question(q, label, i)
@@ -116,10 +117,15 @@ def main():
     for entry in spec_mod.LESSONS:
         mod = importlib.import_module(entry['module'])
         assert isinstance(mod.LESSON_HTML, str) and len(mod.LESSON_HTML) > 500, f'{entry["module"]}: short LESSON_HTML'
-        normalised[entry['module']] = validate_questions(mod.QUESTIONS, 8, entry['module'])
-        print(f'  OK {entry["module"]} ({len(mod.LESSON_HTML)} chars HTML, 8 Qs)')
-    normalised['final_exam'] = validate_questions(final_mod.QUESTIONS, 25, 'final_exam')
-    print('  OK final_exam (25 Qs)')
+        base_qs = list(mod.QUESTIONS)
+        extra_qs = add_mod.QUESTION_ADDITIONS.get(entry['module'], [])
+        merged_qs = base_qs + list(extra_qs)
+        normalised[entry['module']] = validate_questions(merged_qs, 8, entry['module'])
+        added_html = add_mod.LESSON_ADDITIONS.get(entry['module'], '')
+        print(f'  OK {entry["module"]} ({len(mod.LESSON_HTML)} chars HTML + {len(added_html)} added, {len(merged_qs)} Qs incl. {len(extra_qs)} added)')
+    final_qs = list(final_mod.QUESTIONS) + list(add_mod.FINAL_EXAM_ADDITIONS)
+    normalised['final_exam'] = validate_questions(final_qs, 25, 'final_exam')
+    print(f'  OK final_exam ({len(final_qs)} Qs incl. {len(add_mod.FINAL_EXAM_ADDITIONS)} added)')
 
     with app.app_context():
         course = Course.query.filter(Course.title.ilike(OLD_COURSE_TITLE_LIKE)).first()
@@ -156,12 +162,13 @@ def main():
         for entry in spec_mod.LESSONS:
             print(f'\n[{entry["module"]}] {entry["title"]}')
             mod = importlib.import_module(entry['module'])
+            merged_html = mod.LESSON_HTML + add_mod.LESSON_ADDITIONS.get(entry['module'], '')
             next_order = insert_quiz_with_lesson(
                 course_id=course.id,
                 order_start=next_order,
                 title=entry['title'],
                 description=entry['quiz_desc'],
-                lesson_html=mod.LESSON_HTML,
+                lesson_html=merged_html,
                 questions=normalised[entry['module']],
             )
 
