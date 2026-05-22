@@ -6296,25 +6296,18 @@ html[data-theme="dark"] body .uui-edit-card .ds-select__btn {
 }
 
 
-/* ===== Larger quiz question + option font (user request) ===== */
-html body form .question-text,
-html body form .question-text p,
-html body form .question-text li,
-html body .qr-q__text,
-html body .qr-q__text p,
-html body .qr-q__text li { font-size: 2.125rem !important; line-height: 1.4 !important; }
-
+/* ===== Larger quiz option font (user request) — questions left at default ===== */
 html body form .option-item,
 html body form .option-item p,
+html body form .option-item li,
 html body form .form-check-label,
 html body form .form-check-label p,
 html body .qr-opt,
 html body .qr-opt__text,
-html body .qr-opt p { font-size: 1.5rem !important; line-height: 1.5 !important; }
+html body .qr-opt p,
+html body .qr-opt li { font-size: 1.75rem !important; line-height: 1.5 !important; }
 
-html body form .question-text pre,
-html body form .question-text pre code,
-html body form .question-text code,
-html body .qr-q__text pre,
-html body .qr-q__text pre code,
-html body .qr-q__text code { font-size: 1.45rem !important; line-height: 1.5 !important; }
+html body form .option-item code,
+html body form .form-check-label code,
+html body .qr-opt code,
+html body .qr-opt__text code { font-size: 1.6rem !important; }
