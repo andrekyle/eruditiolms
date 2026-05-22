@@ -6302,14 +6302,14 @@ html body form .question-text p,
 html body form .question-text li,
 html body .qr-q__text,
 html body .qr-q__text p,
-html body .qr-q__text li { font-size: 1.875rem !important; line-height: 1.45 !important; }
+html body .qr-q__text li { font-size: 1.5rem !important; line-height: 1.45 !important; }
 
 html body form .question-text code,
 html body form .question-text pre,
 html body form .question-text pre code,
 html body .qr-q__text code,
 html body .qr-q__text pre,
-html body .qr-q__text pre code { font-size: 1.55rem !important; line-height: 1.5 !important; }
+html body .qr-q__text pre code { font-size: 1.3rem !important; line-height: 1.5 !important; }
 
 /* ===== Larger quiz option font (user request) ===== */
 html body form .option-item,
@@ -6320,9 +6320,9 @@ html body form .form-check-label p,
 html body .qr-opt,
 html body .qr-opt__text,
 html body .qr-opt p,
-html body .qr-opt li { font-size: 1.75rem !important; line-height: 1.5 !important; }
+html body .qr-opt li { font-size: 1.375rem !important; line-height: 1.5 !important; }
 
 html body form .option-item code,
 html body form .form-check-label code,
 html body .qr-opt code,
-html body .qr-opt__text code { font-size: 1.6rem !important; }
+html body .qr-opt__text code { font-size: 1.25rem !important; }
