@@ -16,6 +16,13 @@ try:
 except ImportError:
     pass
 
+# Curated model answers for the SAQA 118792 AISD course (staff-only page).
+# Imported at module load so that Vercel's bundler always includes the file.
+try:
+    from _saqa_aisd_answers import LAB_ANSWERS as SAQA_LAB_ANSWERS
+except Exception:  # pragma: no cover — fall back to empty dict if missing
+    SAQA_LAB_ANSWERS = {}
+
 app = Flask(__name__)
 
 # Make sure the instance folder exists — used for the SQLite DB AND the
@@ -2331,21 +2338,33 @@ def init_db():
 @login_required
 @requires_staff
 def lab_answers():
-    from _saqa_aisd_answers import LAB_ANSWERS as SAQA_LAB_ANSWERS
+    from _saqa_aisd_answers import LAB_TITLES, LAB_LESSON_HINTS
 
     course = (Course.query
               .filter(Course.title.ilike('%SAQA 118792%'))
               .first())
 
+    # Build the list straight from the curated answers dict so the page works
+    # even if the SAQA course hasn't been built into the DB yet. When matching
+    # lesson rows exist, attach them so we can link to the student-facing page.
+    course_lessons = sorted(course.lessons,
+                            key=lambda l: (l.order or 0, l.id)) if course else []
+
+    def _find_lesson(hint):
+        h = hint.lower()
+        for l in course_lessons:
+            if 'practical lab' in (l.title or '').lower() and h in (l.title or '').lower():
+                return l
+        return None
+
     labs = []
-    if course is not None:
-        ordered = sorted(course.lessons, key=lambda x: (x.order or 0, x.id))
-        # Pair every task lesson with its curated answer (keyed by lesson order)
-        for lesson in ordered:
-            if lesson.content_type != 'task':
-                continue
-            answer_html = SAQA_LAB_ANSWERS.get(lesson.order or 0)
-            labs.append((lesson, answer_html))
+    for n in sorted(SAQA_LAB_ANSWERS.keys()):
+        labs.append({
+            'order':       n,
+            'title':       LAB_TITLES.get(n, f'Lab {n}'),
+            'lesson':      _find_lesson(LAB_LESSON_HINTS.get(n, '')),
+            'answer_html': SAQA_LAB_ANSWERS[n],
+        })
 
     return render_template(
         'teacher/lab_answers.html',

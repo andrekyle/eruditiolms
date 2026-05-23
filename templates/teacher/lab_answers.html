@@ -30,19 +30,7 @@
         {% endfor %}
     {% endwith %}
 
-    {% if not course %}
-        <div class="alert alert-warning">
-            The course <em>SAQA 118792: Occupational Certificate &mdash;
-            Artificial Intelligence Software Developer</em> is not loaded in
-            this database. Build it first and refresh this page.
-        </div>
-    {% elif not labs %}
-        <div class="alert alert-info">
-            The course is loaded but has no lessons of type
-            <code>task</code> yet.
-        </div>
-    {% else %}
-
+    {% if course %}
         <div class="card shadow-sm mb-4">
             <div class="card-body py-3">
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
@@ -56,91 +44,83 @@
                 </div>
             </div>
         </div>
+    {% else %}
+        <div class="alert alert-warning">
+            The course <em>SAQA 118792: Occupational Certificate &mdash;
+            Artificial Intelligence Software Developer</em> isn&apos;t loaded
+            in this database yet &mdash; the curated model answers are shown
+            below regardless.
+        </div>
+    {% endif %}
 
-        {# Quick-jump navigation #}
+    {% if labs %}
         <div class="mb-4">
             <div class="small text-muted mb-1">Jump to lab:</div>
             <div class="d-flex flex-wrap gap-2">
-                {% for lesson, _ in labs %}
-                    <a href="#lab-{{ lesson.id }}"
+                {% for lab in labs %}
+                    <a href="#lab-{{ lab.order }}"
                        class="btn btn-sm btn-outline-success">
-                        Lab {{ lesson.order or loop.index }}
+                        Lab {{ lab.order }}
                     </a>
                 {% endfor %}
             </div>
         </div>
+    {% endif %}
 
-        {% for lesson, answer_html in labs %}
-            <article id="lab-{{ lesson.id }}"
-                     class="card shadow-sm mb-4 border-0">
-                <header class="card-header bg-body-tertiary border-bottom">
-                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
-                        <div>
-                            <div class="text-uppercase small fw-semibold text-success mb-1">
-                                Lab {{ lesson.order or loop.index }}
-                            </div>
-                            <h2 class="h5 mb-0">{{ lesson.title }}</h2>
+    {% for lab in labs %}
+        <article id="lab-{{ lab.order }}"
+                 class="card shadow-sm mb-4 border-0">
+            <header class="card-header bg-body-tertiary border-bottom">
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                    <div>
+                        <div class="text-uppercase small fw-semibold text-success mb-1">
+                            Lab {{ lab.order }}
                         </div>
-                        <div class="d-flex flex-wrap gap-2 align-items-center">
-                            {% if lesson.points %}
-                                <span class="badge bg-body-secondary text-body border">
-                                    {{ lesson.points }} pts
-                                </span>
-                            {% endif %}
-                            {% if answer_html %}
-                                <span class="badge bg-success-subtle text-success border border-success-subtle">
-                                    <i class="bx bx-check-circle me-1"></i>Model answer
-                                </span>
-                            {% else %}
-                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">
-                                    Awaiting answer
-                                </span>
-                            {% endif %}
-                            <a href="{{ url_for('view_lesson', lesson_id=lesson.id) }}"
+                        <h2 class="h5 mb-0">{{ lab.title }}</h2>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                        <span class="badge bg-success-subtle text-success border border-success-subtle">
+                            <i class="bx bx-check-circle me-1"></i>Model answer
+                        </span>
+                        {% if lab.lesson %}
+                            <a href="{{ url_for('view_lesson', lesson_id=lab.lesson.id) }}"
                                class="btn btn-sm btn-outline-secondary"
                                title="Open the student-facing lesson page">
                                 <i class="bx bx-show me-1"></i>Open lesson
                             </a>
-                        </div>
+                        {% endif %}
                     </div>
-                </header>
-
-                <div class="card-body">
-                    {% if lesson.task_instructions or lesson.content %}
-                        <details class="mb-4">
-                            <summary class="small fw-semibold text-muted"
-                                     style="cursor:pointer;">
-                                Show task instructions
-                            </summary>
-                            <div class="lesson-content mt-3 p-3 rounded
-                                        bg-body-tertiary border">
-                                {{ (lesson.task_instructions or lesson.content)|safe }}
-                            </div>
-                        </details>
-                    {% endif %}
-
-                    <h3 class="h6 text-uppercase text-success fw-semibold mb-3">
-                        <i class="bx bx-key me-1"></i>Model answer
-                    </h3>
-                    {% if answer_html %}
-                        <div class="lesson-content">
-                            {{ answer_html|safe }}
-                        </div>
-                    {% else %}
-                        <p class="text-muted fst-italic mb-0">
-                            No model answer has been authored for this lab yet.
-                        </p>
-                    {% endif %}
                 </div>
+            </header>
 
-                <footer class="card-footer bg-transparent text-end">
-                    <a href="#top" class="small text-muted text-decoration-none">
-                        <i class="bx bx-up-arrow-alt me-1"></i>Back to top
-                    </a>
-                </footer>
-            </article>
-        {% endfor %}
+            <div class="card-body">
+                {% if lab.lesson and (lab.lesson.task_instructions or lab.lesson.content) %}
+                    <details class="mb-4">
+                        <summary class="small fw-semibold text-muted"
+                                 style="cursor:pointer;">
+                            Show task instructions
+                        </summary>
+                        <div class="lesson-content mt-3 p-3 rounded bg-body-tertiary border">
+                            {{ (lab.lesson.task_instructions or lab.lesson.content)|safe }}
+                        </div>
+                    </details>
+                {% endif %}
 
-    {% endif %}
+                <h3 class="h6 text-uppercase text-success fw-semibold mb-3">
+                    <i class="bx bx-key me-1"></i>Model answer
+                </h3>
+                <div class="lesson-content">
+                    {{ lab.answer_html|safe }}
+                </div>
+            </div>
+
+            <footer class="card-footer bg-transparent text-end">
+                <a href="#top" class="small text-muted text-decoration-none">
+                    <i class="bx bx-up-arrow-alt me-1"></i>Back to top
+                </a>
+            </footer>
+        </article>
+    {% endfor %}
+
 </div>
 {% endblock %}

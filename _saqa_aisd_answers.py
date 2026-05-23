@@ -15,6 +15,36 @@ Authoring guidelines:
     * Never use dark-blue text. Use the lesson-content default colours.
 """
 
+# Short, human-friendly lab titles. Keyed by 1-based lab number.
+LAB_TITLES = {
+    1:  "Lab 1 — Map an AI Application (PEAS, data, ethics)",
+    2:  "Lab 2 — Descriptive Statistics and Hypothesis Testing",
+    3:  "Lab 3 — Frame an AI Problem and Draft an SDD",
+    4:  "Lab 4 — Clean and Analyse Sales Data with a Spreadsheet",
+    5:  "Lab 5 — Empirical Algorithm Complexity",
+    6:  "Lab 6 — SQL, Python and Web Scraping",
+    7:  "Lab 7 — Choose the Right Machine-Learning Approach",
+    8:  "Lab 8 — End-to-End Classifier with scikit-learn",
+    9:  "Lab 9 — Train a Neural Network on MNIST in Keras",
+    10: "Lab 10 — Design-Thinking Sprint for a Responsible AI Solution",
+}
+
+# Substring (case-insensitive) used to match the corresponding lesson row in the
+# database, so the page can deep-link to the student-facing lesson page when it
+# exists. Source lesson titles end in " — Practical Lab".
+LAB_LESSON_HINTS = {
+    1:  "Overview of Artificial Intelligence",
+    2:  "Mathematics and Statistics",
+    3:  "Analytical Thinking",
+    4:  "Data, Databases",
+    5:  "Computing Theory",
+    6:  "SQL, Python and Data Scraping",
+    7:  "AI, Machine Learning and Deep Learning Fundamentals",
+    8:  "Machine Learning with Python",
+    9:  "Deep Learning",
+    10: "Governance, Ethics",
+}
+
 LAB_ANSWERS = {}
 
 # ---------------------------------------------------------------------------
