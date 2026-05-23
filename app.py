@@ -16,13 +16,6 @@ try:
 except ImportError:
     pass
 
-# Curated model answers for the SAQA 118792 AISD course (staff-only page).
-# Imported at module load so that Vercel's bundler always includes the file.
-try:
-    from _saqa_aisd_answers import LAB_ANSWERS as SAQA_LAB_ANSWERS
-except Exception:  # pragma: no cover — fall back to empty dict if missing
-    SAQA_LAB_ANSWERS = {}
-
 app = Flask(__name__)
 
 # Make sure the instance folder exists — used for the SQLite DB AND the
@@ -184,9 +177,6 @@ class Lesson(db.Model):
     content_type = db.Column(db.String(20), nullable=False, default='lesson')
     video_url = db.Column(db.String(500))
     task_instructions = db.Column(db.Text)
-    # Teacher/admin-only model answer for practical labs & tasks.
-    # Rendered on /teacher/lab-answers; never shown to students.
-    model_answer = db.Column(db.Text)
     quiz_id = db.Column(db.Integer, db.ForeignKey('quiz.id'), nullable=True)
     order = db.Column(db.Integer, default=0)
     points = db.Column(db.Float, default=1.0)
@@ -306,22 +296,6 @@ def requires_superuser(f):
         if not current_user.is_authenticated or (current_user.role or '') != 'superuser':
             flash('Only a Super User can perform that action.', 'danger')
             return redirect(url_for('manage_users') if current_user.is_authenticated else url_for('login'))
-        return f(*args, **kwargs)
-    return decorated_function
-
-def requires_staff(f):
-    """Allow teachers, admins and superusers (any non-student role)."""
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        ok = False
-        if current_user.is_authenticated:
-            role = (getattr(current_user, 'role', '') or '').lower()
-            ok = (role in {'teacher', 'admin', 'superuser'}
-                  or current_user.is_teacher
-                  or current_user.is_superadmin)
-        if not ok:
-            flash('You do not have permission to access this page.', 'danger')
-            return redirect(url_for('index') if current_user.is_authenticated else url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -2052,40 +2026,6 @@ def init_db():
         except Exception as e:
             print(f"[migration] course.image_url ensure failed: {e}")
 
-        # Ensure lesson.model_answer exists (teacher/admin-only lab answer key).
-        try:
-            with db.engine.begin() as conn:
-                dialect = db.engine.dialect.name
-                if dialect == 'sqlite':
-                    cols = [row[1] for row in conn.exec_driver_sql("PRAGMA table_info(lesson)")]
-                    if 'model_answer' not in cols:
-                        conn.exec_driver_sql("ALTER TABLE lesson ADD COLUMN model_answer TEXT")
-                else:
-                    conn.exec_driver_sql(
-                        "ALTER TABLE lesson ADD COLUMN IF NOT EXISTS model_answer TEXT"
-                    )
-        except Exception as e:
-            print(f"[migration] lesson.model_answer ensure failed: {e}")
-
-        # Reconcile legacy User.is_teacher / is_superadmin booleans with the
-        # canonical role string. Older rows could be out of sync, which would
-        # hide staff-only nav links from real admins/teachers.
-        try:
-            fixed = 0
-            for u in User.query.all():
-                role = (u.role or 'student').lower()
-                want_super = role in {'superuser', 'admin'}
-                want_teach = role in {'superuser', 'teacher'}
-                if bool(u.is_superadmin) != want_super or bool(u.is_teacher) != want_teach:
-                    u.is_superadmin = want_super
-                    u.is_teacher = want_teach
-                    fixed += 1
-            if fixed:
-                db.session.commit()
-                print(f"[migration] reconciled role flags on {fixed} user(s)")
-        except Exception as e:
-            print(f"[migration] role-flag reconcile failed: {e}")
-
         # Ensure every video lesson has a topical video matching its course title.
         # We update lessons whose video_url is missing OR still the generic
         # "Python in 100 seconds" placeholder. Manually-set videos pointing at
@@ -2325,69 +2265,6 @@ def init_db():
             ),
         ])
         db.session.commit()
-
-# ---------------------------------------------------------------------------
-# Teacher / Administrator: Lab Answer Key (SAQA 118792 AISD only)
-# ---------------------------------------------------------------------------
-# A single page listing the practical labs of the SAQA 118792 AISD course
-# with the curated model answers from ``_saqa_aisd_answers.LAB_ANSWERS``.
-# Visible only to teachers and administrators — students never see the link
-# or the page.
-
-@app.route('/teacher/lab-answers')
-@login_required
-@requires_staff
-def lab_answers():
-    try:
-        try:
-            from _saqa_aisd_answers import LAB_TITLES, LAB_LESSON_HINTS
-        except Exception:
-            LAB_TITLES, LAB_LESSON_HINTS = {}, {}
-
-        course = (Course.query
-                  .filter(Course.title.ilike('%SAQA 118792%'))
-                  .first())
-
-        # Build the list straight from the curated answers dict so the page works
-        # even if the SAQA course hasn't been built into the DB yet. When matching
-        # lesson rows exist, attach them so we can link to the student-facing page.
-        course_lessons = sorted(course.lessons,
-                                key=lambda l: (l.order or 0, l.id)) if course else []
-
-        def _find_lesson(hint):
-            h = (hint or '').lower()
-            for l in course_lessons:
-                if 'practical lab' in (l.title or '').lower() and h in (l.title or '').lower():
-                    return l
-            return None
-
-        labs = []
-        for n in sorted(SAQA_LAB_ANSWERS.keys()):
-            labs.append({
-                'order':       n,
-                'title':       LAB_TITLES.get(n, f'Lab {n}'),
-                'lesson':      _find_lesson(LAB_LESSON_HINTS.get(n, '')),
-                'answer_html': SAQA_LAB_ANSWERS[n],
-            })
-
-        return render_template(
-            'teacher/lab_answers.html',
-            course=course,
-            labs=labs,
-        )
-    except Exception as exc:
-        # Never 500 — log the traceback (visible in Vercel function logs) and
-        # render a graceful in-page message.
-        import traceback
-        app.logger.error("lab_answers route failed: %s\n%s",
-                         exc, traceback.format_exc())
-        return render_template(
-            'teacher/lab_answers.html',
-            course=None,
-            labs=[],
-            error_message=str(exc),
-        ), 200
-
 
 if __name__ == '__main__':
     init_db()  # Initialize database on startup
