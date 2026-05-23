@@ -2339,41 +2339,54 @@ def init_db():
 @requires_staff
 def lab_answers():
     try:
-        from _saqa_aisd_answers import LAB_TITLES, LAB_LESSON_HINTS
-    except Exception:
-        LAB_TITLES, LAB_LESSON_HINTS = {}, {}
+        try:
+            from _saqa_aisd_answers import LAB_TITLES, LAB_LESSON_HINTS
+        except Exception:
+            LAB_TITLES, LAB_LESSON_HINTS = {}, {}
 
-    course = (Course.query
-              .filter(Course.title.ilike('%SAQA 118792%'))
-              .first())
+        course = (Course.query
+                  .filter(Course.title.ilike('%SAQA 118792%'))
+                  .first())
 
-    # Build the list straight from the curated answers dict so the page works
-    # even if the SAQA course hasn't been built into the DB yet. When matching
-    # lesson rows exist, attach them so we can link to the student-facing page.
-    course_lessons = sorted(course.lessons,
-                            key=lambda l: (l.order or 0, l.id)) if course else []
+        # Build the list straight from the curated answers dict so the page works
+        # even if the SAQA course hasn't been built into the DB yet. When matching
+        # lesson rows exist, attach them so we can link to the student-facing page.
+        course_lessons = sorted(course.lessons,
+                                key=lambda l: (l.order or 0, l.id)) if course else []
 
-    def _find_lesson(hint):
-        h = hint.lower()
-        for l in course_lessons:
-            if 'practical lab' in (l.title or '').lower() and h in (l.title or '').lower():
-                return l
-        return None
+        def _find_lesson(hint):
+            h = (hint or '').lower()
+            for l in course_lessons:
+                if 'practical lab' in (l.title or '').lower() and h in (l.title or '').lower():
+                    return l
+            return None
 
-    labs = []
-    for n in sorted(SAQA_LAB_ANSWERS.keys()):
-        labs.append({
-            'order':       n,
-            'title':       LAB_TITLES.get(n, f'Lab {n}'),
-            'lesson':      _find_lesson(LAB_LESSON_HINTS.get(n, '')),
-            'answer_html': SAQA_LAB_ANSWERS[n],
-        })
+        labs = []
+        for n in sorted(SAQA_LAB_ANSWERS.keys()):
+            labs.append({
+                'order':       n,
+                'title':       LAB_TITLES.get(n, f'Lab {n}'),
+                'lesson':      _find_lesson(LAB_LESSON_HINTS.get(n, '')),
+                'answer_html': SAQA_LAB_ANSWERS[n],
+            })
 
-    return render_template(
-        'teacher/lab_answers.html',
-        course=course,
-        labs=labs,
-    )
+        return render_template(
+            'teacher/lab_answers.html',
+            course=course,
+            labs=labs,
+        )
+    except Exception as exc:
+        # Never 500 — log the traceback (visible in Vercel function logs) and
+        # render a graceful in-page message.
+        import traceback
+        app.logger.error("lab_answers route failed: %s\n%s",
+                         exc, traceback.format_exc())
+        return render_template(
+            'teacher/lab_answers.html',
+            course=None,
+            labs=[],
+            error_message=str(exc),
+        ), 200
 
 
 if __name__ == '__main__':

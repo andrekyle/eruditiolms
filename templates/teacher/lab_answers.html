@@ -30,6 +30,13 @@
         {% endfor %}
     {% endwith %}
 
+    {% if error_message %}
+        <div class="alert alert-danger">
+            <strong>Couldn&apos;t load the lab answers:</strong>
+            <code>{{ error_message }}</code>
+        </div>
+    {% endif %}
+
     {% if course %}
         <div class="card shadow-sm mb-4">
             <div class="card-body py-3">
