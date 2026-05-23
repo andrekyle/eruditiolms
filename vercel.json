@@ -1,7 +1,11 @@
 {
   "version": 2,
   "builds": [
-    { "src": "app.py", "use": "@vercel/python" },
+    {
+      "src": "app.py",
+      "use": "@vercel/python",
+      "config": { "includeFiles": "_saqa_aisd_answers.py" }
+    },
     { "src": "static/**", "use": "@vercel/static" }
   ],
   "routes": [

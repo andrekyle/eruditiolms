@@ -2338,7 +2338,10 @@ def init_db():
 @login_required
 @requires_staff
 def lab_answers():
-    from _saqa_aisd_answers import LAB_TITLES, LAB_LESSON_HINTS
+    try:
+        from _saqa_aisd_answers import LAB_TITLES, LAB_LESSON_HINTS
+    except Exception:
+        LAB_TITLES, LAB_LESSON_HINTS = {}, {}
 
     course = (Course.query
               .filter(Course.title.ilike('%SAQA 118792%'))
