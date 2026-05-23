@@ -85,6 +85,11 @@
             <a class="sidebar-link" href="https://java-oca-practice-theta.vercel.app/" target="_blank" rel="noopener">
                 <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2s2 3 0 6-4 4-2 8"/><path d="M14 4s2 3 0 6-4 4-2 8"/><path d="M6 18c0 2 3 3 6 3s6-1 6-3"/><path d="M5 22h14"/></svg><span>Java OCA</span>
             </a>
+            {% if current_user.role in ('teacher', 'admin', 'superuser') or current_user.is_teacher or current_user.is_superadmin %}
+            <a class="sidebar-link {% if request.endpoint == 'lab_answers' %}active{% endif %}" href="{{ url_for('lab_answers') }}">
+                <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 2h6l1 3h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3z"/><path d="M9 12h6"/><path d="M9 16h6"/></svg><span>Lab Answers</span>
+            </a>
+            {% endif %}
             {% if current_user.is_superadmin %}
             <a class="sidebar-link {% if request.endpoint == 'manage_users' %}active{% endif %}" href="{{ url_for('manage_users') }}">
                 <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Users</span>

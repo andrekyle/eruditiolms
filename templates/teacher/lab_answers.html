@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Lab Answer Key &mdash; SAQA 118792 AISD{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <div class="d-flex align-items-start justify-content-between mb-3 flex-wrap gap-2">
+        <div>
+            <h1 class="h3 mb-1">Lab Answer Key</h1>
+            <p class="text-muted mb-0">
+                Model solutions for every practical lab in
+                <strong>SAQA 118792: Occupational Certificate &mdash;
+                Artificial Intelligence Software Developer</strong>.
+                <span class="d-block d-md-inline">Visible to
+                <strong>teachers and administrators</strong> only.</span>
+            </p>
+        </div>
+        <span class="badge bg-success-subtle text-success border border-success-subtle">
+            <i class="bx bx-shield-quarter me-1"></i>Staff only
+        </span>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endwith %}
+
+    {% if not course %}
+        <div class="alert alert-warning">
+            The course <em>SAQA 118792: Occupational Certificate &mdash;
+            Artificial Intelligence Software Developer</em> is not loaded in
+            this database. Build it first and refresh this page.
+        </div>
+    {% elif not labs %}
+        <div class="alert alert-info">
+            The course is loaded but has no lessons of type
+            <code>task</code> yet.
+        </div>
+    {% else %}
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body py-3">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <a href="{{ url_for('view_course', course_id=course.id) }}"
+                       class="text-decoration-none fw-semibold">
+                        <i class="bx bx-link-external me-1"></i>{{ course.title }}
+                    </a>
+                    <span class="text-muted small">
+                        {{ labs|length }} practical lab{{ '' if labs|length == 1 else 's' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        {# Quick-jump navigation #}
+        <div class="mb-4">
+            <div class="small text-muted mb-1">Jump to lab:</div>
+            <div class="d-flex flex-wrap gap-2">
+                {% for lesson, _ in labs %}
+                    <a href="#lab-{{ lesson.id }}"
+                       class="btn btn-sm btn-outline-success">
+                        Lab {{ lesson.order or loop.index }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% for lesson, answer_html in labs %}
+            <article id="lab-{{ lesson.id }}"
+                     class="card shadow-sm mb-4 border-0">
+                <header class="card-header bg-body-tertiary border-bottom">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                        <div>
+                            <div class="text-uppercase small fw-semibold text-success mb-1">
+                                Lab {{ lesson.order or loop.index }}
+                            </div>
+                            <h2 class="h5 mb-0">{{ lesson.title }}</h2>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                            {% if lesson.points %}
+                                <span class="badge bg-body-secondary text-body border">
+                                    {{ lesson.points }} pts
+                                </span>
+                            {% endif %}
+                            {% if answer_html %}
+                                <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                    <i class="bx bx-check-circle me-1"></i>Model answer
+                                </span>
+                            {% else %}
+                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">
+                                    Awaiting answer
+                                </span>
+                            {% endif %}
+                            <a href="{{ url_for('view_lesson', lesson_id=lesson.id) }}"
+                               class="btn btn-sm btn-outline-secondary"
+                               title="Open the student-facing lesson page">
+                                <i class="bx bx-show me-1"></i>Open lesson
+                            </a>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="card-body">
+                    {% if lesson.task_instructions or lesson.content %}
+                        <details class="mb-4">
+                            <summary class="small fw-semibold text-muted"
+                                     style="cursor:pointer;">
+                                Show task instructions
+                            </summary>
+                            <div class="lesson-content mt-3 p-3 rounded
+                                        bg-body-tertiary border">
+                                {{ (lesson.task_instructions or lesson.content)|safe }}
+                            </div>
+                        </details>
+                    {% endif %}
+
+                    <h3 class="h6 text-uppercase text-success fw-semibold mb-3">
+                        <i class="bx bx-key me-1"></i>Model answer
+                    </h3>
+                    {% if answer_html %}
+                        <div class="lesson-content">
+                            {{ answer_html|safe }}
+                        </div>
+                    {% else %}
+                        <p class="text-muted fst-italic mb-0">
+                            No model answer has been authored for this lab yet.
+                        </p>
+                    {% endif %}
+                </div>
+
+                <footer class="card-footer bg-transparent text-end">
+                    <a href="#top" class="small text-muted text-decoration-none">
+                        <i class="bx bx-up-arrow-alt me-1"></i>Back to top
+                    </a>
+                </footer>
+            </article>
+        {% endfor %}
+
+    {% endif %}
+</div>
+{% endblock %}
