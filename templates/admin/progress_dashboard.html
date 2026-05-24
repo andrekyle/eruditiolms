@@ -14,10 +14,21 @@
     </div>
     <form method="get" class="d-flex align-items-center gap-2">
       <label for="course_id" class="form-label mb-0 small text-muted">Course</label>
+      {% set COURSE_LABELS = {
+        'AZ-900': 'Azure AZ-900',
+        'AI-901': 'Azure AI-901',
+        'DP-300': 'Azure DP-300',
+        'PL-300': 'Power BI PL-300',
+        'GH-300': 'GitHub GH-300',
+        '1Z0-808': 'Java 1Z0-808',
+        'PCAP':    'Python PCAP',
+        'SAQA':    'SAQA AISD',
+      } %}
       <select id="course_id" name="course_id" class="form-select form-select-sm pd-course-select" onchange="this.form.submit()">
         <option value="">All courses</option>
         {% for c in all_courses %}
-        {% set short = (c.title.split(':')[0] if ':' in c.title else (c.title.split('–')[0] if '–' in c.title else c.title))|trim %}
+        {% set code = (c.title.split(':')[0] if ':' in c.title else (c.title.split('–')[0] if '–' in c.title else c.title))|trim %}
+        {% set short = COURSE_LABELS.get(code) or (COURSE_LABELS.get(code.split(' ')[0]) if ' ' in code else None) or code %}
         <option value="{{ c.id }}" {% if focus_id == c.id %}selected{% endif %} title="{{ c.title }}">{{ short }}</option>
         {% endfor %}
       </select>
