@@ -458,7 +458,7 @@
             <div class="ts-crest__meta">
                 <div><strong>DOCUMENT</strong> &nbsp; Academic Transcript</div>
                 <div><strong>ISSUED</strong> &nbsp; <span id="ts-issued"></span></div>
-                <div><strong>REF</strong> &nbsp; TR-{{ '%06d'|format(current_user.id) }}</div>
+                <div><strong>REF</strong> &nbsp; TR-{{ '%06d'|format(student.id) }}</div>
             </div>
         </div>
     </div>
@@ -472,14 +472,14 @@
         <div class="ts-field">
             <span class="ts-field__label">Issued To</span>
             <span class="ts-field__value">
-                {% if current_user.first_name or current_user.last_name %}{{ current_user.first_name }} {{ current_user.last_name }}{% else %}{{ current_user.username }}{% endif %}
+                {% if student.first_name or student.last_name %}{{ student.first_name }} {{ student.last_name }}{% else %}{{ student.username }}{% endif %}
             </span><br>
-            <span class="ts-meta">{{ current_user.email }}</span>
+            <span class="ts-meta">{{ student.email }}</span>
         </div>
         <div class="ts-field">
             <span class="ts-field__label">Student Number</span>
-            <span class="ts-field__value">STU-{{ '%06d'|format(current_user.id) }}</span><br>
-            <span class="ts-meta">Status: {% if current_user.is_superadmin %}Administrator{% elif current_user.is_teacher %}Faculty{% else %}Enrolled student{% endif %}</span>
+            <span class="ts-field__value">STU-{{ '%06d'|format(student.id) }}</span><br>
+            <span class="ts-meta">Status: {% if student.is_superadmin %}Administrator{% elif student.is_teacher %}Faculty{% else %}Enrolled student{% endif %}</span>
         </div>
     </div>
 

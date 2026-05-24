@@ -89,6 +89,11 @@
                         <td class="uui-hide-md">{{ user.email }}</td>
                         <td class="uui-hide-md">{{ user.created_at.strftime('%b %d, %Y') }}</td>
                         <td class="uui-actions-cell">
+                            {% if current_user.is_teacher or current_user.is_superadmin %}
+                            <a href="{{ url_for('user_transcript', user_id=user.id) }}" class="uui-icon-btn" title="View transcript" aria-label="View transcript">
+                                <i class="bx bx-file"></i>
+                            </a>
+                            {% endif %}
                             {% if (current_user.role or '') == 'superuser' %}
                             <a href="{{ url_for('edit_user', user_id=user.id) }}" class="uui-icon-btn" title="Edit" aria-label="Edit">
                                 <i class="bx bx-pencil-square"></i>

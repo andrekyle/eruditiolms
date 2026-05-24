@@ -150,6 +150,9 @@
                                     </button>
                                 </form>
                                 {% endif %}
+                                <a href="{{ url_for('user_transcript', user_id=user.id) }}" class="uui-icon-btn" title="View transcript" aria-label="View transcript">
+                                    <i class="bx bx-file"></i>
+                                </a>
                                 <a href="{{ url_for('edit_user', user_id=user.id) }}" class="uui-icon-btn" title="Edit" aria-label="Edit">
                                     <i class="bx bx-pencil-square"></i>
                                 </a>

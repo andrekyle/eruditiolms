@@ -159,6 +159,11 @@
                  class="btn btn-sm btn-outline-success">
                 View
               </a>
+              <a href="{{ url_for('user_transcript', user_id=s.id) }}"
+                 class="btn btn-sm btn-outline-secondary"
+                 title="Open academic transcript">
+                Transcript
+              </a>
             </td>
           </tr>
           {% endfor %}

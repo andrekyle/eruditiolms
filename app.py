@@ -847,9 +847,28 @@ def report(filename='index.html'):
 @app.route('/my/results')
 @login_required
 def my_results():
-    """A university-style transcript page listing every quiz attempt for the current user, grouped by course."""
+    """Transcript for the currently logged-in user."""
+    ctx = _build_transcript_context(current_user)
+    return render_template('my_results.html', **ctx)
+
+
+@app.route('/users/<int:user_id>/transcript')
+@login_required
+def user_transcript(user_id):
+    """Transcript for a specific student. Visible to the student themself,
+    to teachers, and to administrators/superusers."""
+    student = User.query.get_or_404(user_id)
+    if student.id != current_user.id and not (current_user.is_teacher or current_user.is_superadmin):
+        abort(403)
+    ctx = _build_transcript_context(student)
+    return render_template('my_results.html', **ctx)
+
+
+def _build_transcript_context(student):
+    """A university-style transcript listing every quiz attempt for ``student``,
+    grouped by course. Returns the kwargs to pass to ``my_results.html``."""
     responses = (QuizResponse.query
-                 .filter_by(user_id=current_user.id)
+                 .filter_by(user_id=student.id)
                  .order_by(QuizResponse.created_at.desc())
                  .all())
 
@@ -924,14 +943,16 @@ def my_results():
     overall_pct = (overall_best / overall_total * 100.0) if overall_total else 0.0
     total_attempts = sum(len(by_quiz[qid]) for qid in by_quiz)
 
-    return render_template('my_results.html',
-                           course_rows=course_rows,
-                           overall_best=overall_best,
-                           overall_total=overall_total,
-                           overall_pct=overall_pct,
-                           overall_grade=_letter_grade(overall_pct),
-                           total_attempts=total_attempts,
-                           quizzes_taken=len(quiz_meta))
+    return dict(
+        student=student,
+        course_rows=course_rows,
+        overall_best=overall_best,
+        overall_total=overall_total,
+        overall_pct=overall_pct,
+        overall_grade=_letter_grade(overall_pct),
+        total_attempts=total_attempts,
+        quizzes_taken=len(quiz_meta),
+    )
 
 
 def _letter_grade(pct):
