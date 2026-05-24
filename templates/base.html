@@ -311,6 +311,24 @@
             });
         });
     </script>
+
+    <script>
+        // Unregister any stale service worker (e.g. left over from an old PWA test
+        // build) and clear its caches so leftover overlays like the "PWA Feature
+        // Test" panel disappear on the next reload.
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function (regs) {
+                if (!regs.length) return;
+                Promise.all(regs.map(function (r) { return r.unregister(); })).then(function () {
+                    if (window.caches && caches.keys) {
+                        caches.keys().then(function (names) {
+                            names.forEach(function (n) { caches.delete(n); });
+                        });
+                    }
+                });
+            }).catch(function () { /* ignore */ });
+        }
+    </script>
     {% block scripts %}{% endblock %}
 </body>
 </html>
