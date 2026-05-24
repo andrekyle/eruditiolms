@@ -9,7 +9,14 @@ Idempotent — safe to re-run.
 from app import app, db, Lesson
 
 VIDEO_ID = "TIIqoDon_r4"
-EMBED_URL = f"https://www.youtube.com/embed/{VIDEO_ID}"
+# Request highest available quality up-front so the opening frames are not blurry
+# while YouTube's adaptive bitrate ramps up. `vq=hd1080` hints the preferred
+# quality, `hd=1` is the legacy hint still honoured by some clients, and
+# `rel=0` / `modestbranding=1` clean up the player UI.
+EMBED_URL = (
+    f"https://www.youtube-nocookie.com/embed/{VIDEO_ID}"
+    "?rel=0&modestbranding=1&hd=1&vq=hd1080"
+)
 
 CONTENT_HTML = """
 <p>
