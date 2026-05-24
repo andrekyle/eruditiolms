@@ -14,10 +14,11 @@
     </div>
     <form method="get" class="d-flex align-items-center gap-2">
       <label for="course_id" class="form-label mb-0 small text-muted">Course</label>
-      <select id="course_id" name="course_id" class="form-select form-select-sm" onchange="this.form.submit()">
+      <select id="course_id" name="course_id" class="form-select form-select-sm pd-course-select" onchange="this.form.submit()">
         <option value="">All courses</option>
         {% for c in all_courses %}
-        <option value="{{ c.id }}" {% if focus_id == c.id %}selected{% endif %}>{{ c.title }}</option>
+        {% set short = (c.title.split(':')[0] if ':' in c.title else (c.title.split('–')[0] if '–' in c.title else c.title))|trim %}
+        <option value="{{ c.id }}" {% if focus_id == c.id %}selected{% endif %} title="{{ c.title }}">{{ short }}</option>
         {% endfor %}
       </select>
       {% if focus_id %}
