@@ -6349,24 +6349,50 @@ html body .qr-opt code,
 html body .qr-opt__text code { font-size: 1.25rem !important; }
 
 /* ===== Progress Dashboard ===== */
-.pd-stat .card-body { padding: 18px 20px; }
+.pd-stat { background: #fff; }
+.pd-stat .card-body { padding: 18px 20px; background: #fff; }
 .pd-stat__label { font-size: .8125rem; color: #667085; text-transform: uppercase; letter-spacing: .04em; }
 .pd-stat__value { font-size: 1.75rem; font-weight: 700; color: #101828; margin-top: 4px; }
-.pd-course { border: 1px solid #EAECF0; border-radius: 12px; box-shadow: 0 1px 2px rgba(16,24,40,.04); overflow: hidden; }
-.pd-course .card-header { background: #FAFBFC; border-bottom: 1px solid #EAECF0; padding: 16px 20px; }
-.pd-course__link { color: #101828; text-decoration: none; }
-.pd-course__link:hover { color: #2E7D32; text-decoration: underline; }
+.pd-course { background: #fff; border: 1px solid #EAECF0 !important; border-radius: 12px !important; box-shadow: 0 1px 2px rgba(16,24,40,.04) !important; overflow: hidden; }
+.pd-course .card-header { background: #FAFBFC !important; border-bottom: 1px solid #EAECF0; padding: 16px 20px; color: #101828; }
+.pd-course .card-body { background: #fff; color: #475467; }
+.pd-course .table { background: #fff; color: #101828; margin-bottom: 0; }
+.pd-course .table > :not(caption) > * > * { background: #fff; color: #101828; }
+a.pd-course__link,
+a.pd-course__link:link,
+a.pd-course__link:visited { color: #101828 !important; text-decoration: none; }
+a.pd-course__link:hover,
+a.pd-course__link:focus { color: #2E7D32 !important; text-decoration: underline; }
 .pd-course__avg { font-size: 1.5rem; font-weight: 700; color: #2E7D32; }
-.pd-table th { font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; color: #667085; font-weight: 600; border-top: 0; }
-.pd-table td { vertical-align: middle; }
+.pd-table th { font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; color: #667085 !important; font-weight: 600; border-top: 0; background: #fff !important; }
+.pd-table td { vertical-align: middle; color: #101828; }
 .pd-progress { height: 8px; border-radius: 999px; background: #F2F4F7; }
 .pd-pct { font-weight: 600; color: #101828; min-width: 40px; display: inline-block; }
 .pd-student__name { font-weight: 600; color: #101828; }
 .pd-avatar { width: 36px; height: 36px; border-radius: 50%; background: #E9F5EE; color: #2E7D32; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
 .pd-avatar img { width: 100%; height: 100%; object-fit: cover; }
-@media (prefers-color-scheme: dark) {
-  .pd-stat__value, .pd-course__link, .pd-pct, .pd-student__name { color: #F2F4F7; }
-  .pd-course, .pd-course .card-header { background: #1E1F22; border-color: #2E2F33; }
-  .pd-stat__label { color: #98A2B3; }
-}
+
+/* App dark-theme (data-theme="dark") overrides — aligns with the manual toggle, not OS pref. */
+html[data-theme="dark"] .pd-stat,
+html[data-theme="dark"] .pd-stat .card-body,
+html[data-theme="dark"] .pd-course,
+html[data-theme="dark"] .pd-course .card-body,
+html[data-theme="dark"] .pd-course .table,
+html[data-theme="dark"] .pd-course .table > :not(caption) > * > *,
+html[data-theme="dark"] .pd-table th { background: #161616 !important; }
+html[data-theme="dark"] .pd-course { border-color: #2A2A2A !important; }
+html[data-theme="dark"] .pd-course .card-header { background: #1E1F22 !important; border-bottom-color: #2A2A2A; color: #F2F4F7; }
+html[data-theme="dark"] .pd-stat__value,
+html[data-theme="dark"] .pd-pct,
+html[data-theme="dark"] .pd-student__name,
+html[data-theme="dark"] .pd-table td { color: #F2F4F7 !important; }
+html[data-theme="dark"] .pd-stat__label,
+html[data-theme="dark"] .pd-table th { color: #98A2B3 !important; }
+html[data-theme="dark"] a.pd-course__link,
+html[data-theme="dark"] a.pd-course__link:link,
+html[data-theme="dark"] a.pd-course__link:visited { color: #F2F4F7 !important; }
+html[data-theme="dark"] a.pd-course__link:hover,
+html[data-theme="dark"] a.pd-course__link:focus { color: #34D399 !important; }
+html[data-theme="dark"] .pd-progress { background: #2A2A2A; }
+html[data-theme="dark"] .pd-course .card-body { color: #A0A0A0; }
 
