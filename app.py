@@ -315,6 +315,97 @@ def auto_enroll_teacher(user):
         db.session.commit()
     return added
 
+
+# ---------------------------------------------------------------------------
+# Avatar persistence helper
+# ---------------------------------------------------------------------------
+# On Vercel the static folder is read-only, which makes the original
+# `static/uploads/avatars/…` write fail with OSError. To keep avatar upload
+# working everywhere we:
+#   1. Resize the image to a small square thumbnail with Pillow.
+#   2. Try to write that thumbnail to the local static folder.
+#   3. If the filesystem is read-only, fall back to a base64 `data:` URL
+#      stored directly in `User.avatar_url` (the column is widened to TEXT
+#      at startup for Postgres so the URL fits).
+ALLOWED_AVATAR_EXTS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+AVATAR_MAX_SIDE = 256
+AVATAR_JPEG_QUALITY = 82
+
+
+def _build_avatar_bytes(file_storage):
+    """Read uploaded file, resize to a square thumbnail, return (bytes, mime).
+
+    Returns (None, None) if Pillow can't open the file. Caller is expected to
+    validate the extension first.
+    """
+    try:
+        from PIL import Image, ImageOps  # local import keeps cold-start light
+        import io
+        file_storage.stream.seek(0)
+        img = Image.open(file_storage.stream)
+        img = ImageOps.exif_transpose(img)
+        if img.mode in ('RGBA', 'P', 'LA'):
+            # Flatten transparency on white to keep JPEG output small.
+            bg = Image.new('RGB', img.size, (255, 255, 255))
+            try:
+                bg.paste(img, mask=img.convert('RGBA').split()[-1])
+            except Exception:
+                bg.paste(img.convert('RGB'))
+            img = bg
+        else:
+            img = img.convert('RGB')
+        # Center-crop to square then resize.
+        w, h = img.size
+        side = min(w, h)
+        left = (w - side) // 2
+        top = (h - side) // 2
+        img = img.crop((left, top, left + side, top + side))
+        if side > AVATAR_MAX_SIDE:
+            img = img.resize((AVATAR_MAX_SIDE, AVATAR_MAX_SIDE), Image.LANCZOS)
+        buf = io.BytesIO()
+        img.save(buf, format='JPEG', quality=AVATAR_JPEG_QUALITY, optimize=True)
+        return buf.getvalue(), 'image/jpeg'
+    except Exception:
+        # Fall back to the raw upload bytes if Pillow choked.
+        try:
+            file_storage.stream.seek(0)
+            return file_storage.stream.read(), (file_storage.mimetype or 'image/jpeg')
+        except Exception:
+            return None, None
+
+
+def persist_avatar(file_storage, user_id):
+    """Save the uploaded avatar and return a URL the browser can render.
+
+    Returns None and silently skips if the upload is empty / invalid.
+    Never raises — on any failure returns None so the rest of the form save
+    can still proceed (caller may flash a message).
+    """
+    if not file_storage or not file_storage.filename:
+        return None
+    ext = file_storage.filename.rsplit('.', 1)[-1].lower() if '.' in file_storage.filename else ''
+    if ext not in ALLOWED_AVATAR_EXTS:
+        return ('__invalid_ext__', None)  # sentinel for caller
+
+    data, mime = _build_avatar_bytes(file_storage)
+    if not data:
+        return None
+
+    # Try writing to local static folder first (dev / persistent hosts).
+    import base64
+    try:
+        filename = secure_filename(f"avatar_{user_id}_{int(datetime.utcnow().timestamp())}.jpg")
+        upload_path = os.path.join(app.static_folder, 'uploads', 'avatars')
+        os.makedirs(upload_path, exist_ok=True)
+        with open(os.path.join(upload_path, filename), 'wb') as f:
+            f.write(data)
+        return url_for('static', filename=f'uploads/avatars/{filename}')
+    except OSError:
+        # Read-only filesystem (e.g. Vercel serverless) — embed as data URL.
+        b64 = base64.b64encode(data).decode('ascii')
+        return f"data:{mime};base64,{b64}"
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -452,20 +543,14 @@ def edit_user(user_id):
             # Avatar upload (optional)
             avatar_file = request.files.get('avatar')
             if avatar_file and avatar_file.filename:
-                allowed_ext = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
-                ext = avatar_file.filename.rsplit('.', 1)[-1].lower() if '.' in avatar_file.filename else ''
-                if ext not in allowed_ext:
+                result = persist_avatar(avatar_file, user.id)
+                if isinstance(result, tuple) and result and result[0] == '__invalid_ext__':
                     flash('Avatar must be a PNG, JPG, GIF, or WEBP image.', 'danger')
                     return render_template('users/edit.html', user=user)
-                filename = secure_filename(f"avatar_{user.id}_{int(datetime.utcnow().timestamp())}.{ext}")
-                upload_path = os.path.join(app.static_folder, 'uploads', 'avatars')
-                try:
-                    os.makedirs(upload_path, exist_ok=True)
-                    avatar_file.save(os.path.join(upload_path, filename))
-                    user.avatar_url = url_for('static', filename=f'uploads/avatars/{filename}')
-                except OSError:
-                    # Read-only filesystem (e.g. Vercel serverless).
-                    flash('Avatar upload is disabled in this environment; other changes were saved.', 'warning')
+                if result:
+                    user.avatar_url = result
+                else:
+                    flash('Could not process the uploaded image; other changes were saved.', 'warning')
 
             # Remove avatar if requested
             if request.form.get('remove_avatar') == '1':
@@ -596,21 +681,14 @@ def profile():
         # Avatar upload (optional)
         avatar_file = request.files.get('avatar')
         if avatar_file and avatar_file.filename:
-            allowed_ext = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
-            ext = avatar_file.filename.rsplit('.', 1)[-1].lower() if '.' in avatar_file.filename else ''
-            if ext not in allowed_ext:
+            result = persist_avatar(avatar_file, user.id)
+            if isinstance(result, tuple) and result and result[0] == '__invalid_ext__':
                 flash('Avatar must be a PNG, JPG, GIF, or WEBP image.', 'danger')
                 return render_template('profile.html', user=user)
-            filename = secure_filename(f"avatar_{user.id}_{int(datetime.utcnow().timestamp())}.{ext}")
-            upload_path = os.path.join(app.static_folder, 'uploads', 'avatars')
-            try:
-                os.makedirs(upload_path, exist_ok=True)
-                avatar_file.save(os.path.join(upload_path, filename))
-                user.avatar_url = url_for('static', filename=f'uploads/avatars/{filename}')
-            except OSError:
-                # Read-only filesystem (e.g. Vercel serverless). Skip the
-                # upload but let the rest of the profile update proceed.
-                flash('Avatar upload is disabled in this environment; other changes were saved.', 'warning')
+            if result:
+                user.avatar_url = result
+            else:
+                flash('Could not process the uploaded image; other changes were saved.', 'warning')
 
         # Remove avatar if requested
         if request.form.get('remove_avatar') == '1':
@@ -2294,6 +2372,19 @@ def init_db():
                     )
         except Exception as e:
             print(f"[migration] course.image_url ensure failed: {e}")
+
+        # Widen user.avatar_url so it can hold a base64 data URL fallback
+        # (used when the host filesystem is read-only, e.g. Vercel).
+        try:
+            with db.engine.begin() as conn:
+                dialect = db.engine.dialect.name
+                if dialect == 'postgresql':
+                    conn.exec_driver_sql(
+                        'ALTER TABLE "user" ALTER COLUMN avatar_url TYPE TEXT'
+                    )
+                # SQLite: VARCHAR has no enforced length, so no migration needed.
+        except Exception as e:
+            print(f"[migration] user.avatar_url widen failed: {e}")
 
         # Ensure every video lesson has a topical video matching its course title.
         # We update lessons whose video_url is missing OR still the generic
