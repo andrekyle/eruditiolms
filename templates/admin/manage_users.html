@@ -71,7 +71,7 @@
                             <div class="uui-user-cell">
                                 <span class="uui-avatar">
                                     {% if user.avatar_url %}
-                                        <img src="{{ user.avatar_url if (user.avatar_url.startswith('http') or user.avatar_url.startswith('/')) else url_for('static', filename=user.avatar_url) }}" alt="{{ display_name }}">
+                                        <img src="{{ user.avatar_url if (user.avatar_url.startswith('http') or user.avatar_url.startswith('/') or user.avatar_url.startswith('data:')) else url_for('static', filename=user.avatar_url) }}" alt="{{ display_name }}">
                                     {% else %}
                                         {{ initials|upper }}
                                     {% endif %}
