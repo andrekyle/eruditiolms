@@ -399,6 +399,11 @@ h2 {
     line-height: 1.5;
 }
 
+.course-description-text {
+    font-size: 1.1rem;
+    line-height: 1.7;
+}
+
 .course-view .list-group-item h6 {
     font-size: 0.95rem;
     margin-bottom: 0.25rem;
