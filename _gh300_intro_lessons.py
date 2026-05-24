@@ -4,7 +4,7 @@ from app import app, db, Course, Lesson
 COURSE_TITLE_LIKE = 'GH-300%'
 
 VIDEO_TITLE = 'Lesson 1: Watch \u2014 Intro Video'
-VIDEO_URL = 'https://www.youtube.com/embed/Fi3AJZZregI'
+VIDEO_URL = 'https://www.youtube.com/embed/f8_uF_IDV50'
 VIDEO_CONTENT = (
     '<p>Watch this short introduction to GitHub Copilot before starting the rest of the course. '
     'It covers what Copilot is, where it runs (IDE, CLI, GitHub.com), and the high-level workflow '
