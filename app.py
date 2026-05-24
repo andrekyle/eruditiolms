@@ -676,6 +676,16 @@ def index():
         c.lesson_id for c in LessonCompletion.query.filter_by(student_id=current_user.id).all()
     }
     my_quiz_responses = QuizResponse.query.filter_by(user_id=current_user.id).all()
+    # Treat exam-wrapper lessons as completed whenever the user has any attempt
+    # at the linked quiz (covers historical attempts before take_quiz() started
+    # auto-inserting LessonCompletion rows for exam-type lessons).
+    attempted_quiz_ids = {qr.quiz_id for qr in my_quiz_responses}
+    if attempted_quiz_ids:
+        for wl in Lesson.query.filter(
+            Lesson.content_type == 'exam',
+            Lesson.quiz_id.in_(attempted_quiz_ids),
+        ).all():
+            my_completed_lesson_ids.add(wl.id)
     # Best (highest %) attempt per quiz_id
     best_by_quiz = {}
     attempts_by_quiz = {}
@@ -1332,6 +1342,16 @@ def view_student_progress(course_id, student_id):
                       .filter(QuizResponse.user_id == student_id, Quiz.course_id == course_id)
                       .order_by(QuizResponse.created_at.desc()).all())
 
+    # Treat exam-wrapper lessons as completed whenever the student has at least
+    # one QuizResponse for the linked quiz (covers historical attempts made
+    # before take_quiz() started inserting LessonCompletion rows).
+    attempted_quiz_ids = {qr.quiz_id for qr in quiz_responses}
+    for l in lessons:
+        if (l.content_type == 'exam' and l.quiz_id
+                and l.quiz_id in attempted_quiz_ids
+                and l.id not in completed_ids):
+            completed_ids.add(l.id)
+
     total_lessons = len(lessons)
     completed_lessons = sum(1 for l in lessons if l.id in completed_ids)
     pct = int((completed_lessons / total_lessons) * 100) if total_lessons else 0
@@ -1454,6 +1474,21 @@ def progress_dashboard():
             prev = quiz_response_dates.get(key)
             if prev is None or (qr.created_at and qr.created_at > prev):
                 quiz_response_dates[key] = qr.created_at
+
+    # Treat exam-wrapper lessons as "completed" whenever the student has at
+    # least one QuizResponse for the linked quiz. This makes the tracker
+    # accurate even for historical attempts that pre-date the LessonCompletion
+    # auto-insert in take_quiz().
+    for ls in lessons_by_course.values():
+        for l in ls:
+            if l.content_type == 'exam' and l.quiz_id:
+                for sid in student_ids:
+                    qkey = (sid, l.quiz_id)
+                    if qkey in best_quiz_pct and (sid, l.id) not in completions_set:
+                        completions_set.add((sid, l.id))
+                        # Use the latest quiz response date as the completion date.
+                        if quiz_response_dates.get(qkey) is not None:
+                            completion_dates[(sid, l.id)] = quiz_response_dates[qkey]
 
     submission_dates: dict[tuple[int, int], datetime] = {}
     if student_ids and all_lesson_ids:
@@ -1934,10 +1969,28 @@ def take_quiz(quiz_id):
         quiz_response.points = earned_points
         quiz_response.total_points = total_points
         db.session.commit()
-        
+
         # Update student progress
         update_student_progress(current_user.id, quiz.course_id, earned_points, total_points)
-        
+
+        # Mark the exam-wrapper lesson(s) for this quiz as completed so the
+        # course completion percentage reflects that the student actually took
+        # the quiz. Without this, exam-type lessons stayed "unfinished" even
+        # after the quiz was submitted, breaking the progress tracker.
+        try:
+            wrapper_lessons = Lesson.query.filter_by(
+                quiz_id=quiz.id, content_type='exam'
+            ).all()
+            for wl in wrapper_lessons:
+                if not _is_lesson_completed(wl.id, current_user.id):
+                    db.session.add(LessonCompletion(
+                        student_id=current_user.id, lesson_id=wl.id
+                    ))
+            if wrapper_lessons:
+                db.session.commit()
+        except Exception:
+            db.session.rollback()
+
         flash('Quiz submitted successfully!', 'success')
         return redirect(url_for('view_quiz_result', quiz_id=quiz_id, response_id=quiz_response.id))
     
