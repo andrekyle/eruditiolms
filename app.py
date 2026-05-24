@@ -1367,6 +1367,180 @@ def view_student_progress(course_id, student_id):
         points_earned=points_earned, total_points=total_points, points_pct=points_pct,
     )
 
+
+@app.route('/dashboard/progress')
+@login_required
+def progress_dashboard():
+    """Cross-course progress tracker for teachers, admins, and superusers.
+
+    Shows every course with each enrolled student's lesson-completion %,
+    best quiz average %, last activity date, and a deep link into the
+    detailed per-student progress page.
+    """
+    if not (current_user.is_teacher or current_user.is_superadmin):
+        flash('You do not have permission to access the progress dashboard.', 'danger')
+        return redirect(url_for('index'))
+
+    # Scope: superusers/admins see all courses; teachers see courses they
+    # are enrolled in (and any they own).
+    if current_user.is_superadmin:
+        courses = Course.query.order_by(Course.title).all()
+    else:
+        courses = list({e.course for e in current_user.enrollments
+                        if e.course is not None})
+        owned = Course.query.filter_by(teacher_id=current_user.id).all()
+        for c in owned:
+            if c not in courses:
+                courses.append(c)
+        courses.sort(key=lambda c: (c.title or '').lower())
+
+    # Optional ?course_id=N filter to focus on one course.
+    focus_id = request.args.get('course_id', type=int)
+    if focus_id:
+        courses = [c for c in courses if c.id == focus_id]
+
+    course_ids = [c.id for c in courses]
+
+    # Pre-load all lessons & quizzes for these courses.
+    lessons_by_course: dict[int, list[Lesson]] = {cid: [] for cid in course_ids}
+    if course_ids:
+        for l in Lesson.query.filter(Lesson.course_id.in_(course_ids)).all():
+            lessons_by_course.setdefault(l.course_id, []).append(l)
+    quizzes_by_course: dict[int, list[Quiz]] = {cid: [] for cid in course_ids}
+    if course_ids:
+        for q in Quiz.query.filter(Quiz.course_id.in_(course_ids)).all():
+            quizzes_by_course.setdefault(q.course_id, []).append(q)
+
+    # Enrollments → only count real students (exclude staff who are auto-enrolled).
+    STAFF_ROLES = {'teacher', 'admin', 'superuser'}
+    enrollments_by_course: dict[int, list[Enrollment]] = {cid: [] for cid in course_ids}
+    student_ids: set[int] = set()
+    if course_ids:
+        rows = (Enrollment.query
+                .join(User, User.id == Enrollment.student_id)
+                .filter(Enrollment.course_id.in_(course_ids),
+                        ~User.role.in_(STAFF_ROLES))
+                .all())
+        for e in rows:
+            enrollments_by_course.setdefault(e.course_id, []).append(e)
+            student_ids.add(e.student_id)
+
+    # Bulk-load completions, quiz responses, submissions for all (student, course) pairs.
+    all_lesson_ids = [l.id for ls in lessons_by_course.values() for l in ls]
+    all_quiz_ids = [q.id for qs in quizzes_by_course.values() for q in qs]
+
+    completions_set: set[tuple[int, int]] = set()  # (student_id, lesson_id)
+    completion_dates: dict[tuple[int, int], datetime] = {}
+    if student_ids and all_lesson_ids:
+        for c in (LessonCompletion.query
+                  .filter(LessonCompletion.student_id.in_(student_ids),
+                          LessonCompletion.lesson_id.in_(all_lesson_ids))
+                  .all()):
+            completions_set.add((c.student_id, c.lesson_id))
+            completion_dates[(c.student_id, c.lesson_id)] = c.completed_at
+
+    # Best quiz % per (student, quiz)
+    best_quiz_pct: dict[tuple[int, int], float] = {}
+    quiz_response_dates: dict[tuple[int, int], datetime] = {}
+    if student_ids and all_quiz_ids:
+        for qr in (QuizResponse.query
+                   .filter(QuizResponse.user_id.in_(student_ids),
+                           QuizResponse.quiz_id.in_(all_quiz_ids))
+                   .all()):
+            pct = (qr.points / qr.total_points * 100.0) if qr.total_points else 0.0
+            key = (qr.user_id, qr.quiz_id)
+            if pct > best_quiz_pct.get(key, -1):
+                best_quiz_pct[key] = pct
+            prev = quiz_response_dates.get(key)
+            if prev is None or (qr.created_at and qr.created_at > prev):
+                quiz_response_dates[key] = qr.created_at
+
+    submission_dates: dict[tuple[int, int], datetime] = {}
+    if student_ids and all_lesson_ids:
+        for s in (TaskSubmission.query
+                  .filter(TaskSubmission.student_id.in_(student_ids),
+                          TaskSubmission.lesson_id.in_(all_lesson_ids))
+                  .all()):
+            submission_dates[(s.student_id, s.lesson_id)] = s.submitted_at
+
+    # Build the per-course rows for the template.
+    dashboard = []
+    grand_students = 0
+    grand_completion_sum = 0
+    grand_completion_count = 0
+    for course in courses:
+        lessons = lessons_by_course.get(course.id, [])
+        quizzes = quizzes_by_course.get(course.id, [])
+        total_lessons = len(lessons)
+        total_quizzes = len(quizzes)
+        student_rows = []
+        for enrollment in enrollments_by_course.get(course.id, []):
+            sid = enrollment.student_id
+            student = enrollment.student
+            if student is None:
+                continue
+            done = sum(1 for l in lessons if (sid, l.id) in completions_set)
+            pct = int(round(done / total_lessons * 100)) if total_lessons else 0
+            quiz_pcts = [best_quiz_pct[(sid, q.id)]
+                         for q in quizzes if (sid, q.id) in best_quiz_pct]
+            quiz_avg = int(round(sum(quiz_pcts) / len(quiz_pcts))) if quiz_pcts else None
+            # last activity = max of completion / submission / quiz dates for this course
+            candidate_dates: list[datetime] = []
+            for l in lessons:
+                d = completion_dates.get((sid, l.id))
+                if d: candidate_dates.append(d)
+                d2 = submission_dates.get((sid, l.id))
+                if d2: candidate_dates.append(d2)
+            for q in quizzes:
+                d = quiz_response_dates.get((sid, q.id))
+                if d: candidate_dates.append(d)
+            last_activity = max(candidate_dates) if candidate_dates else None
+
+            student_rows.append({
+                'student': student,
+                'enrolled_at': enrollment.created_at,
+                'lessons_done': done,
+                'lessons_total': total_lessons,
+                'percent': pct,
+                'quiz_avg': quiz_avg,
+                'quiz_attempted': len(quiz_pcts),
+                'quiz_total': total_quizzes,
+                'last_activity': last_activity,
+            })
+            grand_completion_sum += pct
+            grand_completion_count += 1
+        # Sort: lowest progress first so attention goes to who needs help.
+        student_rows.sort(key=lambda r: (r['percent'], (r['student'].full_name or r['student'].username or '').lower()))
+        course_avg = (int(round(sum(r['percent'] for r in student_rows) / len(student_rows)))
+                      if student_rows else 0)
+        dashboard.append({
+            'course': course,
+            'total_lessons': total_lessons,
+            'total_quizzes': total_quizzes,
+            'student_rows': student_rows,
+            'student_count': len(student_rows),
+            'course_avg': course_avg,
+        })
+        grand_students += len(student_rows)
+
+    overall_avg = (int(round(grand_completion_sum / grand_completion_count))
+                   if grand_completion_count else 0)
+
+    return render_template(
+        'admin/progress_dashboard.html',
+        dashboard=dashboard,
+        all_courses=Course.query.order_by(Course.title).all() if current_user.is_superadmin
+                     else sorted(
+                         list({e.course for e in current_user.enrollments if e.course} |
+                              set(Course.query.filter_by(teacher_id=current_user.id).all())),
+                         key=lambda c: (c.title or '').lower()),
+        focus_id=focus_id,
+        grand_students=grand_students,
+        grand_course_count=len(dashboard),
+        overall_avg=overall_avg,
+    )
+
+
 @app.route('/course/<int:course_id>/edit', methods=['POST'])
 @login_required
 def edit_course(course_id):
