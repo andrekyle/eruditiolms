@@ -1206,25 +1206,36 @@ def enroll_students(course_id):
     
     course = Course.query.get_or_404(course_id)
     student_ids = request.form.getlist('student_ids[]')
-    
+    enroll_all_courses = request.form.get('enroll_all_courses') == '1'
+
+    # Decide the set of courses to enroll into.
+    target_courses = Course.query.all() if enroll_all_courses else [course]
+    target_course_ids = [c.id for c in target_courses]
+
+    added = 0
     for student_id in student_ids:
-        # Check if enrollment already exists
-        enrollment = Enrollment.query.filter_by(
-            student_id=student_id,
-            course_id=course_id
-        ).first()
-        
-        if not enrollment:
-            enrollment = Enrollment(student_id=student_id, course_id=course_id)
-            db.session.add(enrollment)
-    
+        existing_ids = {
+            e.course_id for e in Enrollment.query
+                .filter(Enrollment.student_id == student_id,
+                        Enrollment.course_id.in_(target_course_ids))
+                .all()
+        }
+        for cid in target_course_ids:
+            if cid in existing_ids:
+                continue
+            db.session.add(Enrollment(student_id=student_id, course_id=cid))
+            added += 1
+
     try:
         db.session.commit()
-        flash('Students enrolled successfully!', 'success')
-    except Exception as e:
+        if enroll_all_courses:
+            flash(f'Enrolled selected student(s) in all courses ({added} new enrollment(s)).', 'success')
+        else:
+            flash('Students enrolled successfully!', 'success')
+    except Exception:
         db.session.rollback()
         flash('Error enrolling students.', 'error')
-    
+
     return redirect(url_for('view_course', course_id=course_id))
 
 @app.route('/course/<int:course_id>/unenroll/<int:student_id>', methods=['POST'])
@@ -1248,6 +1259,37 @@ def unenroll_student(course_id, student_id):
         flash('Error unenrolling student.', 'error')
     
     return redirect(url_for('view_course', course_id=course_id))
+
+
+@app.route('/users/<int:student_id>/enroll_all_courses', methods=['POST'])
+@login_required
+def enroll_student_in_all_courses(student_id):
+    """Enroll the given user into every existing course in one click.
+    Accessible to teachers, administrators and super users."""
+    if not (current_user.is_teacher or current_user.is_superadmin):
+        flash('Only a teacher, administrator, or super user can enroll students.', 'error')
+        return redirect(url_for('manage_users'))
+
+    student = User.query.get_or_404(student_id)
+    existing = {e.course_id for e in Enrollment.query.filter_by(student_id=student.id).all()}
+    added = 0
+    for course in Course.query.all():
+        if course.id in existing:
+            continue
+        db.session.add(Enrollment(student_id=student.id, course_id=course.id))
+        added += 1
+
+    try:
+        if added:
+            db.session.commit()
+            flash(f'Enrolled {student.username} in {added} course(s).', 'success')
+        else:
+            flash(f'{student.username} is already enrolled in every course.', 'info')
+    except Exception:
+        db.session.rollback()
+        flash('Error enrolling student in all courses.', 'error')
+
+    return redirect(request.referrer or url_for('manage_users'))
 
 
 @app.route('/course/<int:course_id>/student/<int:student_id>')

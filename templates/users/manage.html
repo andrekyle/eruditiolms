@@ -139,6 +139,17 @@
                             <td class="uui-hide-md uui-email">{{ user.email }}</td>
                             <td class="uui-hide-md uui-nowrap uui-muted">{{ user.created_at.strftime('%b %d, %Y') }}</td>
                             <td class="uui-actions-cell">
+                                {% if r == 'student' %}
+                                <form action="{{ url_for('enroll_student_in_all_courses', student_id=user.id) }}" method="POST" class="d-inline"
+                                      data-confirm="Enroll {{ display_name }} in every course?"
+                                      data-confirm-title="Enroll in all courses"
+                                      data-confirm-ok="Enroll"
+                                      data-confirm-variant="primary">
+                                    <button type="submit" class="uui-icon-btn" title="Enroll in all courses" aria-label="Enroll in all courses">
+                                        <i class="bx bx-book-add"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
                                 <a href="{{ url_for('edit_user', user_id=user.id) }}" class="uui-icon-btn" title="Edit" aria-label="Edit">
                                     <i class="bx bx-pencil-square"></i>
                                 </a>
