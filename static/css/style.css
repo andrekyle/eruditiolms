@@ -3135,6 +3135,9 @@ body:has(.uui-page--white) .app-content {
     border-radius: 12px;
     box-shadow: 0 1px 2px rgba(16,24,40,.04);
 }
+.enrolled-card--clickable { cursor: pointer; transition: box-shadow .15s ease, transform .15s ease; }
+.enrolled-card--clickable:hover { box-shadow: 0 4px 12px rgba(16,24,40,.10); transform: translateY(-1px); }
+.enrolled-card--clickable:focus-visible { outline: 2px solid #2E7D32; outline-offset: 2px; }
 .enrolled-card .card-body { padding: 16px 18px; }
 .enrolled-icon {
     width: 44px; height: 44px;
