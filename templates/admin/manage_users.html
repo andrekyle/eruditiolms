@@ -91,12 +91,12 @@
                         <td class="uui-actions-cell">
                             {% if current_user.is_teacher or current_user.is_superadmin %}
                             <a href="{{ url_for('user_transcript', user_id=user.id) }}" class="uui-icon-btn" title="View transcript" aria-label="View transcript">
-                                <i class="bx bx-file"></i>
+                                <i class="bx bx-receipt"></i>
                             </a>
                             {% endif %}
                             {% if (current_user.role or '') == 'superuser' %}
                             <a href="{{ url_for('edit_user', user_id=user.id) }}" class="uui-icon-btn" title="Edit" aria-label="Edit">
-                                <i class="bx bx-pencil-square"></i>
+                                <i class="bx bx-edit"></i>
                             </a>
                             {% if user.id != current_user.id %}
                             <form action="{{ url_for('delete_user', user_id=user.id) }}" method="POST" class="d-inline"
