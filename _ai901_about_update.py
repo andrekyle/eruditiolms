@@ -1,35 +1,34 @@
 """Replace the AI-901 'About this course' lesson body with a summary of the
-official Microsoft study guide for Exam AI-900: Azure AI Fundamentals
-(skills measured as of May 2, 2025). Idempotent.
+official Microsoft study guide for Exam AI-901: Azure AI Fundamentals
+(skills measured as of April 15, 2026). Idempotent.
 """
 from app import app, db, Lesson
 
 LESSON_ID = 21
 
 CONTENT = """
-<h2>Study Guide Summary — Exam AI-900: Microsoft Azure AI Fundamentals</h2>
+<h2>Study Guide Summary — Exam AI-901: Microsoft Azure AI Fundamentals</h2>
 
-<p>This About page summarizes the official Microsoft <em>Study Guide for Exam AI-900</em>
-(skills measured as of <strong>May 2, 2025</strong>). Although this course is branded
-<strong>AI-901</strong>, it follows the AI-900 syllabus end-to-end so you can use it to
-prepare for the Microsoft Certified: <strong>Azure AI Fundamentals</strong> credential.</p>
+<p>This About page summarizes the official Microsoft <em>Study Guide for Exam AI-901</em>
+(skills measured as of <strong>April 15, 2026</strong>). The exam validates that you can
+identify core AI concepts and capabilities, and that you can build lightweight
+AI solutions on Azure using <strong>Microsoft Foundry</strong>.</p>
 
 <h3>Purpose</h3>
-<p>AI-900 validates foundational knowledge of <strong>machine learning</strong> and
-<strong>artificial intelligence</strong> concepts and the Azure services that implement
-them. A scaled score of <strong>700 or greater</strong> is required to pass.</p>
+<p>AI-901 awards the Microsoft Certified: <strong>Azure AI Fundamentals</strong>
+credential. A scaled score of <strong>700 or greater</strong> is required to pass.
+Most questions cover <strong>generally available (GA)</strong> features, though commonly
+used Preview features may also appear.</p>
 
 <h3>Audience profile</h3>
-<p>The exam is open to candidates from both technical and non-technical backgrounds.
-Data-science or software-engineering experience is <em>not</em> required, but you will
-benefit from awareness of:</p>
+<p>You are at the beginning of your career in AI solution development. For this exam you
+should have:</p>
 <ul>
-  <li>Basic <strong>cloud concepts</strong>.</li>
-  <li><strong>Client&ndash;server applications</strong>.</li>
+  <li>Conceptual knowledge of <strong>AI solutions in Azure</strong>.</li>
+  <li>The foundational technical skills to work with those solutions.</li>
+  <li>Knowledge of <strong>Python</strong> coding syntax and basic programming techniques.</li>
+  <li>Familiarity with <strong>Azure resources</strong>.</li>
 </ul>
-<p>AI-900 is useful preparation for role-based certifications such as
-<em>Azure Data Scientist Associate</em> and <em>Azure AI Engineer Associate</em>, but it
-is not a prerequisite for any of them.</p>
 
 <h3>Skills measured at a glance</h3>
 <table class="table table-bordered table-striped">
@@ -37,86 +36,94 @@ is not a prerequisite for any of them.</p>
     <tr><th>Functional area</th><th>Weight</th></tr>
   </thead>
   <tbody>
-    <tr><td>Describe Artificial Intelligence workloads and considerations</td><td>15&ndash;20%</td></tr>
-    <tr><td>Describe fundamental principles of machine learning on Azure</td><td>15&ndash;20%</td></tr>
-    <tr><td>Describe features of computer vision workloads on Azure</td><td>15&ndash;20%</td></tr>
-    <tr><td>Describe features of Natural Language Processing (NLP) workloads on Azure</td><td>15&ndash;20%</td></tr>
-    <tr><td>Describe features of generative AI workloads on Azure</td><td>20&ndash;25%</td></tr>
+    <tr><td>Identify AI concepts and capabilities</td><td>40&ndash;45%</td></tr>
+    <tr><td>Implement AI solutions by using Microsoft Foundry</td><td>55&ndash;60%</td></tr>
   </tbody>
 </table>
 
-<h3>1. AI workloads and considerations (15&ndash;20%)</h3>
+<h3>1. Identify AI concepts and capabilities (40&ndash;45%)</h3>
+
+<h4>Describe principles of responsible AI</h4>
 <ul>
-  <li><strong>Identify features of common AI workloads:</strong> computer vision, natural
-  language processing, document processing, and generative AI.</li>
-  <li><strong>Guiding principles for Responsible AI:</strong> fairness, reliability and
-  safety, privacy and security, inclusiveness, transparency, and accountability.</li>
+  <li>Considerations for <strong>fairness</strong>.</li>
+  <li>Considerations for <strong>reliability and safety</strong>.</li>
+  <li>Considerations for <strong>privacy and security</strong>.</li>
+  <li>Considerations for <strong>inclusiveness</strong>.</li>
+  <li>Considerations for <strong>transparency</strong>.</li>
+  <li>Considerations for <strong>accountability</strong>.</li>
 </ul>
 
-<h3>2. Fundamental principles of machine learning on Azure (15&ndash;20%)</h3>
+<h4>Identify AI model components and configurations</h4>
 <ul>
-  <li><strong>Common ML techniques:</strong> regression, classification, clustering,
-  deep learning, and the <em>Transformer</em> architecture.</li>
-  <li><strong>Core ML concepts:</strong> features vs. labels in a dataset; the role of
-  training and validation datasets.</li>
-  <li><strong>Azure Machine Learning capabilities:</strong> automated machine learning
-  (AutoML); data and compute services for data science; and model management and
-  deployment.</li>
+  <li>Describe how <strong>generative AI models</strong> work.</li>
+  <li>Identify an appropriate <strong>AI model</strong>, based on capabilities.</li>
+  <li>Identify appropriate <strong>model deployment options</strong> and configuration
+  parameters.</li>
 </ul>
 
-<h3>3. Computer vision workloads on Azure (15&ndash;20%)</h3>
+<h4>Identify AI workloads</h4>
 <ul>
-  <li><strong>Common solution types:</strong> image classification, object detection,
-  optical character recognition (OCR), and facial detection and analysis.</li>
-  <li><strong>Azure tools and services:</strong> <em>Azure AI Vision</em> and
-  <em>Azure AI Face</em>.</li>
+  <li>Identify scenarios for common AI workloads &mdash; <strong>generative and agentic
+  AI</strong>, <strong>text analysis</strong>, <strong>speech</strong>,
+  <strong>computer vision</strong>, and <strong>information extraction</strong>.</li>
+  <li>Common <strong>text analysis</strong> techniques: keyword extraction, entity
+  detection, sentiment analysis, summarization.</li>
+  <li>Features and capabilities of <strong>speech recognition</strong> and
+  <strong>speech synthesis</strong>.</li>
+  <li>Features and capabilities of <strong>computer vision</strong> and
+  <strong>image-generation</strong> models.</li>
+  <li>Techniques to <strong>extract information</strong> from text, images, audio, and
+  videos.</li>
 </ul>
 
-<h3>4. Natural Language Processing on Azure (15&ndash;20%)</h3>
+<h3>2. Implement AI solutions by using Microsoft Foundry (55&ndash;60%)</h3>
+
+<h4>Implement generative AI apps and agents by using Foundry</h4>
 <ul>
-  <li><strong>Common NLP scenarios:</strong> key phrase extraction, entity recognition,
-  sentiment analysis, language modeling, speech recognition and synthesis, and
-  translation.</li>
-  <li><strong>Azure tools and services:</strong> <em>Azure AI Language</em> and
-  <em>Azure AI Speech</em>.</li>
+  <li>Create effective <strong>system and user prompts</strong> for generative AI models.</li>
+  <li><strong>Deploy a model</strong> and interact with it in the Foundry portal.</li>
+  <li>Create a lightweight <strong>chat client application</strong> by using the Foundry SDK.</li>
+  <li>Create and test a <strong>single-agent</strong> solution in the Foundry portal.</li>
+  <li>Create a lightweight <strong>client application for an agent</strong>.</li>
 </ul>
 
-<h3>5. Generative AI workloads on Azure (20&ndash;25%)</h3>
+<h4>Implement AI solutions for text and speech by using Foundry</h4>
 <ul>
-  <li><strong>Features of generative AI solutions:</strong> generative model features,
-  common business scenarios, and responsible-AI considerations specific to generative
-  AI (e.g., grounding, hallucinations, content safety).</li>
-  <li><strong>Azure generative AI services:</strong> <em>Azure AI Foundry</em>,
-  <em>Azure OpenAI Service</em>, and the <em>Azure AI Foundry model catalog</em>.</li>
+  <li>Build a lightweight application that includes <strong>text analysis</strong>.</li>
+  <li>Respond to <strong>spoken prompts</strong> by using a deployed multimodal model.</li>
+  <li>Build a lightweight application by using <strong>Azure Speech in Foundry Tools</strong>.</li>
 </ul>
 
-<h3>Key updates since the previous version (May 2, 2025)</h3>
+<h4>Implement AI solutions with computer vision and image-generation capabilities by using Foundry</h4>
 <ul>
-  <li><em>Identify features of common AI workloads</em> &mdash; <strong>major</strong> change
-  (now explicitly includes document processing and generative AI).</li>
-  <li><em>Describe fundamental principles of machine learning on Azure</em> &mdash; weight
-  <strong>decreased</strong>.</li>
-  <li><em>Identify common machine learning techniques</em> &mdash; minor (adds Transformer
-  architecture).</li>
-  <li><em>Describe features of generative AI workloads on Azure</em> &mdash; weight
-  <strong>increased</strong>.</li>
-  <li><em>Identify capabilities of Azure OpenAI Service</em> renamed to
-  <em>Identify generative AI services and capabilities in Microsoft Azure</em> &mdash;
-  <strong>major</strong> change (adds Azure AI Foundry + model catalog).</li>
+  <li>Interpret <strong>visual input in prompts</strong> by using a deployed multimodal model.</li>
+  <li>Create new <strong>visual outputs</strong> by using generative models.</li>
+  <li>Build a lightweight application that includes <strong>vision capabilities</strong>.</li>
+</ul>
+
+<h4>Implement AI solutions for information extraction by using Foundry</h4>
+<ul>
+  <li>Extract information from <strong>documents and forms</strong> by using
+  <em>Azure Content Understanding</em> in Foundry Tools.</li>
+  <li>Extract information from <strong>images</strong> by using Content Understanding.</li>
+  <li>Extract information from <strong>audio and video</strong> by using Content Understanding.</li>
+  <li>Build a lightweight application with <strong>information extraction capabilities</strong>
+  by using Content Understanding.</li>
 </ul>
 
 <h3>Recommended study resources</h3>
 <ul>
   <li><strong>Microsoft Learn</strong> &mdash; self-paced learning paths and modules for
-  AI-900, plus instructor-led courses.</li>
-  <li><strong>Documentation</strong> &mdash; Azure Machine Learning, Azure AI Vision and
-  Face, Azure AI Language, Azure AI Speech, Azure OpenAI, and Azure AI Foundry.</li>
+  AI-901, plus instructor-led courses.</li>
+  <li><strong>Documentation</strong> &mdash; Anomaly Detector, Language Understanding,
+  Azure Machine Learning, Computer Vision, Natural Language Processing technology,
+  Azure Bot Service, Speech to Text, Speech Translation.</li>
   <li><strong>Practice Assessment</strong> &mdash; free, on Microsoft Learn.</li>
   <li><strong>Exam sandbox</strong> &mdash; explore the exam UI before test day.</li>
-  <li><strong>Community</strong> &mdash; Microsoft Q&amp;A, the AI &amp; Machine Learning
-  Hub, and the Microsoft Learn show <em>The AI Show</em>.</li>
-  <li><strong>Hands-on practice</strong> &mdash; build small demos in Azure AI Foundry,
-  Azure OpenAI playground, Vision Studio, Language Studio, and Azure ML Studio.</li>
+  <li><strong>Community</strong> &mdash; Microsoft Q&amp;A, the Artificial Intelligence and
+  Machine Learning Hub, and the Microsoft Learn show <em>The AI Show</em>.</li>
+  <li><strong>Hands-on practice</strong> &mdash; build small demos in
+  <em>Microsoft Foundry</em> (portal, SDK, agents, Foundry Tools, and Content Understanding).</li>
 </ul>
 
 <h3>Exam logistics worth knowing</h3>
@@ -125,16 +132,16 @@ is not a prerequisite for any of them.</p>
   <strong>eight weeks</strong> later.</li>
   <li>If your preferred language is unavailable, you can request an extra
   <strong>30 minutes</strong>.</li>
-  <li>Most questions cover <strong>GA</strong> features, but commonly used
-  <strong>Preview</strong> features may appear.</li>
   <li><strong>Accommodations</strong> are available for assistive devices, extra time, or
   other modifications.</li>
   <li>Microsoft associate, expert, and specialty certifications expire annually and are
   renewed via a free assessment on Microsoft Learn.</li>
+  <li>You can connect your <strong>Microsoft Learn profile</strong> to schedule and renew
+  exams and to share or print your certificates.</li>
 </ul>
 
-<p class="text-muted"><em>Source: Microsoft official Study Guide for Exam AI-900 &mdash;
-skills measured as of May 2, 2025; document last updated 05/05/2025.</em></p>
+<p class="text-muted"><em>Source: Microsoft official Study Guide for Exam AI-901
+&mdash; skills measured as of April 15, 2026 (last updated 04/15/2026).</em></p>
 """.strip()
 
 
